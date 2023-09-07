@@ -1,0 +1,19 @@
+CREATE TABLE testEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+);
+
+getTestList:
+SELECT *
+FROM testEntity
+ORDER BY id ASC;
+
+insertTestEntity:
+INSERT OR REPLACE
+INTO testEntity(
+    name
+) VALUES (?);
+
+deleteTest:
+DELETE FROM testEntity
+WHERE id = :id;
