@@ -2,4 +2,101 @@
 <resources>
     <string name="hello_world">Hello world</string>
     <string name="hello_x">Hello %s</string>
+
+    <string name="app_name">ronGame</string>
+
+    <!--common-->
+    <string name="start">시작</string>
+    <string name="confirm">확인</string>
+    <string name="cancel">취소</string>
+
+
+    <string name="title_gatcha">카드뽑기</string>
+    <string name="title_game">Game</string>
+    <string name="title_mini_game">돈벌기</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title">아들을 위해 만든 게임</string>
+    //
+    <string name="user_info_edit_name_title">이름이 뭐에요?: </string>
+
+    <string name="user_info_name_title">이름 : %s</string>
+    <string name="user_info_money_title">내가 가진돈 : </string>
+    <string name="money_unit">%d원</string>
+    <string name="card_gatcha_title">카드 뽑기</string>
+    <string name="card_gatcha_grade_title">Grade(등급) : </string>
+    <string name="card_gatcha_power_title">Power(파워) : </string>
+    <string name="card_gatcha_cost_title">Cost(비용) : </string>
+    <string name="card_gatcha_no_money">돈이 없어요 ㅠㅠ</string>
+
+    <string name="card_gatcha_done">카드가 뽑혔습니다.</string>
+    <string name="card_detail_title">카드 상세 정보</string>
+    <string name="card_detail_att">공격 : %d</string>
+    <string name="card_detail_def">방어 : %d</string>
+    <string name="card_detail_spd">속도 : %d</string>
+    <string name="card_detail_hp">체력 : %d</string>
+    <string name="card_detail_mp">정신력 : %d</string>
+    <string name="card_list_title">내 보유 카드 리스트</string>
+
+    <string name="game_att">무기</string>
+    <string name="game_def">방패</string>
+    <string name="game_speed">속도</string>
+    <string name="game_hp">체력</string>
+    <string name="game_mp">정신력</string>
+    <string name="game_selected_card_guid"> 카드 를 선택해 주세요</string>
+
+    <string name="game_list_item_level">레벨 : %d 단계</string>
+    <string name="game_list_item_cost">참가 비용 : %d원</string>
+    <string name="game_list_item_reward">보상 금액 : %d원</string>
+    <string name="game_stage_state_ready">참가 하세요!</string>
+    <string name="game_stage_state_done">돌파</string>
+    <string name="game_stage_state_done_message">이미 완료한 레벨 입니다.</string>
+    <string name="game_stage_state_not_open">미지의 영역</string>
+    <string name="game_stage_state_not_open_message">미지의 영역 입니다.</string>
+
+    <string name="game_my_info">내 정보</string>
+    <string name="game_com_info">적 정보</string>
+    <string name="game_battle_compare_text"> VS </string>
+    <string name="game_battle_first_me">나 부터 공격</string>
+    <string name="game_battle_first_com">악당 부터 공격</string>
+    <string name="game_battle_my_att">내 공격력 : %d</string>
+    <string name="game_battle_my_mp">내 정신력 : %d</string>
+    <string name="game_battle_my_def">내 방어력 : %d</string>
+    <string name="game_battle_com_att">적 공격력 : %d</string>
+    <string name="game_battle_com_def">적 방어력 : %d</string>
+    <string name="game_battle_attack">%d 만큼 공격</string>
+    <string name="game_battle_defense">%d 만큼 피해</string>
+    <string name="game_battle_attack_result">상대방 남은 체력 : %d (%s)</string>
+    <string name="game_battle_defense_result">내 남은 체력 : %d (%s)</string>
+    <string name="game_battle_speed_compare">속도 비교</string>
+    <string name="game_battle_speed_my_stat">나의 속도 : </string>
+    <string name="game_battle_speed_com_stat"> : 적의 속도</string>
+    <string name="game_battle_speed_my_first">나 부터 공격을 시작 합니다.</string>
+    <string name="game_battle_speed_com_first">적 부터 공격을 시작 합니다.</string>
+    <string name="game_battle_current_round">현재 라운드 : %d</string>
+    <string name="game_battle_result_win">승리!</string>
+    <string name="game_battle_result_lost">패배</string>
+    <string name="game_battle_result_get_reward">보상을 받으세요!\n %d 원</string>
+    <string name="game_battle_result_lost_message">사용 하신 카드는 모두 사라집니다.</string>
+    <string name="game_battle_over_card_cost">카드의 총 비용이 초과 했습니다.</string>
+
+    <string name="game_progress_min_attack">최소 공격(+정신력) : %d</string>
+    <string name="game_progress_max_attack">최대 공격(-상대방 방어력) : %d</string>
+    <string name="game_progress_min_defense">최소 방어(+정신력) : %d</string>
+    <string name="game_progress_max_defense">최대 방어 : %d</string>
+
+
+    <string name="game_start_confirm_message">%d 원이 차감 됩니다.\n게임을 시작 하시겠습니까?</string>
+    <string name="game_my_info_remain_hp">남은 체력 : %d</string>
+    <string name="game_my_info_remain_turn">남은 기회 : %d</string>
+    <string name="game_my_info_used_card">사용한 카드 : %d</string>
+    <string name="game_my_info_used_cost">사용한 총 비용 : %d</string>
+
+    <string name="etc_attend_btn">출석 체크 하면 %d원 드려요~</string>
+    <string name="etc_mini_game_quiz">정답을 맞추어 볼까?</string>
+    <string name="etc_attend_done">오늘 출석 완료</string>
+    <string name="etc_result_dialog_title">총 %d 문제 중 %d 맞추었습니다.</string>
+    <string name="etc_result_dialog_content">총 %d 원을 획득 하셨습니다.</string>
+
 </resources>

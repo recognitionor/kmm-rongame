@@ -1,5 +1,8 @@
 package com.jhlee.kmm_rongame
 
+import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
@@ -27,4 +30,10 @@ actual fun httpClient(config: HttpClientConfig<*>.() -> Unit) = HttpClient(OkHtt
 
 actual fun initLogger() {
     Napier.base(DebugAntilog())
+}
+
+@Composable
+actual fun showToast(message: String) {
+    val context = LocalContext.current
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }

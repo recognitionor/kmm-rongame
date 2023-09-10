@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-class CoinListViewModel(private val coinDataSource: CoinDataSource) : ViewModel() {
+class CoinListViewModel(coinDataSource: CoinDataSource) : ViewModel() {
     companion object {
         const val VIEWMODEL_KEY = "coin_list_view_model"
     }
