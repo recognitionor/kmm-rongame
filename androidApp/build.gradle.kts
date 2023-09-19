@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace = "com.jhlee.kmm_rongame.android"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         applicationId = "com.jhlee.kmm_rongame.android"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
     }
