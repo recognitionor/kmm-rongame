@@ -1,0 +1,89 @@
+CREATE TABLE testEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    test TEXT NOT NULL
+);
+
+getTestList:
+SELECT *
+FROM testEntity
+ORDER BY id ASC;
+
+insertTestEntity:
+INSERT OR REPLACE
+INTO testEntity(
+    name, test
+) VALUES (?, ?);
+
+deleteTest:
+DELETE FROM testEntity
+WHERE id = :id;
+
+
+--UserInfoEntity
+--유저 정보--
+CREATE TABLE UserInfoEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    money INTEGER
+);
+
+getUserInfo:
+SELECT *
+FROM UserInfoEntity
+ORDER BY id ASC;
+
+insertUser:
+INSERT OR REPLACE
+INTO UserInfoEntity(
+    id,
+    name,
+    money
+) VALUES (1,?, ?);
+
+updateUser:
+UPDATE UserInfoEntity
+SET money = ?
+WHERE id = 1;
+
+updateUserMoney:
+UPDATE UserInfoEntity
+SET money = money - ?
+WHERE id = 1;
+--CardEntity
+--카드 정보--
+--/*
+
+-- */
+CREATE TABLE CardEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    cost INTEGER,
+    grade INTEGER,
+    image TEXT,
+    type TEXT NOT NULL,
+    attack INTEGER,
+    defense INTEGER,
+    speed INTEGER,
+    hp INTEGER,
+    mp INTEGER
+);
+
+getCardList:
+SELECT *
+FROM CardEntity
+ORDER BY id ASC;
+
+insertCardEntity:
+INSERT INTO CardEntity(
+    name,
+    cost,
+    grade,
+    image,
+    type,
+    attack,
+    defense,
+    speed,
+    hp,
+    mp
+) VALUES (?,?,?,?,?,?,?,?,?,?);

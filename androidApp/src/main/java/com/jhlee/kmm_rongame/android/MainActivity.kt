@@ -15,6 +15,7 @@ import com.jhlee.kmm_rongame.Firebase
 import com.jhlee.kmm_rongame.FirebaseApp
 import com.jhlee.kmm_rongame.FirebaseStorage
 import com.jhlee.kmm_rongame.Greeting
+import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.initialize
 import com.jhlee.kmm_rongame.storage
 import kotlinx.coroutines.GlobalScope
@@ -29,16 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    GlobalScope.launch {
-
-                        Firebase.storage.reference.listAll().items.forEach {
-                            Log.d("jhlee", "${it.getDownloadUrl()}")
-                        }
-
-                    }
-                    Log.d("jhlee", "${Firebase.storage.reference.child("/").name}")
-
-                    App()
+                    App(AppModule(LocalContext.current))
                 }
             }
         }

@@ -5,7 +5,9 @@ struct ContentView: View {
 	
 
 	var body: some View {
-		ComposeView()
+        VStack {
+            ComposeView()
+        }.edgesIgnoringSafeArea(.all)
 	}
 }
 

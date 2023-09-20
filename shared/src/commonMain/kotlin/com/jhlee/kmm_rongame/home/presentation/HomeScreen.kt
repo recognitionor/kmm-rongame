@@ -1,0 +1,62 @@
+package com.jhlee.kmm_rongame.home.presentation
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.card.presentation.CardListScreen
+import com.jhlee.kmm_rongame.card.presentation.CardScreen
+import com.jhlee.kmm_rongame.card.presentation.CardViewModel
+import com.jhlee.kmm_rongame.core.presentation.getString
+import com.jhlee.kmm_rongame.core.util.Logger
+import com.jhlee.kmm_rongame.di.AppModule
+import com.jhlee.kmm_rongame.main.presentation.MainViewModel
+import dev.icerock.moko.mvvm.compose.getViewModel
+import dev.icerock.moko.mvvm.compose.viewModelFactory
+
+@Composable
+
+fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
+    val cardViewModel = getViewModel(key = CardViewModel.VIEWMODEL_KEY,
+        factory = viewModelFactory { CardViewModel(appModule.dbCardDataSource) })
+    val cardStateValue by cardViewModel.state.collectAsState()
+
+    Box(modifier = Modifier.fillMaxSize().padding(15.dp)) {
+        Column(
+            modifier = Modifier.fillMaxHeight().padding(bottom = 70.dp, start = 16.dp, end = 16.dp)
+        ) {
+            if (cardStateValue.updateUserInfo) {
+                Logger.log("update")
+                viewModel.getUserInfo()
+                cardViewModel.refreshDoneUserInfo()
+            }
+            UserInfoScreen(viewModel)
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Logger.log("CardScreen")
+                CardScreen(
+                    cardViewModel, viewModel, height = 250f
+                )
+            }
+
+
+            CardListScreen(cardViewModel = cardViewModel)
+
+        }
+    }
+}
