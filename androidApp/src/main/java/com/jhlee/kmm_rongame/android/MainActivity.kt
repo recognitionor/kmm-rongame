@@ -1,14 +1,24 @@
 package com.jhlee.kmm_rongame.android
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.jhlee.kmm_rongame.App
+import com.jhlee.kmm_rongame.Firebase
+import com.jhlee.kmm_rongame.FirebaseApp
+import com.jhlee.kmm_rongame.FirebaseStorage
 import com.jhlee.kmm_rongame.Greeting
+import com.jhlee.kmm_rongame.initialize
+import com.jhlee.kmm_rongame.storage
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +29,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    GreetingView(Greeting().greet())
+                    GlobalScope.launch {
+
+                        Firebase.storage.reference.listAll().items.forEach {
+                            Log.d("jhlee", "${it.getDownloadUrl()}")
+                        }
+
+                    }
+                    Log.d("jhlee", "${Firebase.storage.reference.child("/").name}")
+
+                    App()
                 }
             }
         }

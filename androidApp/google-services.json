@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "98686887957",
+    "project_id": "kmm-rongame",
+    "storage_bucket": "kmm-rongame.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98686887957:android:a381e813ad3eea9b66061c",
+        "android_client_info": {
+          "package_name": "com.jhlee.kmm_rongame.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRAxk1EP6fnE2628-QaLehegfmo5vTgV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

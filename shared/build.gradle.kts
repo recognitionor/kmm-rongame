@@ -25,16 +25,26 @@ kotlin {
     iosSimulatorArm64()
 
     cocoapods {
+        ios.deploymentTarget = "11.0"
+
         summary = "Some description for the Shared Module"
         homepage = "Link to the Shared Module homepage"
         version = "1.0"
-        ios.deploymentTarget = "14.1"
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
             export("dev.icerock.moko:resources:0.23.0")
             export("dev.icerock.moko:graphics:0.9.0")
+            export("dev.gitlive:firebase-storage:1.10.0")
         }
+        noPodspec()
+        pod("FirebaseStorage") {
+            version = "10.7.0"
+            linkOnly = true
+        }
+//        pod("FirebaseCore") {
+//            version = "10.7.0"
+//        }
     }
 
     sourceSets {
@@ -65,6 +75,8 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1") // 버전은 적절히 선택
+                api("dev.gitlive:firebase-storage:1.10.0")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
 
             }
         }
@@ -81,6 +93,7 @@ kotlin {
                 implementation("androidx.activity:activity-compose:1.7.2")
                 implementation("io.ktor:ktor-client-android:$ktorVersion")
 
+                implementation("dev.gitlive:firebase-storage:1.10.0")
             }
         }
         val androidUnitTest by getting
@@ -137,6 +150,8 @@ sqldelight {
 
 dependencies {
     implementation("androidx.core:core:1.10.1")
+    implementation("com.google.firebase:firebase-common-ktx:20.3.3")
+    implementation("androidx.test:monitor:1.6.1")
     commonMainApi("dev.icerock.moko:mvvm-core:0.16.1")
     commonMainApi("dev.icerock.moko:mvvm-compose:0.16.1")
     commonMainApi("dev.icerock.moko:mvvm-flow:0.16.1")
