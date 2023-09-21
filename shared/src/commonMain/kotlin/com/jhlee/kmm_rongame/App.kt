@@ -9,6 +9,5 @@ import com.jhlee.kmm_rongame.test.presentation.TestScreen2
 fun App(appModule: AppModule) {
 
     MainScreen(appModule)
-//    TestScreen2(appModule)
 
 }

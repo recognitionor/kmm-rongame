@@ -33,7 +33,6 @@ class CardViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
                 }
 
                 is Resource.Success -> {
-                    Logger.log("Success : ${result.data?.size}")
                     _state.update {
                         it.copy(
                             cardList = result.data ?: emptyList(),

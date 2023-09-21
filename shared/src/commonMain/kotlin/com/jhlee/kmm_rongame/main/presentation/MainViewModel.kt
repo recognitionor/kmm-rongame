@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.onEach
 
 class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     companion object {
-        const val VIEWMODEL_KEY = "main_view_model"
+        const val VIEWMODEL_KEY = "reward_view_model"
     }
 
     var newUserName: String by mutableStateOf("")

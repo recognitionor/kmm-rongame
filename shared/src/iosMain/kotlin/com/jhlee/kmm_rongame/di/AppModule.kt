@@ -9,6 +9,8 @@ import com.jhlee.kmm_rongame.core.data.DatabaseDriverFactory
 import com.jhlee.kmm_rongame.core.data.KtorClientFactory
 import com.jhlee.kmm_rongame.main.data.DBUserInfoDataSource
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
+import com.jhlee.kmm_rongame.quiz.data.QuizDataSourceImpl
+import com.jhlee.kmm_rongame.quiz.domain.QuizDataSource
 import com.jhlee.kmm_rongame.test.data.DBTestDataSource
 import com.jhlee.kmm_rongame.test.domain.TestDataSource
 
@@ -37,6 +39,13 @@ actual class AppModule {
             db = AppDatabase(
                 driver = DatabaseDriverFactory().create()
             )
+        )
+    }
+    actual val dbQuizDataSource: QuizDataSource by lazy {
+        QuizDataSourceImpl(
+            db = AppDatabase(
+                driver = DatabaseDriverFactory().create()
+            ),KtorClientFactory.build()
         )
     }
 }

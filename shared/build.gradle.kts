@@ -78,6 +78,10 @@ kotlin {
                 api("dev.gitlive:firebase-storage:1.10.0")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
 
+                implementation ("com.opencsv:opencsv:5.5.2")
+                implementation("com.google.code.gson:gson:2.9.0")
+
+
             }
         }
         val commonTest by getting {

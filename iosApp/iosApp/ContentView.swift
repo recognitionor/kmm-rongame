@@ -6,7 +6,7 @@ struct ContentView: View {
 
 	var body: some View {
         VStack {
-            ComposeView()
+            ComposeView().padding(.top, 30) // 예를 들어 20만큼의 패딩
         }.edgesIgnoringSafeArea(.all)
 	}
 }

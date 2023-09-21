@@ -3,6 +3,7 @@ package com.jhlee.kmm_rongame.di
 import com.jhlee.kmm_rongame.card.domain.CardDataSource
 import com.jhlee.kmm_rongame.coin.domain.CoinDataSource
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
+import com.jhlee.kmm_rongame.quiz.domain.QuizDataSource
 import com.jhlee.kmm_rongame.test.domain.TestDataSource
 
 
@@ -15,4 +16,7 @@ expect class AppModule {
     val dbMainDataSource: MainDataSource
 
     val dbCardDataSource: CardDataSource
+
+    val dbQuizDataSource: QuizDataSource
+
 }

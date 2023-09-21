@@ -1,3 +1,5 @@
+import kotlin.Boolean;
+
 CREATE TABLE testEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -87,3 +89,44 @@ INSERT INTO CardEntity(
     hp,
     mp
 ) VALUES (?,?,?,?,?,?,?,?,?,?);
+
+CREATE TABLE QuizEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    category TEXT NOT NULL,
+    level INTEGER,
+    imageUrl TEXT NOT NULL,
+    answer INTEGER,
+    question TEXT NOT NULL,
+    choiceList TEXT NOT NULL,
+    time INTEGER,
+    chance INTEGER,
+    reward INTEGER,
+    description TEXT NOT NULL,
+    selected INTEGER,
+    durationTime INTEGER,
+    status INTEGER AS Boolean
+
+);
+
+insertQuizEntity:
+INSERT  OR REPLACE INTO QuizEntity(
+    id,
+    category,
+    level,
+    imageUrl,
+    answer,
+    question,
+    choiceList,
+    time,
+    chance,
+    reward,
+    description,
+    selected,
+    durationTime,
+    status
+) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);
+
+getQuizList:
+SELECT *
+FROM QuizEntity
+LIMIT 3;

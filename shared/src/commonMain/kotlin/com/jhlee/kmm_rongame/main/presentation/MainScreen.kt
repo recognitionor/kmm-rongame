@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.home.presentation.HomeScreen
+import com.jhlee.kmm_rongame.reward.presentation.RewardScreen
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 
@@ -58,9 +59,10 @@ fun MainScreen(appModule: AppModule) {
         } else {
             // 여기에서 선택된 아이템에 따라 다른 컴포저블을 표시합니다.
             when (selectedItem.value) {
-                0 -> HomeScreen(viewModel, appModule)
+                0 -> RewardScreen(viewModel, appModule)
+
                 1 -> Text(text = "1")
-                2 -> Text(text = "2")
+                2 -> HomeScreen(viewModel, appModule)
             }
         }
 
