@@ -1,9 +1,12 @@
 package com.jhlee.kmm_rongame.quiz.presentation
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import com.jhlee.kmm_rongame.card.presentation.CardViewModel
 import com.jhlee.kmm_rongame.di.AppModule
 import dev.icerock.moko.mvvm.compose.getViewModel
@@ -15,6 +18,7 @@ fun QuizScreen(appModule: AppModule) {
         factory = viewModelFactory { QuizViewModel(appModule.dbQuizDataSource) })
     val cardStateValue by quizViewModel.state.collectAsState()
 
+    Column(modifier = Modifier.fillMaxSize()) {
 
-    Text(text = "quiz")
+    }
 }

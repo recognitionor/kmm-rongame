@@ -9,8 +9,7 @@
     <string name="start">시작</string>
     <string name="confirm">확인</string>
     <string name="cancel">취소</string>
-
-
+    <string name="quiz">퀴즈</string>
     <string name="title_gatcha">카드뽑기</string>
     <string name="title_game">Game</string>
     <string name="title_mini_game">돈벌기</string>

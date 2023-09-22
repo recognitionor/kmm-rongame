@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.update
 class RewardViewModel : ViewModel() {
 
     companion object {
+        const val VIEWMODEL_KEY = "reward_view_model"
+
         const val REWARD_DEFAULT_SCREEN = 0
 
         const val REWARD_QUIZ_SCREEN = 1
@@ -27,6 +29,12 @@ class RewardViewModel : ViewModel() {
     fun selectedScreen(selected: Int) {
         _state.update {
             it.copy(rewardScreenSelected = selected)
+        }
+    }
+
+    fun toggleQuizDialog(toggleDialog: Boolean) {
+        _state.update {
+            it.copy(openQuizDialog = toggleDialog)
         }
     }
 

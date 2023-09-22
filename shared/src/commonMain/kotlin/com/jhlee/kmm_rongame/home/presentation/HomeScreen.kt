@@ -8,19 +8,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.card.presentation.CardListScreen
 import com.jhlee.kmm_rongame.card.presentation.CardScreen
 import com.jhlee.kmm_rongame.card.presentation.CardViewModel
-import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
@@ -43,7 +38,10 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                 viewModel.getUserInfo()
                 cardViewModel.refreshDoneUserInfo()
             }
-            UserInfoScreen(viewModel)
+            viewModel.state.value.userInfo?.let {
+                UserInfoScreen(it)
+            }
+
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
@@ -53,10 +51,7 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                     cardViewModel, viewModel, height = 250f
                 )
             }
-
-
             CardListScreen(cardViewModel = cardViewModel)
-
         }
     }
 }

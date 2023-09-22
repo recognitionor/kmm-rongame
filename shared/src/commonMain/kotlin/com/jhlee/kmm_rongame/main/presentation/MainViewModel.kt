@@ -1,30 +1,44 @@
 package com.jhlee.kmm_rongame.main.presentation
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.Composable
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     companion object {
-        const val VIEWMODEL_KEY = "reward_view_model"
+        const val VIEWMODEL_KEY = "main_view_model"
     }
 
-    var newUserName: String by mutableStateOf("")
+    private val _state = MutableStateFlow(MainState())
 
-    private val _state = mutableStateOf(MainState())
-
-    val state: State<MainState> = _state
+    val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
+        Logger.log("MainViewModel init")
         getUserInfo()
+    }
+
+    fun showDialog(dialogIndex: Int, createDialog: @Composable () -> Unit) {
+        Logger.log("showDialog $dialogIndex")
+        _state.update {
+            it.copy(openDialog = dialogIndex, dialog = createDialog)
+        }
+        Logger.log("showDialog post ${_state.value.openDialog}")
+    }
+
+    fun dismissDialog() {
+        _state.update {
+            it.copy(openDialog = MainState.NO_DIALOG, dialog = null)
+        }
     }
 
     fun getUserInfo() {

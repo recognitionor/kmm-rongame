@@ -11,12 +11,15 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.home.presentation.HomeScreen
@@ -32,9 +35,8 @@ fun MainScreen(appModule: AppModule) {
 
     val viewModel = getViewModel(key = MainViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { MainViewModel(appModule.dbMainDataSource) })
-    val state: MainState by viewModel.state
+    val state: MainState by viewModel.state.collectAsState()
     Logger.log("${state.userInfo == null}")
-
 
     Scaffold(bottomBar = {
         if (state.userInfo != null) {
@@ -59,15 +61,23 @@ fun MainScreen(appModule: AppModule) {
         } else {
             // 여기에서 선택된 아이템에 따라 다른 컴포저블을 표시합니다.
             when (selectedItem.value) {
-                0 -> RewardScreen(viewModel, appModule)
-
+                0 -> HomeScreen(viewModel, appModule)
                 1 -> Text(text = "1")
-                2 -> HomeScreen(viewModel, appModule)
+                2 -> RewardScreen(viewModel, appModule)
             }
         }
-
-
     }
+    val title = getString(SharedRes.strings.quiz)
+    val message = getString(SharedRes.strings.etc_mini_game_quiz)
+    Logger.log("state.openDialog : ${state.openDialog}")
+    when (state.openDialog) {
+        MainState.QUIZ_INFO_DIALOG -> {
+            state.dialog?.invoke()
+        }
+
+        else -> {}
+    }
+
     if (state.isLoading) {
         Box(
             modifier = Modifier.fillMaxSize().background(Color.Gray.copy(alpha = 0.8F))
