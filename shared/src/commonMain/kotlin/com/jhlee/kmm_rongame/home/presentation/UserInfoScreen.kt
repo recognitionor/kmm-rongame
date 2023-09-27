@@ -12,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.core.presentation.getString
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 
 @Composable
 fun UserInfoScreen(userInfo: UserInfo) {
-
     Column(modifier = Modifier.padding(20.dp)) {
         Row {
             Text(

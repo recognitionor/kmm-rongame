@@ -18,6 +18,7 @@ import com.jhlee.kmm_rongame.card.presentation.CardScreen
 import com.jhlee.kmm_rongame.card.presentation.CardViewModel
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
+import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
@@ -28,6 +29,7 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
     val cardViewModel = getViewModel(key = CardViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { CardViewModel(appModule.dbCardDataSource) })
     val cardStateValue by cardViewModel.state.collectAsState()
+    val state: MainState by viewModel.state.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize().padding(15.dp)) {
         Column(
@@ -38,7 +40,7 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                 viewModel.getUserInfo()
                 cardViewModel.refreshDoneUserInfo()
             }
-            viewModel.state.value.userInfo?.let {
+            state.userInfo?.let {
                 UserInfoScreen(it)
             }
 

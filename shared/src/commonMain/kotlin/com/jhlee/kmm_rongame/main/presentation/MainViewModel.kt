@@ -1,6 +1,7 @@
 package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.runtime.Composable
+import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
@@ -23,21 +24,38 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
-        Logger.log("MainViewModel init")
         getUserInfo()
     }
 
     fun showDialog(dialogIndex: Int, createDialog: @Composable () -> Unit) {
-        Logger.log("showDialog $dialogIndex")
         _state.update {
             it.copy(openDialog = dialogIndex, dialog = createDialog)
         }
-        Logger.log("showDialog post ${_state.value.openDialog}")
     }
 
     fun dismissDialog() {
         _state.update {
             it.copy(openDialog = MainState.NO_DIALOG, dialog = null)
+        }
+    }
+
+    fun updateUserMoney() {
+        val tempUserInfo = _state.value.userInfo?.let {
+            it.copy(money = it.money - RuleConst.QUIZ_COST)
+        }
+        tempUserInfo?.let { userInfo ->
+            mainDataSource.updateUserInfo(userInfo).onEach { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        _state.update {
+                            it.copy(userInfo = result.data)
+                        }
+                    }
+
+                    is Resource.Error -> {}
+                    is Resource.Loading -> {}
+                }
+            }.launchIn(viewModelScope)
         }
     }
 
@@ -60,21 +78,17 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     }
 
     fun registerUser(name: String) {
-        Logger.log("registerUser")
         mainDataSource.insertUserInfo(UserInfo(1, name, 1000)).onEach { res ->
             when (res) {
                 is Resource.Error -> {
-                    Logger.log("registerUser error")
                     _state.value = state.value.copy(isLoading = false, error = res.message ?: "")
                 }
 
                 is Resource.Loading -> {
-                    Logger.log("registerUser loading")
                     _state.value = state.value.copy(isLoading = true)
                 }
 
                 is Resource.Success -> {
-                    Logger.log("registerUser success")
                     getUserInfo()
                 }
             }

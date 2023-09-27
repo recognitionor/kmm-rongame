@@ -2,6 +2,7 @@ package com.jhlee.kmm_rongame.reward.data
 
 import com.jhlee.kmm_rongame.AppDatabase
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.main.data.toUser
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 import com.squareup.sqldelight.runtime.coroutines.asFlow
@@ -43,7 +44,10 @@ class DBRewardDataSource(
         }
     }
 
-    override fun updateUserInfo(userInfo: UserInfo) {
+    override fun updateUserInfo(userInfo: UserInfo): Flow<Resource<UserInfo>> = flow {
+        emit(Resource.Loading())
+        queries.updateUserMoney(userInfo.money.toLong())
+        val updatedUser = queries.getUserInfo().executeAsOne().toUser()
+        emit(Resource.Success(updatedUser))
     }
-
 }

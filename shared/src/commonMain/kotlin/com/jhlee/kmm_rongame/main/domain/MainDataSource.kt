@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface MainDataSource {
     fun getUserInfo(): Flow<Resource<UserInfo>>
     fun insertUserInfo(userInfo: UserInfo): Flow<Resource<UserInfo>>
-    fun updateUserInfo(userInfo: UserInfo)
+    fun updateUserInfo(userInfo: UserInfo): Flow<Resource<UserInfo>>
 }

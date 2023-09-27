@@ -39,10 +39,10 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                     mainViewModel.showDialog(MainState.QUIZ_INFO_DIALOG,
                         createDialog(title, message, {
                             mainViewModel.dismissDialog()
+                            mainViewModel.updateUserMoney()
                         }) {
                             mainViewModel.dismissDialog()
                         })
-//                    viewModel.toggleQuizDialog(true)
                 }) {
                     Text(text = "quiz")
                 }

@@ -36,8 +36,7 @@ fun MainScreen(appModule: AppModule) {
     val viewModel = getViewModel(key = MainViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { MainViewModel(appModule.dbMainDataSource) })
     val state: MainState by viewModel.state.collectAsState()
-    Logger.log("${state.userInfo == null}")
-
+    Logger.log("mainScreen : ${state.userInfo}")
     Scaffold(bottomBar = {
         if (state.userInfo != null) {
             NavigationBar {
