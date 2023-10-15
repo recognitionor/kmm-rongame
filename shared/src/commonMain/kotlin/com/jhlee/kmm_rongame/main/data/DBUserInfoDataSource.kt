@@ -48,12 +48,10 @@ class DBUserInfoDataSource(
     }
 
     override fun updateUserInfo(userInfo: UserInfo): Flow<Resource<UserInfo>> = flow {
-        Logger.log("useInfo updateUserInfo: $userInfo")
         emit(Resource.Loading())
         queries.updateUser(userInfo.money.toLong())
         val userInfoList = queries.getUserInfo().asFlow().mapToList().firstOrNull()
         val userInfo = userInfoList?.firstOrNull()
-        Logger.log("useInfo getUser: $userInfo")
         if (userInfo != null) {
             emit(Resource.Success(userInfo.toUser()))
         } else {

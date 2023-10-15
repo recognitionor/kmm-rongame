@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.common.view
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -15,9 +16,10 @@ import androidx.compose.ui.unit.dp
 fun StarRatingBar(
     maxRating: Int = 5, starColor: Color = Color.Black, size: Dp = 25.dp
 ) {
-    Row {
+    Row(horizontalArrangement = Arrangement.Center) {
         repeat(maxRating) {
             Icon(
+
                 imageVector = Icons.Filled.Star,
                 contentDescription = null,
                 tint = starColor, // 색상 지정

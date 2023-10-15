@@ -36,9 +36,8 @@ fun MainScreen(appModule: AppModule) {
     val viewModel = getViewModel(key = MainViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { MainViewModel(appModule.dbMainDataSource) })
     val state: MainState by viewModel.state.collectAsState()
-    Logger.log("mainScreen : ${state.userInfo}")
     Scaffold(bottomBar = {
-        if (state.userInfo != null) {
+        if (state.userInfo != null && !state.isWholeScreenOpen) {
             NavigationBar {
                 MainScreenItem.SCREEN_LIST.forEachIndexed { index, item ->
                     NavigationBarItem(icon = {
@@ -68,12 +67,14 @@ fun MainScreen(appModule: AppModule) {
     }
     val title = getString(SharedRes.strings.quiz)
     val message = getString(SharedRes.strings.etc_mini_game_quiz)
-    Logger.log("state.openDialog : ${state.openDialog}")
     when (state.openDialog) {
         MainState.QUIZ_INFO_DIALOG -> {
             state.dialog?.invoke()
         }
 
+        MainState.NOT_ENOUGH_MONEY_DIALOG -> {
+            state.dialog?.invoke()
+        }
         else -> {}
     }
 

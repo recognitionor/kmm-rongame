@@ -1,7 +1,6 @@
 package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.runtime.Composable
-import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
@@ -33,29 +32,45 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
         }
     }
 
+    fun setWholeScreen(isWholeScreen: Boolean) {
+        _state.update { it.copy(isWholeScreenOpen = isWholeScreen) }
+    }
+
     fun dismissDialog() {
         _state.update {
             it.copy(openDialog = MainState.NO_DIALOG, dialog = null)
         }
     }
 
-    fun updateUserMoney() {
+    fun updateUserMoney(money: Int, callBack: (isResult: Boolean) -> Unit) {
+        Logger.log("updateUserMoney money : $money")
         val tempUserInfo = _state.value.userInfo?.let {
-            it.copy(money = it.money - RuleConst.QUIZ_COST)
+            Logger.log("updateUserMoney money1 : ${it.money}")
+            Logger.log("updateUserMoney money2 : $money")
+            it.copy(money = it.money + money)
         }
-        tempUserInfo?.let { userInfo ->
-            mainDataSource.updateUserInfo(userInfo).onEach { result ->
-                when (result) {
-                    is Resource.Success -> {
-                        _state.update {
-                            it.copy(userInfo = result.data)
+        if (tempUserInfo != null && tempUserInfo.money >= 0) {
+            tempUserInfo.let { userInfo ->
+                mainDataSource.updateUserInfo(userInfo).onEach { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            Logger.log("updateUserMoney Success")
+                            _state.update {
+                                it.copy(userInfo = result.data)
+                            }
+                            callBack.invoke(true)
                         }
-                    }
 
-                    is Resource.Error -> {}
-                    is Resource.Loading -> {}
-                }
-            }.launchIn(viewModelScope)
+                        is Resource.Error -> {
+                            callBack.invoke(false)
+                        }
+
+                        is Resource.Loading -> {}
+                    }
+                }.launchIn(viewModelScope)
+            }
+        } else {
+            callBack.invoke(false)
         }
     }
 

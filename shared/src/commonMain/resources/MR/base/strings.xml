@@ -9,6 +9,7 @@
     <string name="start">시작</string>
     <string name="confirm">확인</string>
     <string name="cancel">취소</string>
+    <string name="level">난이도</string>
     <string name="quiz">퀴즈</string>
     <string name="title_gatcha">카드뽑기</string>
     <string name="title_game">Game</string>
@@ -98,4 +99,12 @@
     <string name="etc_result_dialog_title">총 %d 문제 중 %d 맞추었습니다.</string>
     <string name="etc_result_dialog_content">총 %d 원을 획득 하셨습니다.</string>
 
+    <string name="quiz_remain_time">남은 시간 : </string>
+    <string name="quiz_level">난이도 : </string>
+    <string name="quiz_remain_chance">남은 기회 : </string>
+    <string name="quiz_fail_message">틀렸습니다.</string>
+    <string name="quiz_success_message_title">정답입니다.</string>
+    <string name="quiz_success_message_content">점을 획득 합니다.</string>
+    <string name="quiz_result_title">퀴즈 결과</string>
+    <string name="quiz_result_message">총 %d 문제 중 %d 를 맞춰 %d점을 획득합니다.</string>
 </resources>

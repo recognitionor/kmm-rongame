@@ -16,5 +16,7 @@ data class MainState(
     companion object {
         const val NO_DIALOG = 0
         const val QUIZ_INFO_DIALOG = 1
+        const val NOT_ENOUGH_MONEY_DIALOG = 2
+        const val QUIZ_RESULT_DIALOG = 3
     }
 }

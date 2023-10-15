@@ -9,6 +9,6 @@ class RuleConst {
         // 출석 후 받을수 있는 금액
         const val ATTEND_REWARD = 300
         // 퀴즈 풀때 차감 금액
-        const val QUIZ_COST = 100
+        const val QUIZ_COST = 10
     }
 }

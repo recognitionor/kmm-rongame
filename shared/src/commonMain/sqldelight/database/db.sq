@@ -129,4 +129,5 @@ INSERT  OR REPLACE INTO QuizEntity(
 getQuizList:
 SELECT *
 FROM QuizEntity
+ORDER BY RANDOM()
 LIMIT 3;

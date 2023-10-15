@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.reward.presentation
 
+import com.jhlee.kmm_rongame.core.util.Logger
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,6 +28,8 @@ class RewardViewModel : ViewModel() {
     }
 
     fun selectedScreen(selected: Int) {
+        Logger.log("selectedScreen")
+
         _state.update {
             it.copy(rewardScreenSelected = selected)
         }

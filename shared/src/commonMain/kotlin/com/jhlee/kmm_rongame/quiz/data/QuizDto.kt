@@ -37,7 +37,7 @@ data class QuizDto(
                             imageUrl = items[3],
                             answer = items[4].toInt(),
                             question = items[5],
-                            choiceList = items[5].split("|"),
+                            choiceList = items[6].split("|"),
                             time = items[7].toLong(),
                             chance = items[8].toInt(),
                             reward = items[9].toInt(),
