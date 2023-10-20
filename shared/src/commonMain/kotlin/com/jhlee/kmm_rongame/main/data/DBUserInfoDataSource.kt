@@ -1,18 +1,16 @@
 package com.jhlee.kmm_rongame.main.data
 
 import com.jhlee.kmm_rongame.AppDatabase
+import com.jhlee.kmm_rongame.attend.data.toAttend
+import com.jhlee.kmm_rongame.attend.domain.Attend
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
-import com.jhlee.kmm_rongame.test.data.toTest
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.supervisorScope
 
 class DBUserInfoDataSource(
     db: AppDatabase

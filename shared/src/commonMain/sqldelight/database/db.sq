@@ -11,16 +11,23 @@ SELECT *
 FROM testEntity
 ORDER BY id ASC;
 
-insertTestEntity:
+--AttendEntity
+--출석 정보--
+CREATE TABLE AttendEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    date INTEGER NOT NULL UNIQUE
+);
+
+insertAttend:
 INSERT OR REPLACE
-INTO testEntity(
-    name, test
-) VALUES (?, ?);
+INTO AttendEntity(
+    date
+) VALUES ( ?);
 
-deleteTest:
-DELETE FROM testEntity
-WHERE id = :id;
-
+getAttendList:
+SELECT *
+FROM AttendEntity
+ORDER BY id ASC;
 
 --UserInfoEntity
 --유저 정보--

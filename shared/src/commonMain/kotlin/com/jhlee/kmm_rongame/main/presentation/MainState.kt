@@ -1,11 +1,10 @@
 package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.runtime.Composable
+import com.jhlee.kmm_rongame.attend.domain.Attend
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 
 data class MainState(
-
-
     val openDialog: Int = 0,
     val dialog: (@Composable () -> Unit)? = null,
     val isWholeScreenOpen: Boolean = false,

@@ -2,7 +2,6 @@ package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.runtime.Composable
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
@@ -42,11 +41,8 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
         }
     }
 
-    fun updateUserMoney(money: Int, callBack: (isResult: Boolean) -> Unit) {
-        Logger.log("updateUserMoney money : $money")
+    fun updateUserMoney(money: Int, callBack: ((isResult: Boolean) -> Unit)? = null) {
         val tempUserInfo = _state.value.userInfo?.let {
-            Logger.log("updateUserMoney money1 : ${it.money}")
-            Logger.log("updateUserMoney money2 : $money")
             it.copy(money = it.money + money)
         }
         if (tempUserInfo != null && tempUserInfo.money >= 0) {
@@ -54,15 +50,14 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
                 mainDataSource.updateUserInfo(userInfo).onEach { result ->
                     when (result) {
                         is Resource.Success -> {
-                            Logger.log("updateUserMoney Success")
                             _state.update {
                                 it.copy(userInfo = result.data)
                             }
-                            callBack.invoke(true)
+                            callBack?.invoke(true)
                         }
 
                         is Resource.Error -> {
-                            callBack.invoke(false)
+                            callBack?.invoke(false)
                         }
 
                         is Resource.Loading -> {}
@@ -70,7 +65,7 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
                 }.launchIn(viewModelScope)
             }
         } else {
-            callBack.invoke(false)
+            callBack?.invoke(false)
         }
     }
 

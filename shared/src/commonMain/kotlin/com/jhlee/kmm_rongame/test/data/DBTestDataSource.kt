@@ -26,6 +26,5 @@ class DBTestDataSource(
     }
 
     override fun insertTest(test: Test) {
-        queries.insertTestEntity(test.name, "12")
     }
 }

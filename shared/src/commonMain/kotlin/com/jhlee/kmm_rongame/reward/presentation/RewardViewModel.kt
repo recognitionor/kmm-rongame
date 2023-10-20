@@ -1,13 +1,17 @@
 package com.jhlee.kmm_rongame.reward.presentation
 
-import com.jhlee.kmm_rongame.core.util.Logger
+import com.jhlee.kmm_rongame.attend.domain.AttendDataSource
+import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.utils.Utils
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-class RewardViewModel : ViewModel() {
+class RewardViewModel(private val attendDataSource: AttendDataSource) : ViewModel() {
 
     companion object {
         const val VIEWMODEL_KEY = "reward_view_model"
@@ -24,12 +28,10 @@ class RewardViewModel : ViewModel() {
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
-
+        getAttend()
     }
 
     fun selectedScreen(selected: Int) {
-        Logger.log("selectedScreen")
-
         _state.update {
             it.copy(rewardScreenSelected = selected)
         }
@@ -39,6 +41,31 @@ class RewardViewModel : ViewModel() {
         _state.update {
             it.copy(openQuizDialog = toggleDialog)
         }
+    }
+
+    fun attend() {
+        attendDataSource.insertAttend(Utils.getCurrentDateInFormat().toLong()).onEach {
+            getAttend()
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getAttend() {
+        attendDataSource.getAttend().onEach { result ->
+            when (result) {
+                is Resource.Loading -> {
+                }
+
+                is Resource.Error -> {
+                }
+
+                is Resource.Success -> {
+                    _state.update { state ->
+                        state.copy(attendedList = (result.data?.map { it.date } ?: emptyList()))
+                    }
+                }
+            }
+
+        }.launchIn(viewModelScope)
     }
 
 }
