@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jhlee.kmm_rongame.card.presentation.CardDetailInfoScreen
 import com.jhlee.kmm_rongame.card.presentation.CardListScreen
 import com.jhlee.kmm_rongame.card.presentation.CardScreen
 import com.jhlee.kmm_rongame.card.presentation.CardViewModel
@@ -35,8 +36,16 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
         Column(
             modifier = Modifier.fillMaxHeight().padding(bottom = 70.dp, start = 16.dp, end = 16.dp)
         ) {
+
+            if (cardStateValue.isShowCardInfoDialog) {
+                cardStateValue.detailCardInfo?.let {
+                    CardDetailInfoScreen(it) {
+                        cardViewModel.toggleCardInfoDialog(it)
+                    }
+                }
+            }
+
             if (cardStateValue.updateUserInfo) {
-                Logger.log("update")
                 viewModel.getUserInfo()
                 cardViewModel.refreshDoneUserInfo()
             }
@@ -48,7 +57,6 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
             ) {
-                Logger.log("CardScreen")
                 CardScreen(
                     cardViewModel, viewModel, height = 250f
                 )

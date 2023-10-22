@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -26,12 +27,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.card.domain.Card
+import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.constants.GameConst
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getPlatformImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.utils.GameUtils
+import dev.icerock.moko.resources.getImageByFileName
 
 @Composable
 fun CardListItemScreen(
@@ -42,10 +46,8 @@ fun CardListItemScreen(
     isEnabled: Boolean = true,
     onItemClick: ((card: Card) -> Unit)? = null
 ) {
-    val showInfoDialog = remember { mutableStateOf(false) }
     val cardWidth = (height * 0.8)
     val cardImg: String = card.image
-
     val powerStr: String = GameUtils.getPower(card).toString()
     val costStr: String = card.cost.toString()
 
@@ -54,20 +56,16 @@ fun CardListItemScreen(
     val color: Color = GradeConst.TYPE_MAP[card.grade]!!.color
     val textColor: Color = Color.Black
 
-    androidx.compose.material3.Card(modifier = Modifier
-        .run {
-            size(width = cardWidth.dp, height = height.dp)
-                .padding(4.dp)
+    androidx.compose.material3.Card(colors = CardDefaults.cardColors(Color.White),
+        modifier = Modifier.run {
+            size(width = cardWidth.dp, height = height.dp).padding(4.dp)
                 .border(width = 2.dp, color = color, shape = RoundedCornerShape(8.dp))
-        }
-        .clickable {
-            if (onItemClick == null) {
-                showInfoDialog.value = true
-            } else {
+        }.clickable {
+            if (onItemClick != null) {
                 if (isEnabled) {
+                    Logger.log("card1 : $card")
                     onItemClick(card)
                 }
-
             }
         }) {
         Box(
@@ -81,19 +79,21 @@ fun CardListItemScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
+                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
                 ) {
                     if (selected && isEnabled) {
-//                        Image(
-//                            modifier = Modifier
-//                                .size(100.dp)
-//                                .align(Alignment.TopEnd),
-//                            getImageResourceBitMap(SharedRes.images.),
-//                            contentDescription = "Selected",
-//                            colorFilter = ColorFilter.tint(color)
-//                        )
+                        getCommonImageResourceBitMap(
+                            SharedRes.images.getImageByFileName(
+                                cardImg
+                            )
+                        )?.let {
+                            Image(
+                                bitmap = it,
+                                modifier = Modifier.size(100.dp).align(Alignment.TopEnd),
+                                contentDescription = "Selected",
+                                colorFilter = ColorFilter.tint(color)
+                            )
+                        }
                     }
 
                     Row(
@@ -104,7 +104,7 @@ fun CardListItemScreen(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                text = "${getString(SharedRes.strings.hello_world)} $gradeStr",
+                                text = "${getString(SharedRes.strings.card_gatcha_grade_title)} $gradeStr",
                                 textAlign = TextAlign.Right,
                                 fontSize = 8.sp,
                                 color = textColor
@@ -126,7 +126,9 @@ fun CardListItemScreen(
 
                                 GameConst.GAME_SELECTED_CARD_TYPE_ATT -> {
                                     Text(
-                                        text = getString(SharedRes.strings.card_detail_att, listOf(card.attack)),
+                                        text = getString(
+                                            SharedRes.strings.card_detail_att, listOf(card.attack)
+                                        ),
                                         textAlign = TextAlign.Right,
                                         fontSize = 8.sp,
                                         color = textColor
@@ -135,7 +137,9 @@ fun CardListItemScreen(
 
                                 GameConst.GAME_SELECTED_CARD_TYPE_DEF -> {
                                     Text(
-                                        text = getString(SharedRes.strings.card_detail_def, listOf(card.defense)),
+                                        text = getString(
+                                            SharedRes.strings.card_detail_def, listOf(card.defense)
+                                        ),
                                         textAlign = TextAlign.Right,
                                         fontSize = 8.sp,
                                         color = textColor
@@ -144,7 +148,9 @@ fun CardListItemScreen(
 
                                 GameConst.GAME_SELECTED_CARD_TYPE_SPD -> {
                                     Text(
-                                        text = getString(SharedRes.strings.card_detail_spd, listOf(card.speed)),
+                                        text = getString(
+                                            SharedRes.strings.card_detail_spd, listOf(card.speed)
+                                        ),
                                         textAlign = TextAlign.Right,
                                         fontSize = 8.sp,
                                         color = textColor
@@ -153,7 +159,9 @@ fun CardListItemScreen(
 
                                 GameConst.GAME_SELECTED_CARD_TYPE_HP -> {
                                     Text(
-                                        text = getString(SharedRes.strings.card_detail_hp, listOf(card.hp)),
+                                        text = getString(
+                                            SharedRes.strings.card_detail_hp, listOf(card.hp)
+                                        ),
                                         textAlign = TextAlign.Right,
                                         fontSize = 8.sp,
                                         color = textColor
@@ -162,7 +170,9 @@ fun CardListItemScreen(
 
                                 GameConst.GAME_SELECTED_CARD_TYPE_MP -> {
                                     Text(
-                                        text = getString(SharedRes.strings.card_detail_mp, listOf(card.mp)),
+                                        text = getString(
+                                            SharedRes.strings.card_detail_mp, listOf(card.mp)
+                                        ),
                                         textAlign = TextAlign.Right,
                                         fontSize = 8.sp,
                                         color = textColor
@@ -173,55 +183,40 @@ fun CardListItemScreen(
 
                         getPlatformImageResourceBitMap("ic_info")?.let {
                             Image(
-                                bitmap = it,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(
-                                        (cardWidth * 0.135).dp, (height * 0.135).dp
-                                    )
-                                    .clickable {
-                                        showInfoDialog.value = true
-                                    },
-                                colorFilter = ColorFilter.tint(color)
+                                bitmap = it, contentDescription = "", modifier = Modifier.size(
+                                    (cardWidth * 0.135).dp, (height * 0.135).dp
+                                ).clickable {
+                                    if (onItemClick != null) {
+                                        Logger.log("card2 : $card")
+                                        onItemClick(card)
+                                    }
+                                },
                             )
                         }
                     }
                 }
                 if (isEnabled) {
-//                    Image(
-//                        imagePath = cardImg,
-//                        contentDescription = "",
-//                        modifier = Modifier
-//                            .size(
-//                                (cardWidth * 0.4).dp, (height * 0.4).dp
-//                            )
-//                            .background(Color.White)
-//                    )
+                    getCommonImageResourceBitMap(SharedRes.images.getImageByFileName(cardImg))?.let {
+                        Image(
+                            bitmap = it, contentDescription = "", modifier = Modifier.size(
+                                (cardWidth * 0.4).dp, (height * 0.4).dp
+                            ).background(Color.Transparent)
+                        )
+                    }
                 } else {
                     getPlatformImageResourceBitMap("ic_close")?.let {
                         Image(
-                            bitmap = it,
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(
-                                    (cardWidth * 0.4).dp, (height * 0.4).dp
-                                )
-                                .background(Color.White),
-                            colorFilter = ColorFilter.tint(color)
+                            bitmap = it, contentDescription = "", modifier = Modifier.size(
+                                (cardWidth * 0.4).dp, (height * 0.4).dp
+                            ).background(Color.Transparent),
                         )
                     }
                 }
 
                 Text(text = nameStr, textAlign = TextAlign.Center)
-//                StarRatingBar(((card.grade.plus(1)) ?: 0), color, 12.dp)
+                StarRatingBar((card.grade.plus(1)), color, 12.dp)
             }
         }
     }
-    // 다이얼로그 표시
-//    if (showInfoDialog.value) {
-//        CardDetailDialog(card) {
-//            showInfoDialog.value = false
-//        }
-//    }
 
 }

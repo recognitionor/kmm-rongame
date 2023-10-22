@@ -1,13 +1,12 @@
 package com.jhlee.kmm_rongame.card.presentation
 
+import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
-import com.jhlee.kmm_rongame.test.presentation.TestListState
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -42,7 +41,6 @@ class CardViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
                 }
 
                 is Resource.Loading -> {
-                    Logger.log("Loading")
                 }
             }
         }.launchIn(viewModelScope)
@@ -54,11 +52,26 @@ class CardViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
         }
     }
 
+    fun toggleCardInfoDialog(card: Card?) {
+        if (state.value.isShowCardInfoDialog) {
+            _state.update {
+                it.copy(
+                    isShowCardInfoDialog = false, detailCardInfo = null
+                )
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    isShowCardInfoDialog = true, detailCardInfo = card
+                )
+            }
+        }
+    }
+
     fun gatchaCard() {
         if (_state.value.isLoading) {
             return
         }
-        Logger.log("gatcha!!")
         cardDataSource.gatchaCard().onEach { result ->
             when (result) {
                 is Resource.Error -> {
@@ -81,7 +94,7 @@ class CardViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
                             it.copy(
                                 isLoading = false,
                                 isLoadDone = false,
-                                gatChaCard = result.data,
+                                gatchaCard = result.data,
                                 updateUserInfo = true
                             )
                         }

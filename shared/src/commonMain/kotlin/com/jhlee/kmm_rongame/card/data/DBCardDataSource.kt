@@ -5,6 +5,7 @@ import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardDataSource
 import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.constants.GatchaConst
+import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
 import io.ktor.utils.io.errors.IOException
@@ -76,7 +77,7 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
                 )
                 card = distributePoints(grade, card)
                 Logger.log(card.toString())
-                queries.updateUserMoney(100)
+                queries.updateUserMoney(RuleConst.GATCHA_COST.toLong())
                 queries.insertCardEntity(
                     card.name,
                     card.cost.toLong(),

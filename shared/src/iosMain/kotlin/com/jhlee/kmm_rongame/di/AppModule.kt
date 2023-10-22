@@ -1,6 +1,8 @@
 package com.jhlee.kmm_rongame.di
 
 import com.jhlee.kmm_rongame.AppDatabase
+import com.jhlee.kmm_rongame.attend.data.DBAttendDataSource
+import com.jhlee.kmm_rongame.attend.domain.AttendDataSource
 import com.jhlee.kmm_rongame.card.data.DBCardDataSource
 import com.jhlee.kmm_rongame.card.domain.CardDataSource
 import com.jhlee.kmm_rongame.coin.data.RemoteCoinDataSource
@@ -45,7 +47,14 @@ actual class AppModule {
         QuizDataSourceImpl(
             db = AppDatabase(
                 driver = DatabaseDriverFactory().create()
-            ),KtorClientFactory.build()
+            ), KtorClientFactory.build()
+        )
+    }
+    actual val dbAttendDataSource: AttendDataSource by lazy {
+        DBAttendDataSource(
+            db = AppDatabase(
+                driver = DatabaseDriverFactory().create()
+            )
         )
     }
 }

@@ -22,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -31,10 +30,13 @@ import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.constants.GatchaConst
 import com.jhlee.kmm_rongame.constants.GradeConst
+import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getPlatformImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 import com.jhlee.kmm_rongame.utils.GameUtils
+import dev.icerock.moko.resources.getImageByFileName
 
 @Composable
 fun CardScreen(
@@ -51,17 +53,18 @@ fun CardScreen(
     var gradeStr = "?"
     var textColor = Color.Black
     var cardImg: ImageBitmap? = getPlatformImageResourceBitMap("ic_contact_support")
-//    val showInfoDialog = cardViewModel.showInfoDialog.value
-    if (cardStateValue.gatChaCard != null) {
+
+    if (cardStateValue.gatchaCard != null) {
         if (!cardStateValue.isLoadDone) {
 
         }
-        powerStr = GameUtils.getPower(cardStateValue.gatChaCard!!).toString()
-        costStr = cardStateValue.gatChaCard!!.cost.toString()
-//        cardImg = getPlatformImageResourceBitMap(cardStateValue.gatChaCard!!.image)
-        nameStr = cardStateValue.gatChaCard!!.name
-        gradeStr = (cardStateValue.gatChaCard!!.grade + 1).toString()
-        color = GradeConst.TYPE_MAP[cardStateValue.gatChaCard!!.grade]!!.color
+        powerStr = GameUtils.getPower(cardStateValue.gatchaCard!!).toString()
+        costStr = cardStateValue.gatchaCard!!.cost.toString()
+        cardImg =
+            getCommonImageResourceBitMap(SharedRes.images.getImageByFileName(cardStateValue.gatchaCard!!.image))
+        nameStr = cardStateValue.gatchaCard!!.name
+        gradeStr = (cardStateValue.gatchaCard!!.grade + 1).toString()
+        color = GradeConst.TYPE_MAP[cardStateValue.gatchaCard!!.grade]!!.color
         textColor = Color.Black
 //        cardViewModel.setFlagCardStateLoadDone()
     }
@@ -69,13 +72,13 @@ fun CardScreen(
     if (isLoading) {
         val index = (cardStateValue.cardRandomProgress % GradeConst.TYPE_MAP.size)
         color = GradeConst.TYPE_MAP[index]!!.color
+        cardImg = getPlatformImageResourceBitMap("ic_contact_support")
         textColor = color
     }
 
     Card(modifier = Modifier.run {
         size(width = cardWidth.dp, height = height.dp).padding(10.dp)
             .border(width = 4.dp, color = color, shape = RoundedCornerShape(8.dp)).clickable {
-                cardViewModel.gatchaCard()
                 if ((mainStateValue.userInfo?.money ?: 0) >= GatchaConst.GATCHA_COST) {
                     cardViewModel.gatchaCard()
                 }
@@ -119,17 +122,13 @@ fun CardScreen(
                         }
 
                         getPlatformImageResourceBitMap("ic_info")?.let {
-                            Image(
-                                bitmap = it, contentDescription = "", modifier = Modifier.size(
-                                    (cardWidth * 0.135).dp, (height * 0.135).dp
-                                ).clickable(cardStateValue.gatChaCard != null) {
-//                                        cardViewModel.onInfoIconClicked()
-                                }, colorFilter = if (isLoading) ColorFilter.tint(color) else null
-                            )
+                            Image(bitmap = it, contentDescription = "", modifier = Modifier.size(
+                                (cardWidth * 0.135).dp, (height * 0.135).dp
+                            ).clickable(cardStateValue.gatchaCard != null) {
+                                cardViewModel.toggleCardInfoDialog(cardStateValue.gatchaCard)
+                            })
                         }
                     }
-
-
                 }
                 cardImg?.let {
                     Image(
@@ -138,11 +137,10 @@ fun CardScreen(
                         modifier = Modifier.size(
                             (cardWidth * 0.4).dp, (height * 0.4).dp
                         ).background(Color.White),
-                        colorFilter = if (isLoading) ColorFilter.tint(color) else null
                     )
                 }
                 Text(text = nameStr, textAlign = TextAlign.Center)
-                StarRatingBar(((cardStateValue.gatChaCard?.grade?.plus(1)) ?: 0), color)
+                StarRatingBar(((cardStateValue.gatchaCard?.grade?.plus(1)) ?: 0), color)
             }
         }
     }

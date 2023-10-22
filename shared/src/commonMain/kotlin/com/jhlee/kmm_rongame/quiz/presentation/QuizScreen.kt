@@ -34,8 +34,6 @@ import com.jhlee.kmm_rongame.common.view.createDialog
 import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
-import com.jhlee.kmm_rongame.main.presentation.MainState
-import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 import com.jhlee.kmm_rongame.quiz.domain.Quiz
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
