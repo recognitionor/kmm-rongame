@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.common.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -20,16 +22,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
+import dev.icerock.moko.resources.getImageByFileName
 
 
 fun createDialog(
     title: String = "",
     message: String = "",
+    image: String? = null,
     positiveButtonCallback: () -> Unit,
     nativeButtonCallback: (() -> Unit)? = null
 ): @Composable () -> Unit = {
@@ -44,11 +51,22 @@ fun createDialog(
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                Text(
-                    text = title, style = TextStyle(
-                        fontSize = 28.sp, fontWeight = FontWeight.Bold
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = title, style = TextStyle(
+                            fontSize = 28.sp, fontWeight = FontWeight.Bold
+                        )
                     )
-                )
+                    Spacer(modifier = Modifier.size(100.dp))
+                    if (!image.isNullOrEmpty()) {
+                        Image(
+                            modifier = Modifier.size(100.dp),
+                            bitmap = getCommonImageResourceBitMap(
+                                SharedRes.images.getImageByFileName(image)
+                            )!!, contentDescription = null
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 

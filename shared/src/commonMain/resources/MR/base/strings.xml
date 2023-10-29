@@ -33,11 +33,11 @@
 
     <string name="card_gatcha_done">카드가 뽑혔습니다.</string>
     <string name="card_detail_title">카드 상세 정보</string>
-    <string name="card_detail_att">공격 : </string>
-    <string name="card_detail_def">방어 : </string>
-    <string name="card_detail_spd">속도 : </string>
-    <string name="card_detail_hp">체력 : </string>
-    <string name="card_detail_mp">정신력 : </string>
+    <string name="card_detail_att">공격 :</string>
+    <string name="card_detail_def">방어 :</string>
+    <string name="card_detail_spd">속도 :</string>
+    <string name="card_detail_hp">체력 :</string>
+    <string name="card_detail_mp">정신력 :</string>
     <string name="card_list_title">내 보유 카드 리스트</string>
 
     <string name="game_att">무기</string>
@@ -108,4 +108,14 @@
     <string name="quiz_success_message_content">점을 획득 합니다.</string>
     <string name="quiz_result_title">퀴즈 결과</string>
     <string name="quiz_result_message">총 %d 문제 중 %d 를 맞춰 %d점을 획득합니다.</string>
+
+    <string name="bank">은행</string>
+    <string name="bank_comment_hello">안녕 나는 BankCat(뱅캣)이야 돈을 아주 좋아 하는 고양이 란다.</string>
+    <string name="bank_comment_1">내가 돈이 얼마가 있냐면...</string>
+    <string name="bank_comment_2">돈을 차곡 차곡 모으면 나처럼 돈이 많아 질수 있어</string>
+    <string name="bank_comment_3">이자율이 50% 이면 맡긴 돈의 절반을 보너스로 준다.</string>
+    <string name="bank_comment_4">50%는 오십퍼센트 라고 읽는단다.</string>
+    <string name="bank_comment_5">만약 100원을 맡기고 이자율이 50% 이라면 150원을 찾아갈수 있단다.</string>
+    <string name="bank_account_balance">통장에 있는 돈</string>
+    <string name="bank_interest_rate">현재 이자율</string>
 </resources>

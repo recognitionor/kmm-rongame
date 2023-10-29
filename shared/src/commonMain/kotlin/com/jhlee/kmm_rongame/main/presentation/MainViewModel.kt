@@ -2,6 +2,7 @@ package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.runtime.Composable
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
@@ -26,6 +27,7 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     }
 
     fun showDialog(dialogIndex: Int, createDialog: @Composable () -> Unit) {
+        Logger.log("showDialog $dialogIndex")
         _state.update {
             it.copy(openDialog = dialogIndex, dialog = createDialog)
         }
@@ -36,6 +38,7 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     }
 
     fun dismissDialog() {
+        Logger.log("dismissDialog")
         _state.update {
             it.copy(openDialog = MainState.NO_DIALOG, dialog = null)
         }

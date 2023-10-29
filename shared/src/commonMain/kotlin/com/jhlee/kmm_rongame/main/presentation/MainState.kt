@@ -16,6 +16,7 @@ data class MainState(
         const val NO_DIALOG = 0
         const val QUIZ_INFO_DIALOG = 1
         const val NOT_ENOUGH_MONEY_DIALOG = 2
-        const val QUIZ_RESULT_DIALOG = 3
+        const val BANK_VIEW_MODE_DEPOSIT_DIALOG = 3
+        const val BANK_VIEW_MODE_WITHDRAW_DIALOG = 4
     }
 }

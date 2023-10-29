@@ -55,9 +55,14 @@ UPDATE UserInfoEntity
 SET money = ?
 WHERE id = 1;
 
-updateUserMoney:
+minusUserMoney:
 UPDATE UserInfoEntity
 SET money = money - ?
+WHERE id = 1;
+
+plusUserMoney:
+UPDATE UserInfoEntity
+SET money = money + ?
 WHERE id = 1;
 --CardEntity
 --카드 정보--
@@ -138,3 +143,61 @@ SELECT *
 FROM QuizEntity
 ORDER BY RANDOM()
 LIMIT 3;
+
+-- */
+CREATE TABLE BankEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    account INTEGER NOT NULL,
+    interestRate INTEGER NOT NULL
+);
+
+CREATE TABLE BankHistoryEntity (
+    bank_id INTEGER NOT NULL REFERENCES BankEntity(id),
+    amount INTEGER NOT NULL,
+    date INTEGER NOT NULL
+);
+
+getBank:
+SELECT *
+FROM BankEntity
+WHERE id = ?;
+
+getBankHistory:
+SELECT *
+FROM BankHistoryEntity
+WHERE bank_id = ?
+ORDER BY date DESC;
+
+insertBank:
+INSERT OR REPLACE
+INTO BankEntity(
+    id,
+    name,
+    account,
+    interestRate
+) VALUES (?,?, ?,?);
+
+insertBankHistory:
+INSERT OR REPLACE
+INTO BankHistoryEntity(
+    bank_id,
+    amount,
+    date
+) VALUES (?, ?,?);
+
+depositBankAccount:
+UPDATE BankEntity
+SET account = account + ?
+WHERE id = ?;
+
+withdrawBankAccount:
+UPDATE BankEntity
+SET account = account - ?
+WHERE id = ?;
+
+updateBankInterestRate:
+UPDATE BankEntity
+SET interestRate = ?
+WHERE id = ?;
+

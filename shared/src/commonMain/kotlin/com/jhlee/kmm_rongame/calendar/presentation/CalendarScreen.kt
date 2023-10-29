@@ -117,8 +117,6 @@ fun Calendar(
                         val date = "$year${month.toString().padStart(2, '0')}${
                             dayOfMonth.toString().padStart(2, '0')
                         }"
-                        Logger.log("date : $date")
-                        Logger.log("attendedList : ${attendedList}")
                         Surface(
                             color = if (attendedList.contains(date)) Color.Black else Color.White,
                             shape = CircleShape,

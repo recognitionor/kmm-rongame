@@ -20,6 +20,8 @@ class RewardViewModel(private val attendDataSource: AttendDataSource) : ViewMode
 
         const val REWARD_QUIZ_SCREEN = 1
 
+        const val REWARD_BANK_SCREEN = 2
+
         const val REWARD_ETC_SCREEN = 0
     }
 

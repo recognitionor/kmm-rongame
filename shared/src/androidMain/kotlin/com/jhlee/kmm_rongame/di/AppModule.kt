@@ -4,6 +4,8 @@ import android.content.Context
 import com.jhlee.kmm_rongame.AppDatabase
 import com.jhlee.kmm_rongame.attend.data.DBAttendDataSource
 import com.jhlee.kmm_rongame.attend.domain.AttendDataSource
+import com.jhlee.kmm_rongame.bank.data.DBBankDataSource
+import com.jhlee.kmm_rongame.bank.domain.BankDataSource
 import com.jhlee.kmm_rongame.card.data.DBCardDataSource
 import com.jhlee.kmm_rongame.card.domain.CardDataSource
 import com.jhlee.kmm_rongame.coin.data.RemoteCoinDataSource
@@ -57,6 +59,14 @@ actual class AppModule(
     }
     actual val dbAttendDataSource: AttendDataSource by lazy {
         DBAttendDataSource(
+            db = AppDatabase(
+                driver = DatabaseDriverFactory(context).create(),
+            )
+        )
+    }
+
+    actual val dbBankDataSource: BankDataSource by lazy {
+        DBBankDataSource(
             db = AppDatabase(
                 driver = DatabaseDriverFactory(context).create(),
             )

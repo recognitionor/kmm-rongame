@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.bank.presentation.BankScreen
 import com.jhlee.kmm_rongame.calendar.presentation.CalendarScreen
 import com.jhlee.kmm_rongame.card.presentation.CardViewModel
 import com.jhlee.kmm_rongame.common.view.createDialog
@@ -57,7 +58,7 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                 }
                 Button(modifier = Modifier.fillMaxWidth(), onClick = {
                     mainViewModel.showDialog(MainState.QUIZ_INFO_DIALOG,
-                        createDialog(title, message, {
+                        createDialog(title, message, "img_smart_dragon", {
                             mainViewModel.dismissDialog()
                             mainViewModel.updateUserMoney(-RuleConst.QUIZ_COST) {
                                 if (it) {
@@ -65,7 +66,7 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                                 } else {
                                     mainViewModel.showDialog(
                                         MainState.NOT_ENOUGH_MONEY_DIALOG,
-                                        createDialog("돈이 모자랍니다.", "", {
+                                        createDialog("돈이 모자랍니다.", "", "img_smart_dragon", {
                                             mainViewModel.dismissDialog()
                                         })
                                     )
@@ -78,7 +79,11 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                     Text(text = getString(SharedRes.strings.etc_mini_game_quiz))
                 }
 
-
+                Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                    rewardViewModel.selectedScreen(RewardViewModel.REWARD_BANK_SCREEN)
+                }) {
+                    Text(text = getString(SharedRes.strings.bank))
+                }
             }
         }
 
@@ -89,15 +94,19 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                 RewardViewModel.REWARD_QUIZ_SCREEN -> {
                     mainViewModel.setWholeScreen(true)
                     QuizScreen(appModule) {
-                        mainViewModel.updateUserMoney(it) {
-
-                        }
+                        mainViewModel.updateUserMoney(it)
                         rewardViewModel.selectedScreen(RewardViewModel.REWARD_DEFAULT_SCREEN)
                     }
                 }
 
                 RewardViewModel.REWARD_ETC_SCREEN -> {
 
+                }
+
+                RewardViewModel.REWARD_BANK_SCREEN -> {
+                    BankScreen(mainViewModel, appModule) {
+                        rewardViewModel.selectedScreen(RewardViewModel.REWARD_DEFAULT_SCREEN)
+                    }
                 }
 
                 else -> {

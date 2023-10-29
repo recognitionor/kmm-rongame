@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,8 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.jhlee.kmm_rongame.SharedRes
-import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.home.presentation.HomeScreen
@@ -27,7 +24,6 @@ import com.jhlee.kmm_rongame.reward.presentation.RewardScreen
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(appModule: AppModule) {
 
@@ -65,17 +61,13 @@ fun MainScreen(appModule: AppModule) {
             }
         }
     }
-    val title = getString(SharedRes.strings.quiz)
-    val message = getString(SharedRes.strings.etc_mini_game_quiz)
+    Logger.log("state.openDialog ${state.openDialog}")
     when (state.openDialog) {
-        MainState.QUIZ_INFO_DIALOG -> {
+        MainState.NO_DIALOG -> {}
+        else -> {
+            Logger.log("dialogInvoke")
             state.dialog?.invoke()
         }
-
-        MainState.NOT_ENOUGH_MONEY_DIALOG -> {
-            state.dialog?.invoke()
-        }
-        else -> {}
     }
 
     if (state.isLoading) {

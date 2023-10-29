@@ -48,7 +48,7 @@ class DBRewardDataSource(
 
     override fun updateUserInfo(userInfo: UserInfo): Flow<Resource<UserInfo>> = flow {
         emit(Resource.Loading())
-        queries.updateUserMoney(userInfo.money.toLong())
+        queries.minusUserMoney(userInfo.money.toLong())
         val updatedUser = queries.getUserInfo().executeAsOne().toUser()
         emit(Resource.Success(updatedUser))
     }

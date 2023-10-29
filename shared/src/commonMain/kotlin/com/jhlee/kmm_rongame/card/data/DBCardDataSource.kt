@@ -77,7 +77,7 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
                 )
                 card = distributePoints(grade, card)
                 Logger.log(card.toString())
-                queries.updateUserMoney(RuleConst.GATCHA_COST.toLong())
+                queries.minusUserMoney(RuleConst.GATCHA_COST.toLong())
                 queries.insertCardEntity(
                     card.name,
                     card.cost.toLong(),
