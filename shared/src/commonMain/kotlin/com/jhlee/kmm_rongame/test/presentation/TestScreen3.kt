@@ -6,6 +6,5 @@ import com.jhlee.kmm_rongame.core.util.Logger
 
 @Composable
 fun TestScreen3(viewModel: Int) {
-    Logger.log("TestScreen3")
     Text(text = viewModel.toString())
 }

@@ -75,7 +75,6 @@ class CardViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
         cardDataSource.gatchaCard().onEach { result ->
             when (result) {
                 is Resource.Error -> {
-                    Logger.log("Error")
                 }
 
                 is Resource.Loading -> {

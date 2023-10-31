@@ -39,7 +39,6 @@ class BankViewModel(private val bankDataSource: BankDataSource) : ViewModel() {
             bankDataSource.deposit(state.value.bank?.id ?: 0, depositMoney).onEach {
                 when (it) {
                     is Resource.Success -> {
-                        Logger.log("processDeposit Success : $depositMoney")
                         getBank()
                     }
 
@@ -89,11 +88,9 @@ class BankViewModel(private val bankDataSource: BankDataSource) : ViewModel() {
     }
 
     private fun getBank() {
-        Logger.log("getBank")
         bankDataSource.getBank(1).onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    Logger.log("getBank ${result.data}")
                     _state.update { it.copy(bank = result.data, needUserRefresh = true) }
                 }
 
@@ -102,7 +99,6 @@ class BankViewModel(private val bankDataSource: BankDataSource) : ViewModel() {
                 }
 
                 is Resource.Loading -> {
-                    Logger.log("l")
                 }
             }
         }.launchIn(viewModelScope)

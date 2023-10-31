@@ -39,7 +39,6 @@ fun CardListScreen(cardViewModel: CardViewModel) {
                 val card = cardStateValue.cardList[index]
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                     CardListItemScreen(card = card, height = 180f) {
-                        Logger.log("click")
                         cardViewModel.toggleCardInfoDialog(card)
                     }
                 }

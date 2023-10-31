@@ -19,7 +19,6 @@ fun TestScreen2(appModule: AppModule) {
 
     val state = viewModel.state.collectAsState().value
 
-    Logger.log("test")
     Column {
         Button(onClick = {
             viewModel.test()

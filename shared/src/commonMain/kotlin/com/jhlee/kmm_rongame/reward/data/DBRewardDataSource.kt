@@ -1,8 +1,6 @@
 package com.jhlee.kmm_rongame.reward.data
 
 import com.jhlee.kmm_rongame.AppDatabase
-import com.jhlee.kmm_rongame.attend.data.toAttend
-import com.jhlee.kmm_rongame.attend.domain.Attend
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.main.data.toUser
 import com.jhlee.kmm_rongame.main.domain.MainDataSource

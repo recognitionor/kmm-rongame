@@ -106,7 +106,6 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
                     quizAnswer++
                     quizPoint += it.reward
                 }
-                Logger.log(it.question + ": " + it.selected)
             }
             _state.update {
                 it.copy(

@@ -63,7 +63,6 @@ fun CardListItemScreen(
         }.clickable {
             if (onItemClick != null) {
                 if (isEnabled) {
-                    Logger.log("card1 : $card")
                     onItemClick(card)
                 }
             }
@@ -187,7 +186,6 @@ fun CardListItemScreen(
                                     (cardWidth * 0.135).dp, (height * 0.135).dp
                                 ).clickable {
                                     if (onItemClick != null) {
-                                        Logger.log("card2 : $card")
                                         onItemClick(card)
                                     }
                                 },
@@ -196,7 +194,6 @@ fun CardListItemScreen(
                     }
                 }
                 if (isEnabled) {
-                    Logger.log("jhlee : $cardImg")
                     getCommonImageResourceBitMap(SharedRes.images.getImageByFileName(cardImg))?.let {
                         Image(
                             bitmap = it, contentDescription = "", modifier = Modifier.size(

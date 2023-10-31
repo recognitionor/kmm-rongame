@@ -14,7 +14,6 @@ import kotlinx.datetime.Clock
 class DBBankDataSource(db: AppDatabase) : BankDataSource {
     private val queries = db.dbQueries
     override fun initBank(): Flow<Resource<Bank>> = flow {
-        Logger.log("initBank :")
         val bank = Bank(1, "고양이은행", 0, emptyList(), 1)
         queries.insertBank(bank.id.toLong(), bank.name, bank.interestRate)
         emit(Resource.Success(bank))

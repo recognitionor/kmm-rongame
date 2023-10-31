@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -20,9 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.jhlee.kmm_rongame.Platform
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
+import com.jhlee.kmm_rongame.getPlatform
 import com.jhlee.kmm_rongame.home.presentation.HomeScreen
+import com.jhlee.kmm_rongame.isAndroid
 import com.jhlee.kmm_rongame.reward.presentation.RewardScreen
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
@@ -37,7 +41,7 @@ fun MainScreen(appModule: AppModule) {
     val state: MainState by viewModel.state.collectAsState()
     Scaffold(bottomBar = {
         if (state.userInfo != null && !state.isWholeScreenOpen) {
-            NavigationBar(modifier = Modifier.height(80.dp)) {
+            NavigationBar() {
                 MainScreenItem.SCREEN_LIST.forEachIndexed { index, item ->
                     NavigationBarItem(icon = {
                         Icon(
@@ -67,11 +71,9 @@ fun MainScreen(appModule: AppModule) {
         }
 
     }
-    Logger.log("state.openDialog ${state.openDialog}")
     when (state.openDialog) {
         MainState.NO_DIALOG -> {}
         else -> {
-            Logger.log("dialogInvoke")
             state.dialog?.invoke()
         }
     }

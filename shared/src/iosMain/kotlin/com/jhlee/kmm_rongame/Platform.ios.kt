@@ -30,5 +30,7 @@ actual fun initLogger() {
 
 // iosMain
 actual fun showToast(message: String) {
-    
+
 }
+
+actual fun isAndroid() = false

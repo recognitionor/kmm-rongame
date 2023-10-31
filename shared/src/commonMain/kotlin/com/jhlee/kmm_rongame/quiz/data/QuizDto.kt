@@ -49,7 +49,6 @@ data class QuizDto(
                     )
                     tempList.add(quizDto)
                 } catch (ignored: Exception) {
-                    Logger.log("error : ${ignored.message}")
                 }
             }
             return tempList

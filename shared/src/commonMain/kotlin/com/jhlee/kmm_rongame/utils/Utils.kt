@@ -11,7 +11,6 @@ class Utils {
     companion object {
 
         fun formatUnixEpochTime(epochTime: Long): String {
-            Logger.log("formatUnixEpochTime : $epochTime")
             val instant = Instant.fromEpochSeconds(epochTime)
             val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
 

@@ -18,17 +18,14 @@ class CoinListViewModel(coinDataSource: CoinDataSource) : ViewModel() {
     val state = combine(_state, coinDataSource.getCoinList()) { state, data ->
         when (data) {
             is Resource.Error -> {
-                Logger.log("error ${data.message}")
                 state.copy(isLoading = false, error = data.message ?: "error")
             }
 
             is Resource.Loading -> {
-                Logger.log("loading")
                 state.copy(isLoading = true)
             }
 
             is Resource.Success -> {
-                Logger.log("success  : ${data.data}")
                 state.copy(coins = data.data ?: emptyList())
             }
         }

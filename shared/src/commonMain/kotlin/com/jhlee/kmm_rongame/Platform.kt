@@ -15,3 +15,5 @@ expect fun initLogger()
 
 expect fun showToast(message: String)
 
+expect fun isAndroid(): Boolean
+

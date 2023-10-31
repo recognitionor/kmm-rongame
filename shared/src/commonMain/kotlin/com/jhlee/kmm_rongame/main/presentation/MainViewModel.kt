@@ -27,7 +27,6 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     }
 
     fun showDialog(dialogIndex: Int, createDialog: @Composable () -> Unit) {
-        Logger.log("showDialog $dialogIndex")
         _state.update {
             it.copy(openDialog = dialogIndex, dialog = createDialog)
         }
@@ -38,7 +37,6 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     }
 
     fun dismissDialog() {
-        Logger.log("dismissDialog")
         _state.update {
             it.copy(openDialog = MainState.NO_DIALOG, dialog = null)
         }

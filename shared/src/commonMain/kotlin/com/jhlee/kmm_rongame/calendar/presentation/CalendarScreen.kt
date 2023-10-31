@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,8 +40,12 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun CalendarScreen(rewardViewModel: RewardViewModel) {
     val currentDateTime = Clock.System.now()
-    val year by remember { mutableStateOf(currentDateTime.toLocalDateTime(TimeZone.UTC).year) }
-    val month by remember { mutableStateOf(currentDateTime.toLocalDateTime(TimeZone.UTC).month.ordinal + 1) }
+    val timeZone = TimeZone.currentSystemDefault()
+    val currentLocalDateTime = currentDateTime.toLocalDateTime(timeZone)
+
+    val state by rewardViewModel.state.collectAsState()
+    val year by remember { mutableStateOf(currentLocalDateTime.year) }
+    val month by remember { mutableStateOf(currentLocalDateTime.month.ordinal + 1) }
     Column(
         modifier = Modifier.padding(0.dp)
     ) {
@@ -61,13 +66,8 @@ fun CalendarScreen(rewardViewModel: RewardViewModel) {
                 modifier = Modifier.weight(1f)
             )
         }
-
         Spacer(modifier = Modifier.height(12.dp))
-        Calendar(
-            year,
-            month,
-            rewardViewModel,
-            rewardViewModel.state.value.attendedList.map { it.toString() })
+        Calendar(year, month, rewardViewModel, state.attendedList.map { it.toString() })
     }
 }
 
@@ -75,7 +75,6 @@ fun CalendarScreen(rewardViewModel: RewardViewModel) {
 fun Calendar(
     year: Int, month: Int, rewardViewModel: RewardViewModel, attendedList: List<String>
 ) {
-
     val firstDayOfMonth = LocalDate(year, month, 1)
     val lastDayOfMonth = firstDayOfMonth.plus(1, kotlinx.datetime.DateTimeUnit.MONTH).minus(
         1, kotlinx.datetime.DateTimeUnit.DAY
@@ -106,7 +105,6 @@ fun Calendar(
     Spacer(modifier = Modifier.height(8.dp))
 
     val weeks = (daysInMonth + startDayOfWeek - 2) / 7 + 1
-    Logger.log("weeks : $weeks")
 
     Column(modifier = Modifier.fillMaxWidth()) {
         for (week in 0 until weeks) {

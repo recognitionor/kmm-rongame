@@ -76,7 +76,6 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
                     0
                 )
                 card = distributePoints(grade, card)
-                Logger.log(card.toString())
                 queries.minusUserMoney(RuleConst.GATCHA_COST.toLong())
                 queries.insertCardEntity(
                     card.name,
@@ -92,7 +91,6 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
                 )
                 emit(Resource.Success(card))
             } catch (e: IOException) {
-                Logger.log(e.toString())
                 emit(Resource.Error(e.message as String))
             }
         }

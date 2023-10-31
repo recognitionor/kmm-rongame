@@ -2,6 +2,7 @@ package com.jhlee.kmm_rongame.reward.presentation
 
 import com.jhlee.kmm_rongame.attend.domain.AttendDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.utils.Utils
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,7 +63,8 @@ class RewardViewModel(private val attendDataSource: AttendDataSource) : ViewMode
 
                 is Resource.Success -> {
                     _state.update { state ->
-                        state.copy(attendedList = (result.data?.map { it.date } ?: emptyList()))
+                        state.copy(attendedList = (result.data?.map { it.date }
+                            ?: emptyList()))
                     }
                 }
             }

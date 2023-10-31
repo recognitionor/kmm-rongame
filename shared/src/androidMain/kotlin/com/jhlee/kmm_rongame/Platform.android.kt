@@ -35,3 +35,5 @@ actual fun initLogger() {
 actual fun showToast(message: String) {
 
 }
+
+actual fun isAndroid() = true
