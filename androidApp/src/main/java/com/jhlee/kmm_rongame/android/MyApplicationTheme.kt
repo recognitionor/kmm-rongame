@@ -31,8 +31,10 @@ fun MyApplicationTheme(
             primary = Color(0xFF6200EE),
             primaryVariant = Color(0xFF3700B3),
             secondary = Color(0xFF03DAC5)
+
         )
     }
+
     val typography = Typography(
         body1 = TextStyle(
             fontFamily = FontFamily.Default,

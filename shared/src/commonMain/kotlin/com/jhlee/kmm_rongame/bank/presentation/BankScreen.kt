@@ -17,11 +17,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.bank.domain.BankUtils
 import com.jhlee.kmm_rongame.common.view.NumberInputField
 import com.jhlee.kmm_rongame.common.view.StoryDialog
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
@@ -50,6 +53,8 @@ import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 import com.jhlee.kmm_rongame.utils.Utils
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
+import kotlinx.datetime.Clock
+import kotlin.time.Duration
 
 @Composable
 fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -> Unit) {
@@ -70,12 +75,14 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
         )
     }
     LaunchedEffect(Unit) {
+        mainViewModel.setWholeScreen(true)
         viewModel.setComment(commentList.value)
     }
 
     DisposableEffect(Unit) {
         onDispose {
             mainViewModel.dismissDialog()
+            mainViewModel.setWholeScreen(false)
         }
     }
 
@@ -152,46 +159,86 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
                     }) {
                         Text(text = "입금")
                     }
-                    Spacer(Modifier.size(8.dp))
-                    Button(modifier = Modifier.weight(1f), onClick = {
-                        mainViewModel.showDialog(MainState.BANK_VIEW_MODE_DEPOSIT_DIALOG,
-                            createDepositDialog(
-                                "내 통장에 있는 돈", "찾아갈 돈을 입력 해주세요", bankState.bank?.account ?: 0
-                            ) {
-                                viewModel.processWithDraw(it)
-                                mainViewModel.dismissDialog()
-                            })
-                    }) {
-                        Text(text = "출금")
-                    }
                 }
                 bankState.bank?.history?.let {
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         items(it) { item ->
-                            Column(Modifier.padding(start = 12.dp, end = 12.dp)) {
-                                if (item.amount > 0) {
-                                    Text(
-                                        text = "저축한 금액 : ${item.amount}", style = TextStyle(
-                                            fontSize = 16.sp, fontWeight = FontWeight.Bold
+                            Box(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)) {
+                                Row {
+                                    Column(modifier = Modifier.weight(1f)) {
+
+                                        if (item.amount > 0) {
+                                            Text(
+                                                text = "저축한 금액 : ${item.amount}",
+                                                color = Color.Blue,
+                                                style = TextStyle(
+                                                    fontSize = 16.sp, fontWeight = FontWeight.Bold
+                                                )
+                                            )
+                                            Text(
+                                                text = "기준 이자율 ${item.interestRate}%",
+                                                style = TextStyle(
+                                                    fontSize = 12.sp, fontWeight = FontWeight.Bold
+                                                ),
+                                                color = Color.Black
+                                            )
+                                            Text(
+                                                text = "기대 이자 ${(item.amount.toLong() * (item.interestRate / 100.toFloat())).toInt()}",
+                                                style = TextStyle(
+                                                    fontSize = 12.sp, fontWeight = FontWeight.Bold
+                                                ),
+                                                color = Color.Black
+                                            )
+                                        } else {
+                                            Text(
+                                                text = "찾은간 금액 : ${item.amount}",
+                                                color = Color.Red,
+                                                style = TextStyle(
+                                                    fontSize = 16.sp, fontWeight = FontWeight.Bold
+                                                )
+                                            )
+                                        }
+
+                                        Text(
+                                            text = Utils.formatUnixEpochTime(item.date),
+                                            style = TextStyle(
+                                                fontSize = 12.sp, fontWeight = FontWeight.Light
+                                            ),
+                                            color = Color.LightGray
                                         )
-                                    )
-                                } else {
-                                    Text(
-                                        text = "찾은간 금액 : ${item.amount}", style = TextStyle(
-                                            fontSize = 16.sp, fontWeight = FontWeight.Bold
-                                        )
-                                    )
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                    }
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        horizontalAlignment = Alignment.End // 수평 정렬을 가운데로 설정
+                                    ) {
+                                        var title = ""
+                                        var color: Color = Color.Gray
+                                        if (BankUtils.hasDayPassed(item.date)) {
+                                            color = Color.Green
+                                            title = "이자와 출금"
+                                        } else {
+                                            color = Color.Gray
+                                            title = "원금만 출금"
+                                        }
+
+                                        Button(
+                                            onClick = {
+                                                viewModel.processWithDraw(item)
+                                            }, colors = ButtonDefaults.buttonColors(
+                                                contentColor = Color.Black, containerColor = color
+                                            )
+                                        ) {
+                                            Text(text = title)
+                                        }
+                                    }
                                 }
-
-                                Text(text = Utils.formatUnixEpochTime(item.date))
                             }
-
                         }
                     }
                 }
-
             }
         }
     }
@@ -214,11 +261,23 @@ fun createDepositDialog(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                var inputData by remember { mutableStateOf(0) }
-                Text(text = "$title $totalMyMoney 원")
+                var inputData by remember { mutableStateOf(100) }
+                Text(
+                    text = "$title $totalMyMoney 원", style = TextStyle(
+                        fontSize = 24.sp, fontWeight = FontWeight.Bold
+                    )
+                )
                 Spacer(modifier = Modifier.height(14.dp))
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = content)
+                    Column {
+                        Text(text = content)
+                        Text(
+                            text = "최소 100원만 받아 준다", style = TextStyle(
+                                fontSize = 12.sp, fontWeight = FontWeight.Light
+                            ), color = Color.LightGray
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(24.dp))
                     NumberInputField(totalMyMoney, {
                         inputData = it
@@ -226,14 +285,20 @@ fun createDepositDialog(
                     Text(text = "원")
                 }
 
-                Button(onClick = {
-                    Logger.log(inputData.toString())
-                    confirm.invoke(inputData)
-                }) {
-                    Text(text = getString(SharedRes.strings.confirm))
+                Row {
+                    Button(enabled = inputData >= 100, onClick = {
+                        confirm.invoke(inputData)
+                    }) {
+                        Text(text = getString(SharedRes.strings.confirm))
+                    }
+                    Spacer(Modifier.width(20.dp))
+                    Button(enabled = inputData >= 100, onClick = {
+                        confirm.invoke(0)
+                    }) {
+                        Text(text = getString(SharedRes.strings.cancel))
+                    }
                 }
             }
-
         }
     }
 }

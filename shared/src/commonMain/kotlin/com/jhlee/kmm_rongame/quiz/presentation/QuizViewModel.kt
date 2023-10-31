@@ -33,7 +33,8 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
     fun summitAnswer(index: Int, quiz: Quiz) {
         _state.update {
             it.copy(quizList = it.quizList.toMutableList().apply {
-                this[_state.value.quizIndex] = this[_state.value.quizIndex].copy(selected = index + 1)
+                this[_state.value.quizIndex] =
+                    this[_state.value.quizIndex].copy(selected = index + 1)
             })
         }
         if (index + 1 == quiz.answer) {
@@ -132,23 +133,24 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
             )
         }
         viewModelScope.launch {
-            val timeOffset = Clock.System.now().epochSeconds
-            val quizTime = quiz.time
+            val timeOffset = Clock.System.now().toEpochMilliseconds()
+            val quizTime = quiz.time * 1000
             var progressTime = 0L
-            while (quizTime >= progressTime) {
+            while (quizTime > progressTime) {
                 if (_state.value.quizStatus != QuizState.QUIZ_STATUS_ING) {
                     break
                 }
 
-                delay(1000)
-                progressTime = Clock.System.now().epochSeconds - timeOffset
+
+                progressTime = Clock.System.now().toEpochMilliseconds() - timeOffset
                 _state.update {
                     it.copy(
                         quizTimeProgress = (progressTime.toFloat() / quizTime),
-                        quizTime = progressTime
+                        quizTime = (progressTime / 1000)
                     )
                 }
-                if (quizTime <= progressTime) {
+                delay(10)
+                if (quizTime < progressTime) {
                     break
                 }
             }

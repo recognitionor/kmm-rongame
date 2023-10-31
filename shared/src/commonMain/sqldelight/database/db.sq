@@ -144,17 +144,19 @@ FROM QuizEntity
 ORDER BY RANDOM()
 LIMIT 3;
 
+-- WHERE id IN (148, 149, 147);
 -- */
 CREATE TABLE BankEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    account INTEGER NOT NULL,
     interestRate INTEGER NOT NULL
 );
 
 CREATE TABLE BankHistoryEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     bank_id INTEGER NOT NULL REFERENCES BankEntity(id),
     amount INTEGER NOT NULL,
+    interestRate INTEGER NOT NULL,
     date INTEGER NOT NULL
 );
 
@@ -174,30 +176,23 @@ INSERT OR REPLACE
 INTO BankEntity(
     id,
     name,
-    account,
     interestRate
-) VALUES (?,?, ?,?);
+) VALUES (?,?, ?);
 
 insertBankHistory:
 INSERT OR REPLACE
 INTO BankHistoryEntity(
     bank_id,
     amount,
+    interestRate,
     date
-) VALUES (?, ?,?);
-
-depositBankAccount:
-UPDATE BankEntity
-SET account = account + ?
-WHERE id = ?;
-
-withdrawBankAccount:
-UPDATE BankEntity
-SET account = account - ?
-WHERE id = ?;
+) VALUES (?, ?,?, ?);
 
 updateBankInterestRate:
 UPDATE BankEntity
 SET interestRate = ?
 WHERE id = ?;
 
+removeBankHistory:
+DELETE FROM BankHistoryEntity
+WHERE id = ?;

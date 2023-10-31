@@ -139,7 +139,7 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
 //                emit(Resource.Error(e.message.toString()))
 //            }
 //        }
-        Firebase.storage.reference.listAll().items.forEach { it ->
+        Firebase.storage.reference.listAll().items.forEach {
             emit(Resource.Loading())
             supervisorScope {
                 try {
@@ -149,6 +149,7 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                             quiz.toQuiz()
                         }
                     }
+
                     emit(Resource.Success(list.await()))
                 } catch (e: Exception) {
                     emit(Resource.Error(e.message.toString()))
@@ -167,7 +168,7 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                         it.toQuiz()
                     }
                 }
-                Logger.log("quizList : ${quizList.await()}")
+//                Logger.log("quizList : ${quizList.await()}")
                 emit(Resource.Success(quizList.await()))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message.toString()))

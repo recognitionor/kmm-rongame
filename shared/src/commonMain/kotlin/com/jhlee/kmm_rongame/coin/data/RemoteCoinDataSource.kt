@@ -3,6 +3,7 @@ package com.jhlee.kmm_rongame.coin.data
 import com.jhlee.kmm_rongame.coin.domain.Coin
 import com.jhlee.kmm_rongame.coin.domain.CoinDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

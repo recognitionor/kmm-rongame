@@ -18,7 +18,8 @@ import androidx.compose.ui.text.input.KeyboardType
 fun NumberInputField(
     maxValue: Int, onValueChange: (Int) -> Unit, modifier: Modifier = Modifier
 ) {
-    var textValue by remember { mutableStateOf(0.toString()) }
+    val minValue = 100
+    var textValue by remember { mutableStateOf(100.toString()) }
     val focusRequester by remember { mutableStateOf(FocusRequester()) }
 
     DisposableEffect(Unit) {
@@ -31,14 +32,14 @@ fun NumberInputField(
             var tempValue = it
             try {
                 if (it.isEmpty()) {
-                    tempValue = 0.toString()
+                    tempValue = minValue.toString()
                 }
                 textValue = if (tempValue.toInt() > maxValue) {
                     maxValue.toString()
                 } else {
                     tempValue
                 }
-                val newValue = textValue.toIntOrNull() ?: 0
+                val newValue = textValue.toIntOrNull() ?: minValue
                 onValueChange(newValue)
             } catch (e: Exception) {
                 onValueChange(0)

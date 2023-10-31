@@ -61,3 +61,5 @@ val SurfaceVariantDark = Color(0xff424940)
 val OnSurfaceVariantDark = Color(0xffc2c9bd)
 
 val OutlineDark = Color(0xff72796f)
+
+val QuizBorder = Color(0xFF750080)

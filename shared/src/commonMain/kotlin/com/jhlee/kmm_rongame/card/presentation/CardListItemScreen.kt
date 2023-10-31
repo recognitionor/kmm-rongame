@@ -196,6 +196,7 @@ fun CardListItemScreen(
                     }
                 }
                 if (isEnabled) {
+                    Logger.log("jhlee : $cardImg")
                     getCommonImageResourceBitMap(SharedRes.images.getImageByFileName(cardImg))?.let {
                         Image(
                             bitmap = it, contentDescription = "", modifier = Modifier.size(

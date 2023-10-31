@@ -5,6 +5,10 @@ import database.BankHistoryEntity
 
 fun BankHistoryEntity.toBankHistory(): Bank.History {
     return Bank.History(
-        bankId = bank_id.toInt(), amount = amount.toInt(), date = date
+        id = id.toInt(),
+        bankId = bank_id.toInt(),
+        amount = amount.toInt(),
+        interestRate = interestRate,
+        date = date
     )
 }

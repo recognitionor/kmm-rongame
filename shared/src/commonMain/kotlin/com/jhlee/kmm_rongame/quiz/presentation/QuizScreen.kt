@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.quiz.presentation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,9 +33,11 @@ import com.jhlee.kmm_rongame.card.presentation.CardViewModel
 import com.jhlee.kmm_rongame.common.view.ProgressBar
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.common.view.createDialog
+import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.quiz.domain.Quiz
+import com.jhlee.kmm_rongame.ui.theme.QuizBorder
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 
@@ -66,7 +70,7 @@ fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
 
         QuizState.QUIZ_STATUS_DONE_FAIL -> {
             createDialog(getString(SharedRes.strings.quiz_fail_message),
-                quiz?.description ?: "",
+                quiz?.description ?: "다음엔 꼭 맞추어야 한다!!",
                 "img_smart_dragon",
                 positiveButtonCallback = {
                     quizViewModel.nextStage()
@@ -99,46 +103,54 @@ fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
                     ProgressBar((quizState.quizTimeProgress))
 
                     Spacer(modifier = Modifier.height(6.dp).fillMaxWidth())
+                    Row {
+                        Column(modifier = Modifier.weight(0.7f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = getString(SharedRes.strings.quiz_remain_time),
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                Text(
+                                    text = "${((quiz?.time ?: 60) - (quizState.quizTime))}초 남음",
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = getString(SharedRes.strings.quiz_level),
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                                StarRatingBar(quiz?.level ?: 0, Color.Magenta)
+                            }
 
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = getString(SharedRes.strings.quiz_remain_time),
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                            Text(
-                                text = "${quizState.quizTime}/${quiz?.time}",
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(8.dp)
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = getString(SharedRes.strings.quiz_remain_chance),
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(8.dp)
+
+                                )
+                                Text(text = quizState.quizChanceCount.toString(), fontSize = 16.sp)
+                            }
                         }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = getString(SharedRes.strings.quiz_level),
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(8.dp)
+                        getCommonImageResourceBitMap(SharedRes.images.img_smart_dragon)?.let {
+                            Image(
+                                modifier = Modifier.weight(0.3f),
+                                bitmap = it,
+                                contentDescription = null
                             )
-                            StarRatingBar(quiz?.level ?: 0, Color.Magenta)
-                        }
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = getString(SharedRes.strings.quiz_remain_chance),
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(8.dp)
-
-                            )
-                            Text(text = quizState.quizChanceCount.toString(), fontSize = 16.sp)
                         }
                     }
 
 
                     Text(
-                        text = quiz?.question ?: "", modifier = Modifier.border(
-                            width = 2.dp, color = Color.Black, shape = RoundedCornerShape(10.dp)
+                        fontSize = 18.sp, text = quiz?.question ?: "", modifier = Modifier.border(
+                            width = 2.dp, color = QuizBorder, shape = RoundedCornerShape(10.dp)
                         ).padding(8.dp).fillMaxWidth()
                             .then(Modifier.heightIn(max = 200.dp, min = 100.dp)) // 최대 높이 설정
                             .verticalScroll(rememberScrollState()) // 스크롤 활성화
@@ -148,14 +160,25 @@ fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
 
                     quiz?.choiceList?.forEachIndexed { index, it ->
                         Box(
-                            modifier = Modifier.fillMaxWidth().height(80.dp).clickable {
+                            modifier = Modifier.fillMaxWidth().height(60.dp).clickable {
                                 quizViewModel.summitAnswer(index, quiz)
                             }, contentAlignment = Alignment.CenterStart
                         ) {
-                            Text(
-                                text = "${index + 1}. $it",
-                                modifier = Modifier.verticalScroll(rememberScrollState())
-                            )
+                            Row {
+                                Text(
+                                    fontSize = 20.sp,
+                                    color = QuizBorder,
+                                    text = "${index + 1}. ",
+                                    modifier = Modifier.verticalScroll(rememberScrollState())
+                                )
+                                Text(
+                                    fontSize = 20.sp,
+                                    color = Color.Black,
+                                    text = it,
+                                    modifier = Modifier.verticalScroll(rememberScrollState())
+                                )
+                            }
+
                             Spacer(modifier = Modifier.height(6.dp).fillMaxWidth())
                         }
                     }

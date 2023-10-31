@@ -12,5 +12,5 @@ interface BankDataSource {
 
     fun deposit(bankId: Int, money: Int): Flow<Resource<Unit>>
 
-    fun withDraw(bankId: Int, money: Int): Flow<Resource<Unit>>
+    fun withDraw(history: Bank.History): Flow<Resource<Unit>>
 }

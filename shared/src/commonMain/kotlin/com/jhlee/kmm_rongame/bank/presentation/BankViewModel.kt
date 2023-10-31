@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.bank.presentation
 
+import com.jhlee.kmm_rongame.bank.domain.Bank
 import com.jhlee.kmm_rongame.bank.domain.BankDataSource
 import com.jhlee.kmm_rongame.coin.presentation.CoinListState
 import com.jhlee.kmm_rongame.core.domain.Resource
@@ -49,19 +50,17 @@ class BankViewModel(private val bankDataSource: BankDataSource) : ViewModel() {
         }
     }
 
-    fun processWithDraw(withDrawMoney: Int) {
-        if (withDrawMoney.absoluteValue != 0) {
-            bankDataSource.withDraw(state.value.bank?.id ?: 0, withDrawMoney).onEach {
-                when (it) {
-                    is Resource.Success -> {
-                        getBank()
-                    }
-
-                    is Resource.Error -> {}
-                    is Resource.Loading -> {}
+    fun processWithDraw(item: Bank.History) {
+        bankDataSource.withDraw(item).onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    getBank()
                 }
-            }.launchIn(viewModelScope)
-        }
+                is Resource.Loading -> {}
+                is Resource.Error -> {}
+            }
+
+        }.launchIn(viewModelScope)
     }
 
     fun setComment(commentList: List<String>) {

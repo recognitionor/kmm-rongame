@@ -9,6 +9,6 @@ data class Bank(
 
     ) {
     data class History(
-        val bankId: Int, val amount: Int, val date: Long
+        val id: Int, val bankId: Int, val amount: Int, val interestRate: Long, val date: Long
     )
 }

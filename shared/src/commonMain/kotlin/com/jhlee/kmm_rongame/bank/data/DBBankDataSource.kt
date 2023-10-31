@@ -3,6 +3,7 @@ package com.jhlee.kmm_rongame.bank.data
 import com.jhlee.kmm_rongame.AppDatabase
 import com.jhlee.kmm_rongame.bank.domain.Bank
 import com.jhlee.kmm_rongame.bank.domain.BankDataSource
+import com.jhlee.kmm_rongame.bank.domain.BankUtils
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +16,7 @@ class DBBankDataSource(db: AppDatabase) : BankDataSource {
     override fun initBank(): Flow<Resource<Bank>> = flow {
         Logger.log("initBank :")
         val bank = Bank(1, "고양이은행", 0, emptyList(), 1)
-        queries.insertBank(bank.id.toLong(), bank.name, bank.account.toLong(), bank.interestRate)
+        queries.insertBank(bank.id.toLong(), bank.name, bank.interestRate)
         emit(Resource.Success(bank))
     }
 
@@ -36,9 +37,9 @@ class DBBankDataSource(db: AppDatabase) : BankDataSource {
     override fun deposit(bankId: Int, money: Int): Flow<Resource<Unit>> = flow {
         try {
             queries.minusUserMoney(money.toLong())
-            queries.depositBankAccount(money.toLong(), bankId.toLong())
+            val bank = queries.getBank(bankId.toLong()).executeAsOne()
             queries.insertBankHistory(
-                bankId.toLong(), money.toLong(), Clock.System.now().epochSeconds
+                bankId.toLong(), money.toLong(), bank.interestRate, Clock.System.now().epochSeconds
             )
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
@@ -46,16 +47,22 @@ class DBBankDataSource(db: AppDatabase) : BankDataSource {
         }
     }
 
-    override fun withDraw(bankId: Int, money: Int): Flow<Resource<Unit>> = flow {
+    override fun withDraw(history: Bank.History): Flow<Resource<Unit>> = flow {
         try {
-            queries.plusUserMoney(money.toLong())
-            queries.withdrawBankAccount(money.toLong(), bankId.toLong())
-            queries.insertBankHistory(
-                bankId.toLong(), -money.toLong(), Clock.System.now().epochSeconds
-            )
+            val interest: Float
+            val tempMoney: Int
+            if (BankUtils.hasDayPassed(history.date)) {
+                interest = history.amount * (history.interestRate.toFloat() / 100)
+                tempMoney = history.amount + interest.toInt()
+            } else {
+                tempMoney = history.amount
+            }
+            queries.plusUserMoney(tempMoney.toLong())
+            queries.removeBankHistory(history.id.toLong())
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
             emit(Resource.Error(e.message.toString()))
         }
     }
+
 }

@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.quiz.data
 
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.quiz.domain.Quiz
 import database.QuizEntity
 import kotlinx.serialization.Serializable
@@ -22,29 +23,33 @@ data class QuizDto(
     val durationTime: Long = -1
 ) {
     companion object {
+
         suspend fun parseJson(json: String): List<QuizDto> {
-            val lines = json.replace("\"", "").replace("'", "").trim().lines()
-            val dataLines = lines.drop(1)
+            val modifiedString = json.replace("\"", "\\\"").lines()
+            modifiedString.drop(1)
+            val dataLines = modifiedString.drop(1)
+            // QuizDto 객체 목록을 저장할 mutable list를 생성합니다.
             val tempList = mutableListOf<QuizDto>()
-            dataLines.map { line ->
+            dataLines.forEach {
+                val items = it.split(",\\s*(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex())
                 try {
-                    val items = line.split(",")
-                    tempList.add(
-                        QuizDto(
-                            id = items[0].toInt(),
-                            category = items[1],
-                            level = items[2].toInt(),
-                            imageUrl = items[3],
-                            answer = items[4].toInt(),
-                            question = items[5],
-                            choiceList = items[6].split("|"),
-                            time = items[7].toLong(),
-                            chance = items[8].toInt(),
-                            reward = items[9].toInt(),
-                            description = items[10]
-                        )
+                    val quizDto = QuizDto(
+                        id = items[0].toInt(),
+                        category = items[1],
+                        level = items[2].toInt(),
+                        imageUrl = items[3],
+                        answer = items[4].toInt(),
+                        question = items[5].replace("'", "").replace("\"", "").replace("\"", "")
+                            .replace("\\n", "\n"),
+                        choiceList = items[6].split("|"),
+                        time = items[7].toLong(),
+                        chance = items[8].toInt(),
+                        reward = items[9].toInt(),
+                        description = items[10]
                     )
+                    tempList.add(quizDto)
                 } catch (ignored: Exception) {
+                    Logger.log("error : ${ignored.message}")
                 }
             }
             return tempList
