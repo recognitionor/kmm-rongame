@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.home.presentation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,10 +14,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.card.presentation.CardDetailInfoScreen
 import com.jhlee.kmm_rongame.card.presentation.CardListScreen
 import com.jhlee.kmm_rongame.card.presentation.CardScreen
 import com.jhlee.kmm_rongame.card.presentation.CardViewModel
+import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainState

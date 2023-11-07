@@ -41,7 +41,7 @@ fun MainScreen(appModule: AppModule) {
     val state: MainState by viewModel.state.collectAsState()
     Scaffold(bottomBar = {
         if (state.userInfo != null && !state.isWholeScreenOpen) {
-            NavigationBar() {
+            NavigationBar {
                 MainScreenItem.SCREEN_LIST.forEachIndexed { index, item ->
                     NavigationBarItem(icon = {
                         Icon(
@@ -55,7 +55,7 @@ fun MainScreen(appModule: AppModule) {
             }
         }
     }) {
-        Box() {
+        Box {
             if (state.userInfo == null) {
                 UserRegisterScreen(state) {
                     viewModel.registerUser(it)
