@@ -1,16 +1,15 @@
 package com.jhlee.kmm_rongame.card.domain
 
 data class Card(
-    var id: Int,
+    var id: Int = -1,
     val name: String,
-    val cost: Int,
+    val nameEng: String,
     val grade: Int,
     val image: String,
+    val description: String,
     val type: String,
-    val attack: Int,
-    val defense: Int,
-    val speed: Int,
-    val hp: Int,
-    val mp: Int
+    val power: Int = 0,
+    val potential: Int = 0,
+    val upgrade: Int = 0
 )
 

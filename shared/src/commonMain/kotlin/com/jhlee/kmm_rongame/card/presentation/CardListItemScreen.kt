@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
@@ -22,6 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,13 +53,14 @@ fun CardListItemScreen(
 ) {
     val cardWidth = (height * 0.8)
     val cardImg: String = card.image
-    val powerStr: String = GameUtils.getPower(card).toString()
-    val costStr: String = card.cost.toString()
-
-    val nameStr: String = card.name
-    val gradeStr: String = (card.grade + 1).toString()
-    val color: Color = GradeConst.TYPE_MAP[card.grade]!!.color
-    val textColor: Color = Color.Black
+    var color: Color = GradeConst.TYPE_MAP[card.grade - 1]!!.color
+    var nameStr = card.name
+    var nameEngStr = card.nameEng
+    var grade = card.grade
+    var potential = card.potential
+    var upgrade = card.upgrade
+    var powerStr = card.power.toString()
+    var textColor = color
 
     androidx.compose.material3.Card(colors = CardDefaults.cardColors(Color.White),
         modifier = Modifier.run {
@@ -68,152 +74,70 @@ fun CardListItemScreen(
             }
         }) {
         Box(
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier.padding(start = 10.dp, end = 10.dp)
         ) {
-
-
-            // 패딩을 적용할 Box 컴포넌트 추가
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                ) {
-                    if (selected && isEnabled) {
-                        getCommonImageResourceBitMap(
-                            SharedRes.images.getImageByFileName(
-                                cardImg
-                            )
-                        )?.let {
-                            Image(
-                                bitmap = it,
-                                modifier = Modifier.size(100.dp).align(Alignment.TopEnd),
-                                contentDescription = "Selected",
-                                colorFilter = ColorFilter.tint(color)
-                            )
-                        }
+            Column {
+                Row {
+                    Box(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
+                        StarRatingBar(grade, color, size = 12.dp)
                     }
-
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(
-                            modifier = Modifier.weight(1f)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = powerStr, modifier = Modifier.weight(0.1f), style = TextStyle(
+                            fontSize = 20.sp, fontWeight = FontWeight.Bold
+                        )
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+                cardImg.let {
+                    getCommonImageResourceBitMap(SharedRes.images.getImageByFileName(it))?.let { it1 ->
+                        Image(
+                            bitmap = it1,
+                            contentDescription = null,
+                            alignment = Alignment.TopCenter,
+                            modifier = Modifier.fillMaxWidth().size(60.dp)
+                        )
+                    }
+                }
+                if (nameStr.isNotBlank()) {
+                    Column {
+                        Text(
+                            text = "$nameStr ($nameEngStr)",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = TextStyle(
+                                fontSize = 14.sp, fontWeight = FontWeight.Bold
+                            )
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
                         ) {
-                            Text(
-                                text = "${getString(SharedRes.strings.card_gatcha_grade_title)} $gradeStr",
-                                textAlign = TextAlign.Right,
-                                fontSize = 8.sp,
-                                color = textColor
-                            )
-                            Text(
-                                text = "${getString(SharedRes.strings.card_gatcha_power_title)} $powerStr",
-                                textAlign = TextAlign.Right,
-                                fontSize = 8.sp,
-                                color = textColor
-                            )
-                            Text(
-                                text = "${getString(SharedRes.strings.card_gatcha_cost_title)} $costStr",
-                                textAlign = TextAlign.Right,
-                                fontSize = 8.sp,
-                                color = textColor
-                            )
-
-                            when (visibleInfoType) {
-
-                                GameConst.GAME_SELECTED_CARD_TYPE_ATT -> {
-                                    Text(
-                                        text = getString(
-                                            SharedRes.strings.card_detail_att, listOf(card.attack)
-                                        ),
-                                        textAlign = TextAlign.Right,
-                                        fontSize = 8.sp,
-                                        color = textColor
-                                    )
-                                }
-
-                                GameConst.GAME_SELECTED_CARD_TYPE_DEF -> {
-                                    Text(
-                                        text = getString(
-                                            SharedRes.strings.card_detail_def, listOf(card.defense)
-                                        ),
-                                        textAlign = TextAlign.Right,
-                                        fontSize = 8.sp,
-                                        color = textColor
-                                    )
-                                }
-
-                                GameConst.GAME_SELECTED_CARD_TYPE_SPD -> {
-                                    Text(
-                                        text = getString(
-                                            SharedRes.strings.card_detail_spd, listOf(card.speed)
-                                        ),
-                                        textAlign = TextAlign.Right,
-                                        fontSize = 8.sp,
-                                        color = textColor
-                                    )
-                                }
-
-                                GameConst.GAME_SELECTED_CARD_TYPE_HP -> {
-                                    Text(
-                                        text = getString(
-                                            SharedRes.strings.card_detail_hp, listOf(card.hp)
-                                        ),
-                                        textAlign = TextAlign.Right,
-                                        fontSize = 8.sp,
-                                        color = textColor
-                                    )
-                                }
-
-                                GameConst.GAME_SELECTED_CARD_TYPE_MP -> {
-                                    Text(
-                                        text = getString(
-                                            SharedRes.strings.card_detail_mp, listOf(card.mp)
-                                        ),
-                                        textAlign = TextAlign.Right,
-                                        fontSize = 8.sp,
-                                        color = textColor
-                                    )
-                                }
+                            getCommonImageResourceBitMap(SharedRes.images.ic_detail)?.let {
+                                Image(
+                                    bitmap = it,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
                             }
                         }
-
-                        getPlatformImageResourceBitMap("ic_info")?.let {
-                            Image(
-                                bitmap = it, contentDescription = "", modifier = Modifier.size(
-                                    (cardWidth * 0.135).dp, (height * 0.135).dp
-                                ).clickable {
-                                    if (onItemClick != null) {
-                                        onItemClick(card)
-                                    }
-                                },
-                            )
-                        }
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
-                if (isEnabled) {
-                    getCommonImageResourceBitMap(SharedRes.images.getImageByFileName(cardImg))?.let {
-                        Image(
-                            bitmap = it, contentDescription = "", modifier = Modifier.size(
-                                (cardWidth * 0.4).dp, (height * 0.4).dp
-                            ).background(Color.Transparent)
-                        )
-                    }
-                } else {
-                    getPlatformImageResourceBitMap("ic_close")?.let {
-                        Image(
-                            bitmap = it, contentDescription = "", modifier = Modifier.size(
-                                (cardWidth * 0.4).dp, (height * 0.4).dp
-                            ).background(Color.Transparent),
-                        )
-                    }
-                }
-
-                Text(text = nameStr, textAlign = TextAlign.Center)
-                StarRatingBar((card.grade.plus(1)), color, 12.dp)
+//                Column(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    PotentialRatingBar(potential, upgrade)
+//                    if (potential > 5) {
+//                        PotentialRatingBar(
+//                            potential - 5, if (upgrade - 5 <= 1) 0 else upgrade - 5
+//                        )
+//                    }
+//                }
             }
+
         }
     }
 

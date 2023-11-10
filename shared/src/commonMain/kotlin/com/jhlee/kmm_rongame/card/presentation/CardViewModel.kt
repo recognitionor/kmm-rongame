@@ -3,7 +3,6 @@ package com.jhlee.kmm_rongame.card.presentation
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -72,7 +71,7 @@ class CardViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
         if (_state.value.isLoading) {
             return
         }
-        cardDataSource.gatchaCard().onEach { result ->
+        cardDataSource.gatchaBasicCard().onEach { result ->
             when (result) {
                 is Resource.Error -> {
                 }

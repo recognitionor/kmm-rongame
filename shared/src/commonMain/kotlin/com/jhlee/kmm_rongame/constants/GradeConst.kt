@@ -25,5 +25,6 @@ class GradeConst {
             this[5] = GradeInfo(Color.Magenta, IRON)
             this[6] = GradeInfo(Color.Red, DIAMOND)
         }
+
     }
 }

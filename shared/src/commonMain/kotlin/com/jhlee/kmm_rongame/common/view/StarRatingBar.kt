@@ -19,7 +19,6 @@ fun StarRatingBar(
     Row(horizontalArrangement = Arrangement.Center) {
         repeat(maxRating) {
             Icon(
-
                 imageVector = Icons.Filled.Star,
                 contentDescription = null,
                 tint = starColor, // 색상 지정

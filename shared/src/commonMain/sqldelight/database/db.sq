@@ -72,15 +72,14 @@ WHERE id = 1;
 CREATE TABLE CardEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    cost INTEGER,
+    nameEng TEXT NOT NULL,
     grade INTEGER,
     image TEXT,
+    description TEXT NOT NULL,
     type TEXT NOT NULL,
-    attack INTEGER,
-    defense INTEGER,
-    speed INTEGER,
-    hp INTEGER,
-    mp INTEGER
+    potential INTEGER,
+    upgrade INTEGER,
+    power INTEGER
 );
 
 getCardList:
@@ -91,16 +90,15 @@ ORDER BY id ASC;
 insertCardEntity:
 INSERT INTO CardEntity(
     name,
-    cost,
+    nameEng,
     grade,
     image,
+    description,
     type,
-    attack,
-    defense,
-    speed,
-    hp,
-    mp
-) VALUES (?,?,?,?,?,?,?,?,?,?);
+    potential,
+    upgrade,
+    power
+) VALUES (?,?,?,?,?,?,?,?, ?);
 
 CREATE TABLE QuizEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -117,7 +115,6 @@ CREATE TABLE QuizEntity (
     selected INTEGER,
     durationTime INTEGER,
     status INTEGER AS Boolean
-
 );
 
 insertQuizEntity:

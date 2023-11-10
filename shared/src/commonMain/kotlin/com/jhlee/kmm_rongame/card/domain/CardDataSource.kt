@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface CardDataSource {
     fun getCardList(): Flow<Resource<List<Card>>>
-    fun gatchaCard(): Flow<Resource<Card>>
+    fun gatchaBasicCard(): Flow<Resource<Card>>
 }

@@ -7,14 +7,12 @@ fun CardEntity.toCard(): Card {
     return Card(
         id.toInt(),
         name,
-        cost?.toInt() ?: 0,
-        grade?.toInt() ?: 0,
+        nameEng,
+        grade?.toInt() ?: 1,
         image ?: "",
-        type,
-        attack?.toInt() ?: 0,
-        defense?.toInt() ?: 0,
-        speed?.toInt() ?: 0,
-        hp?.toInt() ?: 0,
-        mp?.toInt() ?: 0
+        description,
+        type ?: "",
+        power?.toInt() ?: 0,
+        potential?.toInt() ?: 0,
     )
 }

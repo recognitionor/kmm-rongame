@@ -51,11 +51,6 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                     fontSize = 20.sp, fontWeight = FontWeight.Bold
                 )
             )
-            Text(
-                text = card.type, style = TextStyle(
-                    fontSize = 20.sp, fontWeight = FontWeight.Bold
-                )
-            )
 
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -64,47 +59,7 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                 Column(
                     modifier = Modifier.padding(bottom = 26.dp)
                 ) {
-                    Text(
-                        text = "${
-                            getString(
-                                SharedRes.strings.card_detail_att
-                            )
-                        } ${card.attack}",
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                    Text(
-                        text = "${
-                            getString(
-                                SharedRes.strings.card_detail_def
-                            )
-                        } ${card.defense}",
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                    Text(
-                        text = "${
-                            getString(
-                                SharedRes.strings.card_detail_spd
-                            )
-                        } ${card.speed}",
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                    Text(
-                        text = "${
-                            getString(
-                                SharedRes.strings.card_detail_hp
-                            )
-                        } ${card.hp}", fontSize = 16.sp, modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                    Text(
-                        text = "${
-                            getString(
-                                SharedRes.strings.card_detail_mp
-                            )
-                        } ${card.mp}", fontSize = 16.sp, modifier = Modifier.padding(bottom = 4.dp)
-                    )
+
                 }
                 Spacer(modifier = Modifier.width(36.dp)) // 간격 조정을 위한 Spacer 추가
 
@@ -115,21 +70,6 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                         text = "${getString(SharedRes.strings.card_gatcha_grade_title)} ${card.grade + 1}",
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 4.dp)
-                    )
-
-                    Text(
-
-                        text = "${getString(SharedRes.strings.card_gatcha_power_title)} ${
-                            GameUtils.getPower(
-                                card
-                            )
-                        }", fontSize = 16.sp, modifier = Modifier.padding(bottom = 4.dp)
-                    )
-
-                    Text(
-                        text = "${getString(SharedRes.strings.card_gatcha_cost_title)} ${
-                            card.cost
-                        }", fontSize = 16.sp, modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
             }

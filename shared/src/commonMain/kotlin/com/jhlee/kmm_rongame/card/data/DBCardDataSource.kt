@@ -7,7 +7,6 @@ import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.constants.GatchaConst
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +30,8 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
         }
     }
 
-    override fun gatchaCard(): Flow<Resource<Card>> {
+    override fun gatchaBasicCard(): Flow<Resource<Card>> {
+        val cardGrade = 1
         return flow {
             try {
                 emit(Resource.Loading())
@@ -43,51 +43,25 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
                     count = count.minus(offsetTime.toInt())
                 }
                 val random = Random(Clock.System.now().epochSeconds) // 시드값을 현재 시간으로 설정
-                val randomNumber = random.nextInt(1, CardConst.HERO_LIST.size)
+                val randomNumber = random.nextInt(0, CardConst.BASIC_CARD_LIST.size)
 
-                val hero = CardConst.HERO_LIST[(randomNumber)]
-                val cost = when (random.nextInt(1, 101)) {
-                    in 1..10 -> 1
-                    in 11..50 -> 2
-                    in 51..80 -> 3
-                    in 81..90 -> 4
-                    else -> 5
-                }
-                val grade = when ((random.nextInt(1, 100))) {
-                    in 1..49 -> 0
-                    in 50..74 -> 1
-                    in 75..89 -> 2
-                    in 90..94 -> 3
-                    in 95..97 -> 4
-                    in 98..99 -> 5
-                    else -> 6
-                }
-                var card = Card(
-                    0,
-                    name = hero.name,
-                    cost = cost,
-                    grade = grade,
-                    image = hero.image,
-                    hero.type,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
+                val cardTemp = CardConst.BASIC_CARD_LIST[(randomNumber)]
+
+                val card = cardTemp.copy(
+                    power = CardUtils.getCardRandomPower(cardGrade),
+                    potential = CardUtils.getCardRandomPotential()
                 )
-                card = distributePoints(grade, card)
                 queries.minusUserMoney(RuleConst.GATCHA_COST.toLong())
                 queries.insertCardEntity(
                     card.name,
-                    card.cost.toLong(),
+                    card.nameEng,
                     card.grade.toLong(),
                     card.image,
+                    card.description,
                     card.type,
-                    card.attack.toLong(),
-                    card.defense.toLong(),
-                    card.speed.toLong(),
-                    card.hp.toLong(),
-                    card.mp.toLong()
+                    card.power.toLong(),
+                    card.potential.toLong(),
+                    card.upgrade.toLong()
                 )
                 emit(Resource.Success(card))
             } catch (e: IOException) {
@@ -121,12 +95,6 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
             pointList.add(random)
         }
         pointList.shuffle()
-        return card.copy(
-            attack = pointList[0] ?: 0,
-            defense = pointList[1] ?: 0,
-            speed = pointList[2] ?: 0,
-            hp = pointList[3] ?: 0,
-            mp = pointList[4] ?: 0,
-        )
+        return card.copy()
     }
 }
