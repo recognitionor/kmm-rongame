@@ -53,15 +53,15 @@ fun CardListItemScreen(
 ) {
     val cardWidth = (height * 0.8)
     val cardImg: String = card.image
-    var color: Color = GradeConst.TYPE_MAP[card.grade - 1]!!.color
-    var nameStr = card.name
-    var nameEngStr = card.nameEng
-    var grade = card.grade
+    val color: Color = GradeConst.TYPE_MAP[card.grade - 1]!!.color
+    val nameStr = card.name
+    val nameEngStr = card.nameEng
+    val grade = card.grade
     var potential = card.potential
     var upgrade = card.upgrade
-    var powerStr = card.power.toString()
+    val powerStr = card.power.toString()
     var textColor = color
-
+    Logger.log("card : $card")
     androidx.compose.material3.Card(colors = CardDefaults.cardColors(Color.White),
         modifier = Modifier.run {
             size(width = cardWidth.dp, height = height.dp).padding(4.dp)

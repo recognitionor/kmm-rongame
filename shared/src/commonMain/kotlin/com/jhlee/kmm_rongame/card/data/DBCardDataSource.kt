@@ -53,15 +53,15 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
                 )
                 queries.minusUserMoney(RuleConst.GATCHA_COST.toLong())
                 queries.insertCardEntity(
-                    card.name,
-                    card.nameEng,
-                    card.grade.toLong(),
-                    card.image,
-                    card.description,
-                    card.type,
-                    card.power.toLong(),
-                    card.potential.toLong(),
-                    card.upgrade.toLong()
+                    name = card.name,
+                    nameEng = card.nameEng,
+                    grade = card.grade.toLong(),
+                    image = card.image,
+                    description = card.description,
+                    type = card.type,
+                    power = card.power.toLong(),
+                    potential = card.potential.toLong(),
+                    upgrade = card.upgrade.toLong()
                 )
                 emit(Resource.Success(card))
             } catch (e: IOException) {
