@@ -33,10 +33,10 @@
 
     <string name="card_gatcha_done">카드가 뽑혔습니다.</string>
     <string name="card_detail_title">카드 상세 정보</string>
-    <string name="card_detail_att">공격 :</string>
-    <string name="card_detail_def">방어 :</string>
-    <string name="card_detail_spd">속도 :</string>
-    <string name="card_detail_hp">체력 :</string>
+    <string name="card_detail_grade">등급 :</string>
+    <string name="card_detail_type">타입 :</string>
+    <string name="card_detail_potential">잠재능력 :</string>
+    <string name="card_detail_upgrade">업그레이드 :</string>
     <string name="card_detail_mp">정신력 :</string>
     <string name="card_list_title">내 보유 카드 리스트</string>
 
@@ -72,6 +72,7 @@
     <string name="game_battle_defense_result">내 남은 체력 : %d (%s)</string>
     <string name="game_battle_speed_compare">속도 비교</string>
     <string name="game_battle_speed_my_stat">나의 속도 :</string>
+    <strieng name="game_battle_speed_my_stat">나의 속도 :</strieng>
     <string name="game_battle_speed_com_stat">: 적의 속도</string>
     <string name="game_battle_speed_my_first">나 부터 공격을 시작 합니다.</string>
     <string name="game_battle_speed_com_first">적 부터 공격을 시작 합니다.</string>

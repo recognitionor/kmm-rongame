@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.card.data
 
+import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.constants.CardConst
 import kotlinx.datetime.Clock
 import kotlin.random.Random
@@ -7,6 +8,23 @@ import kotlin.random.Random
 class CardUtils {
 
     companion object {
+
+        fun getStrongType() {
+            CardTypeConst
+        }
+
+        fun isUpgradeCard(typeId: HashSet<CardType>): Boolean {
+            var result = false
+            val iterator = typeId.iterator()
+            while (iterator.hasNext()) {
+                val cardType = iterator.next()
+                if (cardType.id == CardTypeConst.TYPE_LIST[CardTypeConst.GOOD].id || cardType.id == CardTypeConst.TYPE_LIST[CardTypeConst.BAD].id || cardType.id == CardTypeConst.TYPE_LIST[CardTypeConst.WEIRD].id) {
+                    result = true
+                }
+            }
+            return result
+        }
+
         fun getCardRandomPower(cardGrade: Int): Int {
             var offset = 1
             when (cardGrade) {

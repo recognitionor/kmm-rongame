@@ -141,27 +141,7 @@ fun CardScreen(
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
-//                Column(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    PotentialRatingBar(potential, upgrade)
-//                    if (potential > 5) {
-//                        PotentialRatingBar(
-//                            potential - 5, if (upgrade - 5 <= 1) 0 else upgrade - 5
-//                        )
-//                    }
-//                }
             }
         }
     }
-    // 다이얼로그 표시
-//    if (showInfoDialog) {
-//        cardStateValue.card?.let {
-//            CardDetailDialog(
-//                it
-//            ) { cardViewModel.onInfoDialogDismissed() }
-//        } // 다이얼로그 닫기 함수 호출
-//    }
-
 }

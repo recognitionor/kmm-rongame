@@ -7,12 +7,15 @@ import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.constants.GatchaConst
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.supervisorScope
 import kotlinx.datetime.Clock
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlin.random.Random
 
 class DBCardDataSource(db: AppDatabase) : CardDataSource {
@@ -46,7 +49,6 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
                 val randomNumber = random.nextInt(0, CardConst.BASIC_CARD_LIST.size)
 
                 val cardTemp = CardConst.BASIC_CARD_LIST[(randomNumber)]
-
                 val card = cardTemp.copy(
                     power = CardUtils.getCardRandomPower(cardGrade),
                     potential = CardUtils.getCardRandomPotential()
@@ -58,7 +60,7 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
                     grade = card.grade.toLong(),
                     image = card.image,
                     description = card.description,
-                    type = card.type,
+                    type = Json.encodeToString(card.type),
                     power = card.power.toLong(),
                     potential = card.potential.toLong(),
                     upgrade = card.upgrade.toLong()
