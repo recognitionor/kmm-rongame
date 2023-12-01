@@ -156,7 +156,6 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                 }
             }
         }
-        Logger.log("${Firebase.storage.reference.listAll().items.size}")
     }
 
     override fun getQuizListsFromDB(): Flow<Resource<List<Quiz>>> = flow {
@@ -168,7 +167,6 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                         it.toQuiz()
                     }
                 }
-//                Logger.log("quizList : ${quizList.await()}")
                 emit(Resource.Success(quizList.await()))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message.toString()))
@@ -199,7 +197,8 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                             false
                         )
                     }
-                } catch (ignored: Exception) { }
+                } catch (ignored: Exception) {
+                }
             }.await()
             emit(Resource.Success(Unit))
         }

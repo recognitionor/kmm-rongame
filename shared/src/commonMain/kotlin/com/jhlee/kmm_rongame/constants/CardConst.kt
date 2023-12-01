@@ -3,8 +3,6 @@ package com.jhlee.kmm_rongame.constants
 import com.jhlee.kmm_rongame.card.data.CardTypeConst
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardType
-import com.jhlee.kmm_rongame.card.domain.Hero
-import com.jhlee.kmm_rongame.constants.TypeConst.Companion.DRAGON
 
 class CardConst {
     companion object {

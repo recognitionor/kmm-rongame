@@ -29,6 +29,28 @@ SELECT *
 FROM AttendEntity
 ORDER BY id ASC;
 
+
+--CommonEntity
+--공통 정보--
+CREATE TABLE CommonEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    token TEXT NOT NULL,
+    expires INTEGER
+);
+
+getCommonInfo:
+SELECT *
+FROM CommonEntity
+ORDER BY id ASC;
+
+insertCommon:
+INSERT OR REPLACE
+INTO CommonEntity(
+    id,
+    token,
+    expires
+) VALUES (1,?, ?);
+
 --UserInfoEntity
 --유저 정보--
 CREATE TABLE UserInfoEntity (

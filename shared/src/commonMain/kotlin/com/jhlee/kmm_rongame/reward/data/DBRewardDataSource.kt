@@ -15,6 +15,8 @@ class DBRewardDataSource(
     db: AppDatabase
 ) : MainDataSource {
     private val queries = db.dbQueries
+    override fun getFlaticonToken(): Flow<Resource<String>> = flow { }
+
     override fun getUserInfo(): Flow<Resource<UserInfo>> {
         return flow {
             try {

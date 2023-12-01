@@ -1,7 +1,6 @@
 package com.jhlee.kmm_rongame.card.presentation
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,18 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,13 +27,8 @@ import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
-import com.jhlee.kmm_rongame.constants.GameConst
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
-import com.jhlee.kmm_rongame.core.presentation.getPlatformImageResourceBitMap
-import com.jhlee.kmm_rongame.core.presentation.getString
-import com.jhlee.kmm_rongame.core.util.Logger
-import com.jhlee.kmm_rongame.utils.GameUtils
 import dev.icerock.moko.resources.getImageByFileName
 
 @Composable
@@ -49,6 +38,7 @@ fun CardListItemScreen(
     height: Float,
     selected: Boolean = false,
     isEnabled: Boolean = true,
+    onItemDetailInfoClick: ((card: Card?) -> Unit)? = null,
     onItemClick: ((card: Card) -> Unit)? = null
 ) {
     val cardWidth = (height * 0.8)
@@ -61,7 +51,6 @@ fun CardListItemScreen(
     var upgrade = card.upgrade
     val powerStr = card.power.toString()
     var textColor = color
-    Logger.log("card : $card")
     androidx.compose.material3.Card(colors = CardDefaults.cardColors(Color.White),
         modifier = Modifier.run {
             size(width = cardWidth.dp, height = height.dp).padding(4.dp)
@@ -115,30 +104,17 @@ fun CardListItemScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             getCommonImageResourceBitMap(SharedRes.images.ic_detail)?.let {
-                                Image(
-                                    bitmap = it,
+                                Image(bitmap = it,
                                     contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
-                                )
+                                    modifier = Modifier.size(18.dp).clickable {
+                                        onItemDetailInfoClick?.invoke(card)
+                                    })
                             }
                         }
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
-//                Column(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    PotentialRatingBar(potential, upgrade)
-//                    if (potential > 5) {
-//                        PotentialRatingBar(
-//                            potential - 5, if (upgrade - 5 <= 1) 0 else upgrade - 5
-//                        )
-//                    }
-//                }
             }
-
         }
     }
-
 }

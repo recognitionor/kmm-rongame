@@ -36,8 +36,10 @@ fun CardListScreen(cardViewModel: CardViewModel) {
         LazyVerticalGrid(columns = GridCells.Fixed(2)) {
             items(cardStateValue.cardList.size) { index ->
                 val card = cardStateValue.cardList[cardStateValue.cardList.size - index - 1]
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    CardListItemScreen(card = card, height = 180f) {
+                Row(horizontalArrangement = Arrangement.Center) {
+                    CardListItemScreen(card = card,
+                        height = 200f,
+                        onItemDetailInfoClick = { cardViewModel.toggleCardInfoDialog(card) }) {
                         cardViewModel.toggleCardInfoDialog(card)
                     }
                 }

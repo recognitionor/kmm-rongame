@@ -9,8 +9,7 @@ plugins {
     kotlin("plugin.serialization") version "1.5.10"
 }
 
-@OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
-kotlin {
+@OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class) kotlin {
     targetHierarchy.default()
 
     android {
@@ -51,12 +50,17 @@ kotlin {
         val ktorVersion = "2.3.0"
         val commonMain by getting {
             dependencies {
+                implementation("io.github.qdsfdhvh:image-loader:1.7.1")
+                api("io.github.qdsfdhvh:image-loader-extension-moko-resources:1.7.1")
+//                api("io.github.qdsfdhvh:image-loader-extension-blur:1.7.1")
+
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.materialIconsExtended)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                implementation(compose.components.resources)
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class) implementation(
+                    compose.components.resources
+                )
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
@@ -78,12 +82,13 @@ kotlin {
                 api("dev.gitlive:firebase-storage:1.10.0")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.2")
 
-                implementation ("com.opencsv:opencsv:5.5.2")
+                implementation("com.opencsv:opencsv:5.5.2")
                 implementation("com.google.code.gson:gson:2.9.0")
 
 
             }
         }
+
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))

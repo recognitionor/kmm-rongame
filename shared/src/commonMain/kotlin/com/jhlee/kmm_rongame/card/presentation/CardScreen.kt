@@ -44,6 +44,7 @@ import dev.icerock.moko.resources.getImageByFileName
 fun CardScreen(
     cardViewModel: CardViewModel, mainViewModel: MainViewModel, height: Float
 ) {
+//    val painter: ImagePainter = rememberCoilPainter(request = url)
     val cardWidth = (height * 0.8)
     val cardStateValue by cardViewModel.state.collectAsState()
     val mainStateValue by mainViewModel.state.collectAsState()

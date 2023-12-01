@@ -23,7 +23,19 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
+//        initCommonInfo()
         getUserInfo()
+    }
+
+    private fun initCommonInfo() {
+        mainDataSource.getFlaticonToken().onEach { result ->
+            when (result) {
+                is Resource.Success -> {}
+                is Resource.Error -> {}
+                is Resource.Loading -> {}
+            }
+
+        }.launchIn(viewModelScope)
     }
 
     fun showDialog(dialogIndex: Int, createDialog: @Composable () -> Unit) {

@@ -7,11 +7,13 @@ import com.jhlee.kmm_rongame.bank.data.DBBankDataSource
 import com.jhlee.kmm_rongame.bank.domain.BankDataSource
 import com.jhlee.kmm_rongame.card.data.DBCardDataSource
 import com.jhlee.kmm_rongame.card.domain.CardDataSource
+import com.jhlee.kmm_rongame.cardgame.data.DBCardGameDataSource
+import com.jhlee.kmm_rongame.cardgame.domain.CardGameDataSource
 import com.jhlee.kmm_rongame.coin.data.RemoteCoinDataSource
 import com.jhlee.kmm_rongame.coin.domain.CoinDataSource
 import com.jhlee.kmm_rongame.core.data.DatabaseDriverFactory
 import com.jhlee.kmm_rongame.core.data.KtorClientFactory
-import com.jhlee.kmm_rongame.main.data.DBUserInfoDataSource
+import com.jhlee.kmm_rongame.main.data.MainDataSourceImpl
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.quiz.data.QuizDataSourceImpl
 import com.jhlee.kmm_rongame.quiz.domain.QuizDataSource
@@ -31,10 +33,10 @@ actual class AppModule {
         RemoteCoinDataSource(KtorClientFactory.build())
     }
     actual val dbMainDataSource: MainDataSource by lazy {
-        DBUserInfoDataSource(
+        MainDataSourceImpl(
             db = AppDatabase(
                 driver = DatabaseDriverFactory().create()
-            )
+            ), KtorClientFactory.build()
         )
     }
 
@@ -62,6 +64,13 @@ actual class AppModule {
 
     actual val dbBankDataSource: BankDataSource by lazy {
         DBBankDataSource(
+            db = AppDatabase(
+                driver = DatabaseDriverFactory().create()
+            )
+        )
+    }
+    actual val dbCardGameDataSource: CardGameDataSource by lazy {
+        DBCardGameDataSource(
             db = AppDatabase(
                 driver = DatabaseDriverFactory().create()
             )

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.card.presentation.CardDetailInfoScreen
@@ -20,6 +21,8 @@ import com.jhlee.kmm_rongame.card.presentation.CardViewModel
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
+import com.seiko.imageloader.LocalImageLoader
+import com.seiko.imageloader.ui.AutoSizeImage
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 

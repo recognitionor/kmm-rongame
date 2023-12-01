@@ -18,5 +18,6 @@ data class MainState(
         const val NOT_ENOUGH_MONEY_DIALOG = 2
         const val BANK_VIEW_MODE_DEPOSIT_DIALOG = 3
         const val BANK_VIEW_MODE_WITHDRAW_DIALOG = 4
+        const val CARD_START_DIALOG = 5
     }
 }
