@@ -50,10 +50,6 @@ plugins {
         val ktorVersion = "2.3.0"
         val commonMain by getting {
             dependencies {
-                implementation("io.github.qdsfdhvh:image-loader:1.7.1")
-                api("io.github.qdsfdhvh:image-loader-extension-moko-resources:1.7.1")
-//                api("io.github.qdsfdhvh:image-loader-extension-blur:1.7.1")
-
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)

@@ -5,10 +5,9 @@ import com.jhlee.kmm_rongame.card.data.toCard
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.cardgame.domain.CardGameDataSource
 import com.jhlee.kmm_rongame.constants.CardConst
-import com.jhlee.kmm_rongame.constants.CardGameConst
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.supervisorScope
@@ -31,9 +30,10 @@ class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
                     untilIndex = 6
                 }
             }
-
             repeat(6) {
-                val random = Random(Clock.System.now().nanosecondsOfSecond).nextInt(0, untilIndex)
+                val currentTimeMillis = Clock.System.now().toEpochMilliseconds()
+
+                val random = Random(currentTimeMillis).nextInt(0, Int.MAX_VALUE) % untilIndex
                 val card = CardConst.BASIC_CARD_LIST[random]
                 val ability = selectIndex + 1
                 resultList.add(
@@ -41,6 +41,7 @@ class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
                         id = it, power = ability, potential = ability, upgrade = ability
                     )
                 )
+                delay(1)
             }
             emit(Resource.Success(resultList))
         } catch (e: Exception) {

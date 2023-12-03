@@ -51,7 +51,6 @@ class CardGameViewModel(private val cardGameDataSource: CardGameDataSource) : Vi
     }
 
     fun startGame() {
-        Logger.log("startGame ${state.value.enemyEntry}")
         viewModelScope.launch {
             _state.update {
                 it.copy(gameState = CardGameState.CARD_GAME_STATE_OPEN_CARD,
@@ -73,7 +72,6 @@ class CardGameViewModel(private val cardGameDataSource: CardGameDataSource) : Vi
         cardGameDataSource.getEnemyList(index).onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    Logger.log("getCardGame ${result.data}")
                     _state.update {
                         it.copy(
                             enemySpareEntry = result.data ?: emptyList(),
@@ -99,7 +97,6 @@ class CardGameViewModel(private val cardGameDataSource: CardGameDataSource) : Vi
     }
 
     fun openCard(index: Int) {
-        Logger.log("openCard $index")
         viewModelScope.launch {
             if (state.value.enemyEntry[index] != null) {
                 return@launch

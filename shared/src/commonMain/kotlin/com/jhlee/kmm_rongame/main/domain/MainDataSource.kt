@@ -10,4 +10,6 @@ interface MainDataSource {
     fun insertUserInfo(userInfo: UserInfo): Flow<Resource<UserInfo>>
     fun updateUserInfo(userInfo: UserInfo): Flow<Resource<UserInfo>>
 
+    fun updateCardStage(): Flow<Resource<UserInfo>>
+
 }

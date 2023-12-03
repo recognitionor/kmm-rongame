@@ -54,6 +54,17 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
         }
     }
 
+    fun updateCardStage() {
+        mainDataSource.updateCardStage().onEach { result ->
+            when (result) {
+                is Resource.Success -> {}
+                is Resource.Error -> {}
+                is Resource.Loading -> {}
+            }
+
+        }.launchIn(viewModelScope)
+    }
+
     fun updateUserMoney(money: Int, callBack: ((isResult: Boolean) -> Unit)? = null) {
         val tempUserInfo = _state.value.userInfo?.let {
             it.copy(money = it.money + money)
@@ -101,7 +112,7 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     }
 
     fun registerUser(name: String) {
-        mainDataSource.insertUserInfo(UserInfo(1, name, 1000)).onEach { res ->
+        mainDataSource.insertUserInfo(UserInfo(1, name, 1000, 0)).onEach { res ->
             when (res) {
                 is Resource.Error -> {
                     _state.value = state.value.copy(isLoading = false, error = res.message ?: "")

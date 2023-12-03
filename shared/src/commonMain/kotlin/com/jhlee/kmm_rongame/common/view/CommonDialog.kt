@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -38,7 +37,7 @@ fun createDialog(
     message: String = "",
     image: String? = null,
     positiveButtonCallback: () -> Unit,
-    nativeButtonCallback: (() -> Unit)? = null
+    negativeButtonCallback: (() -> Unit)? = null
 ): @Composable () -> Unit = {
     Box(
         modifier = Modifier.fillMaxSize().background(Color.Gray.copy(alpha = 0.8F))
@@ -84,10 +83,10 @@ fun createDialog(
                         Text(text = "확인")
                     }
 
-                    nativeButtonCallback?.let {
+                    negativeButtonCallback?.let {
                         Spacer(modifier = Modifier.width(12.dp))
                         Button(onClick = {
-                            nativeButtonCallback.invoke()
+                            negativeButtonCallback.invoke()
                         }) {
                             Text(text = "취소")
                         }

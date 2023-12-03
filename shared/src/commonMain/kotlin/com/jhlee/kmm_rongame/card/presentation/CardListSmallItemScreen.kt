@@ -59,7 +59,7 @@ fun CardListSmallItemScreen(
                 }
             }) {
             Box(
-                modifier = Modifier.padding(start = 10.dp, end = 10.dp)
+                modifier = Modifier.padding(10.dp)
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Row {

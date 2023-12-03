@@ -38,7 +38,7 @@ class DBRewardDataSource(
         return flow {
             try {
                 emit(Resource.Loading())
-                queries.insertUser(userInfo.name, userInfo.money.toLong())
+                queries.insertUser(userInfo.name, userInfo.money.toLong(), 0)
                 emit(Resource.Success(userInfo))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "error getUserInfo"))
@@ -51,6 +51,18 @@ class DBRewardDataSource(
         queries.minusUserMoney(userInfo.money.toLong())
         val updatedUser = queries.getUserInfo().executeAsOne().toUser()
         emit(Resource.Success(updatedUser))
+    }
+
+    override fun updateCardStage(): Flow<Resource<UserInfo>> = flow {
+        emit(Resource.Loading())
+        queries.nextCardStage()
+        val userInfoList = queries.getUserInfo().asFlow().mapToList().firstOrNull()
+        val userInfo = userInfoList?.firstOrNull()
+        if (userInfo != null) {
+            emit(Resource.Success(userInfo.toUser()))
+        } else {
+            emit(Resource.Error("No user found"))
+        }
     }
 
 

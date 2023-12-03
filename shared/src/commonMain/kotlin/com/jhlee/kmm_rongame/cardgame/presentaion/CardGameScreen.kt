@@ -41,12 +41,15 @@ import com.jhlee.kmm_rongame.card.presentation.CardListItemScreen
 import com.jhlee.kmm_rongame.card.presentation.CardListSmallItemScreen
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
+import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 
 @Composable
 fun CardGameScreen(
-    appModule: AppModule, viewModel: CardGameViewModel, state: CardGameState, dismiss: () -> Unit
+    mainViewmodel: MainViewModel,
+    viewModel: CardGameViewModel,
+    state: CardGameState,
+    dismiss: () -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var selectCardSlot by remember { mutableStateOf(-1) }
@@ -356,11 +359,15 @@ fun CardGameScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             var resultStr = ""
+            var rewardPoint = 0
             resultStr = if (enemyScore < myScore) {
+                rewardPoint = ((selectCardSlot) * 2) * 10
+                mainViewmodel.updateCardStage()
                 "승"
             } else if (enemyScore > myScore) {
                 "패"
             } else {
+                rewardPoint = (selectCardSlot) * 10
                 "무승부"
             }
 
@@ -378,9 +385,22 @@ fun CardGameScreen(
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                Text(
+                    "$rewardPoint 점 획득",
+                    fontSize = 25.sp,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        fontFamily = FontFamily.Default, fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
                 Button(onClick = {
-                    viewModel.exitGame()
-                    dismiss.invoke()
+                    mainViewmodel.updateUserMoney(rewardPoint) {
+                        viewModel.exitGame()
+                        dismiss.invoke()
+                    }
                 }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                     Text(
                         text = getString(SharedRes.strings.confirm),

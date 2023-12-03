@@ -73,7 +73,7 @@ class MainDataSourceImpl(
         return flow {
             try {
                 emit(Resource.Loading())
-                queries.insertUser(userInfo.name, userInfo.money.toLong())
+                queries.insertUser(userInfo.name, userInfo.money.toLong(), 0)
                 emit(Resource.Success(userInfo))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "error getUserInfo"))
@@ -84,6 +84,18 @@ class MainDataSourceImpl(
     override fun updateUserInfo(userInfo: UserInfo): Flow<Resource<UserInfo>> = flow {
         emit(Resource.Loading())
         queries.updateUser(userInfo.money.toLong())
+        val userInfoList = queries.getUserInfo().asFlow().mapToList().firstOrNull()
+        val userInfo = userInfoList?.firstOrNull()
+        if (userInfo != null) {
+            emit(Resource.Success(userInfo.toUser()))
+        } else {
+            emit(Resource.Error("No user found"))
+        }
+    }
+
+    override fun updateCardStage(): Flow<Resource<UserInfo>> = flow {
+        emit(Resource.Loading())
+        queries.nextCardStage()
         val userInfoList = queries.getUserInfo().asFlow().mapToList().firstOrNull()
         val userInfo = userInfoList?.firstOrNull()
         if (userInfo != null) {

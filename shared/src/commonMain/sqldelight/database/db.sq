@@ -56,7 +56,8 @@ INTO CommonEntity(
 CREATE TABLE UserInfoEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    money INTEGER
+    money INTEGER,
+    cardStage INTEGER
 );
 
 getUserInfo:
@@ -69,12 +70,18 @@ INSERT OR REPLACE
 INTO UserInfoEntity(
     id,
     name,
-    money
-) VALUES (1,?, ?);
+    money,
+    cardStage
+) VALUES (1,?, ?,?);
 
 updateUser:
 UPDATE UserInfoEntity
 SET money = ?
+WHERE id = 1;
+
+nextCardStage:
+UPDATE UserInfoEntity
+SET cardStage = cardStage + 1
 WHERE id = 1;
 
 minusUserMoney:
