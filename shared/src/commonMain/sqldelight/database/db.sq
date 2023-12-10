@@ -100,6 +100,7 @@ WHERE id = 1;
 -- */
 CREATE TABLE CardEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    cardId INTEGER,
     name TEXT NOT NULL,
     nameEng TEXT NOT NULL,
     grade INTEGER,
@@ -116,9 +117,15 @@ SELECT *
 FROM CardEntity
 ORDER BY id ASC;
 
+getCard:
+SELECT *
+FROM CardEntity
+WHERE id = ?;
+
 insertCardEntity:
 INSERT INTO CardEntity(
     name,
+    cardId,
     nameEng,
     grade,
     image,
@@ -127,7 +134,20 @@ INSERT INTO CardEntity(
     potential,
     upgrade,
     power
-) VALUES (?,?,?,?,?,?,?,?, ?);
+) VALUES (?,?,?,?,?,?,?,?,?, ?);
+
+upgradeCard:
+UPDATE CardEntity
+SET upgrade = upgrade + 1,
+    power = ?,
+    nameEng = ?,
+    name = ?,
+    type = ?
+WHERE id = ?;
+
+removeCard:
+DELETE FROM CardEntity
+WHERE id = ?;
 
 CREATE TABLE QuizEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,

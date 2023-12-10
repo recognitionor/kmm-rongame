@@ -3,7 +3,6 @@ package com.jhlee.kmm_rongame.card.presentation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -17,10 +16,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.core.presentation.getString
-import com.jhlee.kmm_rongame.core.util.Logger
 
 @Composable
-fun CardListScreen(cardViewModel: CardViewModel) {
+fun CardListScreen(cardViewModel: HomeViewModel) {
     val cardStateValue by cardViewModel.state.collectAsState()
 
     Column {

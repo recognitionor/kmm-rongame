@@ -1,7 +1,10 @@
 package com.jhlee.kmm_rongame.card.data
 
+import com.jhlee.kmm_rongame.card.domain.Card
+import com.jhlee.kmm_rongame.card.domain.CardCombination
 import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.constants.CardConst
+import com.jhlee.kmm_rongame.core.util.Logger
 import kotlinx.datetime.Clock
 import kotlin.random.Random
 
@@ -13,17 +16,44 @@ class CardUtils {
             CardTypeConst
         }
 
-        fun isUpgradeCard(typeId: HashSet<CardType>): Boolean {
+
+        fun isUpgradeCard(card: Card): Boolean {
             var result = false
-            val iterator = typeId.iterator()
-            while (iterator.hasNext()) {
-                val cardType = iterator.next()
-                if (cardType.id == CardTypeConst.TYPE_LIST[CardTypeConst.GOOD].id || cardType.id == CardTypeConst.TYPE_LIST[CardTypeConst.BAD].id || cardType.id == CardTypeConst.TYPE_LIST[CardTypeConst.WEIRD].id) {
-                    result = true
-                }
+            if (card.cardId != CardConst.BAD && card.cardId != CardConst.GOOD && card.cardId != CardConst.WEIRD) {
+                result = true
             }
+            Logger.log("isUpgradeCard $card - $result")
             return result
         }
+
+        fun getEnhanceCard(card1: Card, card2: Card): List<CardCombination> {
+            val pair = Pair(card1.cardId, card2.cardId)
+            return CardCombinationConst.COMBINE_LIST[pair] ?: emptyList()
+        }
+
+        fun selectRandomCard(cardCombinations: List<CardCombination>): Int {
+            // 퍼센트 기준으로 내림차순 정렬
+            val sortedCardCombinations = cardCombinations.sortedByDescending { it.cardPercent }
+
+            // 전체 퍼센트 합 계산
+            val totalPercent = sortedCardCombinations.sumOf { it.cardPercent.toDouble() }
+
+            // 0부터 전체 퍼센트 합 사이의 랜덤 값을 생성
+            val randomValue = Random.nextDouble(0.0, totalPercent)
+
+            // 랜덤 값에 해당하는 카드 선택
+            var currentTotal = 0.0
+            for (cardCombination in sortedCardCombinations) {
+                currentTotal += cardCombination.cardPercent.toDouble()
+                if (randomValue < currentTotal) {
+                    return cardCombination.cardId
+                }
+            }
+
+            // 만약 선택된 카드가 없는 경우, 마지막 카드를 반환
+            return sortedCardCombinations.last().cardId
+        }
+
 
         fun getCardRandomPower(cardGrade: Int): Int {
             var offset = 1

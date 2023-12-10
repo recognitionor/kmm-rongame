@@ -9,6 +9,7 @@ fun CardEntity.toCard(): Card {
     val tempSet = decodeFromString(type) as HashSet<CardType>
     return Card(
         id.toInt(),
+        cardId?.toInt() ?: 0,
         name,
         nameEng,
         grade?.toInt() ?: 1,
@@ -17,5 +18,6 @@ fun CardEntity.toCard(): Card {
         tempSet,
         power?.toInt() ?: 0,
         potential?.toInt() ?: 0,
+        upgrade?.toInt() ?: 0
     )
 }

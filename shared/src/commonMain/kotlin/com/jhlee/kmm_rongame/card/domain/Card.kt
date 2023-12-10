@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Card(
     var id: Int = -1,
+    var cardId: Int = -1,
     val name: String,
     val nameEng: String,
     val grade: Int,

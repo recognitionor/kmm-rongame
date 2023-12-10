@@ -2,12 +2,11 @@ package com.jhlee.kmm_rongame.card.data
 
 import com.jhlee.kmm_rongame.AppDatabase
 import com.jhlee.kmm_rongame.card.domain.Card
-import com.jhlee.kmm_rongame.card.domain.CardDataSource
+import com.jhlee.kmm_rongame.card.domain.HomeDataSource
 import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.constants.GatchaConst
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +17,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.random.Random
 
-class DBCardDataSource(db: AppDatabase) : CardDataSource {
+class DBCardDataSource(db: AppDatabase) : HomeDataSource {
 
     private val queries = db.dbQueries
     override fun getCardList(): Flow<Resource<List<Card>>> {
@@ -56,6 +55,7 @@ class DBCardDataSource(db: AppDatabase) : CardDataSource {
                 queries.minusUserMoney(RuleConst.GATCHA_COST.toLong())
                 queries.insertCardEntity(
                     name = card.name,
+                    cardId = card.cardId.toLong(),
                     nameEng = card.nameEng,
                     grade = card.grade.toLong(),
                     image = card.image,

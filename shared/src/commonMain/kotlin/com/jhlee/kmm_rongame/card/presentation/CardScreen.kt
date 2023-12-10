@@ -3,12 +3,10 @@ package com.jhlee.kmm_rongame.card.presentation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,11 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
-import com.jhlee.kmm_rongame.common.view.PotentialRatingBar
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.constants.GatchaConst
 import com.jhlee.kmm_rongame.constants.GradeConst
@@ -42,7 +38,7 @@ import dev.icerock.moko.resources.getImageByFileName
 
 @Composable
 fun CardScreen(
-    cardViewModel: CardViewModel, mainViewModel: MainViewModel, height: Float
+    cardViewModel: HomeViewModel, mainViewModel: MainViewModel, height: Float
 ) {
 //    val painter: ImagePainter = rememberCoilPainter(request = url)
     val cardWidth = (height * 0.8)
@@ -57,7 +53,7 @@ fun CardScreen(
     var upgrade = 0
     var powerStr = ""
     var textColor = Color.Black
-    var cardImg: ImageBitmap? = getPlatformImageResourceBitMap("ic_contact_support")
+    var cardImg: ImageBitmap? = getCommonImageResourceBitMap(SharedRes.images.ic_question)
 
     if (cardStateValue.gatchaCard != null) {
         cardStateValue.gatchaCard?.let {
@@ -75,8 +71,7 @@ fun CardScreen(
     if (isLoading) {
         val index = (cardStateValue.cardRandomProgress % GradeConst.TYPE_MAP.size)
         color = GradeConst.TYPE_MAP[index]!!.color
-        cardImg = getPlatformImageResourceBitMap("ic_contact_support")
-        textColor = color
+        cardImg = getPlatformImageResourceBitMap("ic_question")
         nameEngStr = ""
         nameStr = ""
         powerStr = ""
@@ -103,7 +98,7 @@ fun CardScreen(
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         text = powerStr, modifier = Modifier.weight(0.1f), style = TextStyle(
-                            fontSize = 30.sp, fontWeight = FontWeight.Bold
+                            fontSize = 15.sp, fontWeight = FontWeight.Bold
                         )
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -113,34 +108,8 @@ fun CardScreen(
                         bitmap = it,
                         contentDescription = null,
                         alignment = Alignment.TopCenter,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().height(40.dp)
                     )
-                }
-                if (nameStr.isNotBlank()) {
-                    Column {
-                        Text(
-                            text = "$nameStr ($nameEngStr)",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            style = TextStyle(
-                                fontSize = 18.sp, fontWeight = FontWeight.Bold
-                            )
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            getCommonImageResourceBitMap(SharedRes.images.ic_detail)?.let {
-                                Image(
-                                    bitmap = it,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(25.dp)
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
                 }
             }
         }

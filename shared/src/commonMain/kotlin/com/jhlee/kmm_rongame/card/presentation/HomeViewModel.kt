@@ -1,7 +1,7 @@
 package com.jhlee.kmm_rongame.card.presentation
 
 import com.jhlee.kmm_rongame.card.domain.Card
-import com.jhlee.kmm_rongame.card.domain.CardDataSource
+import com.jhlee.kmm_rongame.card.domain.HomeDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-class CardViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
+class HomeViewModel(private val cardDataSource: HomeDataSource) : ViewModel() {
     companion object {
         const val VIEWMODEL_KEY = "card_view_model"
     }
 
-    private val _state = MutableStateFlow(CardState())
+    private val _state = MutableStateFlow(HomeState())
 
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
@@ -24,7 +24,7 @@ class CardViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
         getCardList()
     }
 
-    private fun getCardList() {
+    fun getCardList() {
         cardDataSource.getCardList().onEach { result ->
             when (result) {
                 is Resource.Error -> {
@@ -108,5 +108,11 @@ class CardViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
                 }
             }
         }.launchIn(viewModelScope)
+    }
+
+    fun selectScreen(homeScreen: Int) {
+        _state.update {
+            it.copy(homeScreenMode = homeScreen)
+        }
     }
 }

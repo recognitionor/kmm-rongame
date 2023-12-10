@@ -33,6 +33,7 @@ import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
+import com.jhlee.kmm_rongame.core.util.Logger
 import dev.icerock.moko.resources.getImageByFileName
 
 @Composable
@@ -76,7 +77,8 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                                 fontSize = 18.sp, fontWeight = FontWeight.Bold
                             )
                         )
-                        if (!CardUtils.isUpgradeCard(card.type)) {
+
+                        if (CardUtils.isUpgradeCard(card)) {
                             Text(
                                 text = "${getString(SharedRes.strings.card_gatcha_grade_title)}${card.grade}",
                                 style = TextStyle(
@@ -117,7 +119,7 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            if (!CardUtils.isUpgradeCard(card.type)) {
+            if (CardUtils.isUpgradeCard(card)) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     PotentialRatingBar(card.potential, card.upgrade, 25.dp)
                 }
@@ -150,6 +152,7 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                 var count = 0
                 iterator.forEach {
                     count++
+                    sb.clear()
                     sb.append("(")
                     it.strongList.forEach { map ->
                         val typeItem = CardTypeConst.TYPE_LIST[map.key]

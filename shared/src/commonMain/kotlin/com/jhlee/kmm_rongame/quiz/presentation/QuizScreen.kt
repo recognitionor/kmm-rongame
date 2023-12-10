@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
-import com.jhlee.kmm_rongame.card.presentation.CardViewModel
+import com.jhlee.kmm_rongame.card.presentation.HomeViewModel
 import com.jhlee.kmm_rongame.common.view.ProgressBar
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.common.view.createDialog
@@ -42,7 +42,7 @@ import dev.icerock.moko.mvvm.compose.viewModelFactory
 
 @Composable
 fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
-    val quizViewModel = getViewModel(key = CardViewModel.VIEWMODEL_KEY,
+    val quizViewModel = getViewModel(key = HomeViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { QuizViewModel(appModule.dbQuizDataSource) })
     val quizState by quizViewModel.state.collectAsState()
 

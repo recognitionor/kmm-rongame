@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.bank.presentation.BankScreen
 import com.jhlee.kmm_rongame.calendar.presentation.CalendarScreen
-import com.jhlee.kmm_rongame.card.presentation.CardViewModel
+import com.jhlee.kmm_rongame.card.presentation.HomeViewModel
 import com.jhlee.kmm_rongame.common.view.createDialog
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getString
@@ -33,7 +33,7 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
 
     val rewardViewModel = getViewModel(key = RewardViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { RewardViewModel(appModule.dbAttendDataSource) })
-    val quizViewModel = getViewModel(key = CardViewModel.VIEWMODEL_KEY,
+    val quizViewModel = getViewModel(key = HomeViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { QuizViewModel(appModule.dbQuizDataSource) })
     val title = getString(SharedRes.strings.quiz)
     val message = getString(SharedRes.strings.etc_mini_game_quiz)

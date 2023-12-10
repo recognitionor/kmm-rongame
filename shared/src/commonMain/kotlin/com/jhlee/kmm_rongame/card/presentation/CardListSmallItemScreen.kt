@@ -32,6 +32,7 @@ import dev.icerock.moko.resources.getImageByFileName
 @Composable
 fun CardListSmallItemScreen(
     card: Card? = null,
+    modifier: Modifier = Modifier,
     visibleInfoType: Int = -1,
     height: Float,
     selected: Boolean = false,
@@ -48,7 +49,7 @@ fun CardListSmallItemScreen(
         val nameStr = card.name
         val powerStr = card.power.toString()
         androidx.compose.material3.Card(colors = CardDefaults.cardColors(Color.White),
-            modifier = Modifier.run {
+            modifier = modifier.run {
                 size(width = cardWidth.dp, height = height.dp).padding(4.dp)
                     .border(width = 2.dp, color = color, shape = RoundedCornerShape(8.dp))
             }.clickable {
@@ -105,7 +106,7 @@ fun CardListSmallItemScreen(
         }
     } else {
         androidx.compose.material3.Card(colors = CardDefaults.cardColors(Color.White),
-            modifier = Modifier.run {
+            modifier = modifier.run {
                 size(width = cardWidth.dp, height = height.dp).padding(4.dp)
                     .border(width = 2.dp, color = Color.Gray, shape = RoundedCornerShape(8.dp))
             }.clickable {
