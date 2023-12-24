@@ -1,16 +1,15 @@
 package com.jhlee.kmm_rongame.core.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asComposeImageBitmap
-import com.jhlee.kmm_rongame.core.util.Logger
 import dev.icerock.moko.resources.ImageResource
 import kotlinx.cinterop.readBytes
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Image
 import platform.Foundation.NSData
 import platform.UIKit.UIImage
-import platform.UIKit.UIImageJPEGRepresentation
 import platform.UIKit.UIImagePNGRepresentation
 
 @Composable
@@ -37,4 +36,17 @@ actual fun getPlatformImageResourceBitMap(name: String): ImageBitmap? {
         }
     }
     return null
+}
+
+@Composable
+actual fun rememberBitmapFromBytes(bytes: ByteArray?): ImageBitmap? {
+    return remember(bytes) {
+        if (bytes != null) {
+            Bitmap.makeFromImage(
+                Image.makeFromEncoded(bytes)
+            ).asComposeImageBitmap()
+        } else {
+            null
+        }
+    }
 }

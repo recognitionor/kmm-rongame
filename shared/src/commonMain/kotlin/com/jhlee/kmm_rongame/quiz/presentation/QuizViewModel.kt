@@ -171,9 +171,15 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
                 }
 
                 is Resource.Loading -> {
+                    _state.update {
+                        it.copy(quizStatus = QuizState.QUIZ_STATUS_LOADING)
+                    }
                 }
 
                 is Resource.Error -> {
+                    _state.update {
+                        it.copy(quizStatus = QuizState.QUIZ_STATUS_READY)
+                    }
                 }
             }
         }.launchIn(viewModelScope)

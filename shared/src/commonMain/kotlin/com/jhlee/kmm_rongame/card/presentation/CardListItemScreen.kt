@@ -29,6 +29,8 @@ import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
+import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
+import com.seiko.imageloader.rememberAsyncImagePainter
 import dev.icerock.moko.resources.getImageByFileName
 
 @Composable
@@ -39,10 +41,10 @@ fun CardListItemScreen(
     selected: Boolean = false,
     isEnabled: Boolean = true,
     onItemDetailInfoClick: ((card: Card?) -> Unit)? = null,
-    onItemClick: ((card: Card) -> Unit)? = null
+    onItemClick: ((card: Card) -> Unit)? = null,
 ) {
     val cardWidth = (height * 0.8)
-    val cardImg: String = card.image
+    val cardImg = rememberBitmapFromBytes(card.image)
     val color: Color = GradeConst.TYPE_MAP[card.grade - 1]!!.color
     val nameStr = card.name
     val nameEngStr = card.nameEng
@@ -78,16 +80,15 @@ fun CardListItemScreen(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                 }
-                cardImg.let {
-                    getCommonImageResourceBitMap(SharedRes.images.getImageByFileName(it))?.let { it1 ->
-                        Image(
-                            bitmap = it1,
-                            contentDescription = null,
-                            alignment = Alignment.TopCenter,
-                            modifier = Modifier.fillMaxWidth().size(60.dp)
-                        )
-                    }
+                cardImg?.let {
+                    Image(
+                        bitmap = it,
+                        contentDescription = null,
+                        alignment = Alignment.TopCenter,
+                        modifier = Modifier.fillMaxWidth().size(60.dp)
+                    )
                 }
+
                 if (nameStr.isNotBlank()) {
                     Column {
                         Text(

@@ -1,7 +1,7 @@
 package com.jhlee.kmm_rongame.card.presentation
 
 import com.jhlee.kmm_rongame.card.domain.Card
-import com.jhlee.kmm_rongame.card.domain.HomeDataSource
+import com.jhlee.kmm_rongame.card.domain.CardDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-class HomeViewModel(private val cardDataSource: HomeDataSource) : ViewModel() {
+class HomeViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
     companion object {
         const val VIEWMODEL_KEY = "card_view_model"
     }
@@ -21,11 +21,52 @@ class HomeViewModel(private val cardDataSource: HomeDataSource) : ViewModel() {
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
-        getCardList()
+        getCardTypeFromFireBase()
+        getCardInfoFromFireBase()
+        getCardTypeCombinationFromFireBase()
+        getMyCardList()
     }
 
-    fun getCardList() {
-        cardDataSource.getCardList().onEach { result ->
+    private fun getCardTypeCombinationFromFireBase() {
+        cardDataSource.getCardCombineInfoList().onEach { result ->
+            when (result) {
+                is Resource.Error -> {
+                }
+
+                is Resource.Success -> {}
+                is Resource.Loading -> {}
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getCardTypeFromFireBase() {
+        cardDataSource.getCardTypeInfoList().onEach { result ->
+            when (result) {
+                is Resource.Error -> {
+                }
+
+                is Resource.Success -> {}
+                is Resource.Loading -> {}
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getCardInfoFromFireBase() {
+        cardDataSource.getCardInfoList().onEach { result ->
+            when (result) {
+                is Resource.Error -> {
+                }
+
+                is Resource.Success -> {
+                    
+                }
+                is Resource.Loading -> {}
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun getMyCardList() {
+        cardDataSource.getMyCardList().onEach { result ->
             when (result) {
                 is Resource.Error -> {
                 }
@@ -87,7 +128,7 @@ class HomeViewModel(private val cardDataSource: HomeDataSource) : ViewModel() {
 
                 is Resource.Success -> {
                     if (result.data != null) {
-                        getCardList()
+                        getMyCardList()
                         _state.update {
                             it.copy(
                                 isLoading = false,

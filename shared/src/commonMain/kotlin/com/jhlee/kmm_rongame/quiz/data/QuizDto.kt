@@ -1,6 +1,5 @@
 package com.jhlee.kmm_rongame.quiz.data
 
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.quiz.domain.Quiz
 import database.QuizEntity
 import kotlinx.serialization.Serializable

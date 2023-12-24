@@ -9,3 +9,6 @@ import dev.icerock.moko.resources.ImageResource
 expect fun getCommonImageResourceBitMap(imageResource: ImageResource?): ImageBitmap?
 @Composable
 expect fun getPlatformImageResourceBitMap(name: String): ImageBitmap?
+
+@Composable
+expect fun rememberBitmapFromBytes(bytes: ByteArray?): ImageBitmap?

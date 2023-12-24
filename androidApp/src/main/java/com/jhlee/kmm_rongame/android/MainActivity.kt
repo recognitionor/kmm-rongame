@@ -1,25 +1,19 @@
 package com.jhlee.kmm_rongame.android
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.jhlee.kmm_rongame.App
-import com.jhlee.kmm_rongame.Firebase
-import com.jhlee.kmm_rongame.FirebaseApp
-import com.jhlee.kmm_rongame.FirebaseStorage
-import com.jhlee.kmm_rongame.Greeting
+import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.di.AppModule
-import com.jhlee.kmm_rongame.initialize
-import com.jhlee.kmm_rongame.storage
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,10 +21,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background
                 ) {
                     App(AppModule(LocalContext.current))
+                    ImageStorage.setContext(this)
                 }
             }
         }

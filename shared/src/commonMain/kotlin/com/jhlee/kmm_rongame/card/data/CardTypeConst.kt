@@ -5,7 +5,7 @@ import com.jhlee.kmm_rongame.constants.CardConst
 
 object CardTypeConst {
 
-
+    
     val TYPE_LIST by lazy {
         ArrayList<CardType>().apply {
             this.add(

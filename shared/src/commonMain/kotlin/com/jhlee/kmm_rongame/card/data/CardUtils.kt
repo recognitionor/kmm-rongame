@@ -22,7 +22,6 @@ class CardUtils {
             if (card.cardId != CardConst.BAD && card.cardId != CardConst.GOOD && card.cardId != CardConst.WEIRD) {
                 result = true
             }
-            Logger.log("isUpgradeCard $card - $result")
             return result
         }
 

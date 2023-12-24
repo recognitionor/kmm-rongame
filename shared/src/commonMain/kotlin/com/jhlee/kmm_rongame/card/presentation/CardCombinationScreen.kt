@@ -136,7 +136,6 @@ fun CardCombinationScreen(appModule: AppModule, dismiss: () -> Unit) {
                                     CardListSmallItemScreen(state.mySelectedCardEntry[index],
                                         height = 160f,
                                         onItemDetailInfoClick = {
-                                            Logger.log("click")
                                         }) {
                                         selectCardSlot = index
                                         showDialog = true

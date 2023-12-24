@@ -109,10 +109,6 @@ class CardGameViewModel(private val cardGameDataSource: CardGameDataSource) : Vi
                 !isCardInSelectedList
             }
             val tempEnemyList = state.value.enemyEntry.toMutableList()
-            Logger.log("state.value.enemySpareEntry : ${state.value.enemySpareEntry}")
-            Logger.log("state.value.enemyEntry : ${state.value.enemyEntry}")
-            Logger.log("tempEnemyEntryList : $tempEnemyEntryList")
-            Logger.log("tempEmptyList : $tempEnemyList")
             tempEnemyList[index] = tempEnemyEntryList.random()
             _state.update {
                 it.copy(

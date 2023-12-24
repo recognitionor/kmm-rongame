@@ -57,6 +57,7 @@ plugins {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class) implementation(
                     compose.components.resources
                 )
+                api("io.github.qdsfdhvh:image-loader:1.2.9")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 

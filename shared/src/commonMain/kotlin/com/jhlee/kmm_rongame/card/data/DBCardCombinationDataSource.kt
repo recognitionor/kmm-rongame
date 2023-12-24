@@ -5,15 +5,11 @@ import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardCombinationDataSource
 import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
+import database.CardTypeEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.supervisorScope
-import kotlinx.datetime.Clock
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlin.random.Random
 
 class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
 
@@ -22,7 +18,14 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
         emit(Resource.Loading())
         supervisorScope {
             val cardList = async {
-                queries.getCardList().executeAsList().map { it.toCard() }
+                queries.myCardList().executeAsList().map {
+                    val cardInfo = queries.getCardInfo(it.cardId!!.toLong()).executeAsOne()
+                    val list: MutableList<CardTypeEntity> = mutableListOf()
+                    cardInfo.type.split("|").forEach { typeId ->
+                        list.add(queries.getCardType(typeId.toLong()).executeAsOne())
+                    }
+                    it.toCard(cardInfo, list)
+                }
             }.await()
             emit(Resource.Success(cardList))
         }
@@ -77,14 +80,11 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                     }
                     queries.upgradeCard(
                         (upgradeCard.power + removeCard.power).toLong(),
-                        "$newNameEng",
-                        "$newName",
-                        Json.encodeToString(upgradeCard.type),
                         upgradeCard.id.toLong(),
                     )
 
                     val resultCard =
-                        queries.getCard(upgradeCard.id.toLong()).executeAsOne().toCard()
+                        queries.getMyCard(upgradeCard.id.toLong()).executeAsOne().toCard()
                     emit(Resource.Success(resultCard))
                     return@supervisorScope
                 } else {

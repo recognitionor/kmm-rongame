@@ -31,16 +31,22 @@ import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.constants.GatchaConst
 import com.jhlee.kmm_rongame.constants.GradeConst
+import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getPlatformImageResourceBitMap
+import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
+import com.seiko.imageloader.AsyncImagePainter
+import com.seiko.imageloader.LocalImageLoader
+import com.seiko.imageloader.rememberAsyncImagePainter
+import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.getImageByFileName
 
 @Composable
 fun CardScreen(
-    cardViewModel: HomeViewModel, mainViewModel: MainViewModel, height: Float
+    cardViewModel: HomeViewModel, mainViewModel: MainViewModel, height: Float,
 ) {
-//    val painter: ImagePainter = rememberCoilPainter(request = url)
     val cardWidth = (height * 0.8)
     val cardStateValue by cardViewModel.state.collectAsState()
     val mainStateValue by mainViewModel.state.collectAsState()
@@ -53,11 +59,12 @@ fun CardScreen(
     var upgrade = 0
     var powerStr = ""
     var textColor = Color.Black
-    var cardImg: ImageBitmap? = getCommonImageResourceBitMap(SharedRes.images.ic_question)
+    var questionImage = getCommonImageResourceBitMap(SharedRes.images.ic_question)
+    var cardImg: ImageBitmap? = null
 
     if (cardStateValue.gatchaCard != null) {
         cardStateValue.gatchaCard?.let {
-            cardImg = getCommonImageResourceBitMap(SharedRes.images.getImageByFileName(it.image))
+            questionImage = getCommonImageResourceBitMap(SharedRes.images.ic_question)
             nameStr = it.name
             nameEngStr = it.nameEng
             powerStr = it.power.toString()
@@ -65,13 +72,14 @@ fun CardScreen(
             upgrade = it.upgrade
             potential = it.potential
             color = color
+            cardImg = rememberBitmapFromBytes(it.image)
         }
     }
 
     if (isLoading) {
         val index = (cardStateValue.cardRandomProgress % GradeConst.TYPE_MAP.size)
         color = GradeConst.TYPE_MAP[index]!!.color
-        cardImg = getPlatformImageResourceBitMap("ic_question")
+        questionImage = getCommonImageResourceBitMap(SharedRes.images.ic_question)
         nameEngStr = ""
         nameStr = ""
         powerStr = ""
@@ -103,13 +111,24 @@ fun CardScreen(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                 }
-                cardImg?.let {
-                    Image(
-                        bitmap = it,
-                        contentDescription = null,
-                        alignment = Alignment.TopCenter,
-                        modifier = Modifier.fillMaxWidth().height(40.dp)
-                    )
+                if (cardImg == null) {
+                    questionImage?.let {
+                        Image(
+                            bitmap = it,
+                            contentDescription = null,
+                            alignment = Alignment.TopCenter,
+                            modifier = Modifier.fillMaxWidth().height(40.dp)
+                        )
+                    }
+                } else {
+                    cardImg?.let {
+                        Image(
+                            bitmap = it,
+                            contentDescription = null,
+                            alignment = Alignment.TopCenter,
+                            modifier = Modifier.fillMaxWidth().height(40.dp)
+                        )
+                    }
                 }
             }
         }

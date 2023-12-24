@@ -29,16 +29,16 @@ import com.jhlee.kmm_rongame.card.data.CardTypeConst
 import com.jhlee.kmm_rongame.card.data.CardUtils
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.common.view.PotentialRatingBar
-import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.constants.GradeConst
-import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
-import com.jhlee.kmm_rongame.core.util.Logger
-import dev.icerock.moko.resources.getImageByFileName
+import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
 
 @Composable
 fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
     val color: Color = GradeConst.TYPE_MAP[card.grade - 1]!!.color
+
+
+    val cardImg = rememberBitmapFromBytes(card.image)
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -55,14 +55,15 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                     horizontalArrangement = Arrangement.Center, // Row 내에서 가로 방향 가운데 정렬
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    getCommonImageResourceBitMap(SharedRes.images.getImageByFileName(card.image))?.let {
+                    cardImg?.let {
                         Image(
-                            it,
+                            bitmap = cardImg,
                             contentDescription = null,
                             modifier = Modifier.weight(1f, true).padding(24.dp),
                             contentScale = ContentScale.Crop
                         )
                     }
+
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(

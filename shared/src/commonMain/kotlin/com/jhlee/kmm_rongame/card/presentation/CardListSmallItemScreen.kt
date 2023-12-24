@@ -27,7 +27,7 @@ import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
-import dev.icerock.moko.resources.getImageByFileName
+import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
 
 @Composable
 fun CardListSmallItemScreen(
@@ -39,15 +39,15 @@ fun CardListSmallItemScreen(
     isEnabled: Boolean = true,
     infoMsg: String = "Select!!",
     onItemDetailInfoClick: ((card: Card?) -> Unit)? = null,
-    onItemClick: ((card: Card?) -> Unit)? = null
+    onItemClick: ((card: Card?) -> Unit)? = null,
 ) {
     val cardWidth = (height * 0.8)
 
     if (card != null) {
-        val cardImg: String = card.image
         val color: Color = GradeConst.TYPE_MAP[card.grade - 1]!!.color
         val nameStr = card.name
         val powerStr = card.power.toString()
+        val cardImg = rememberBitmapFromBytes(card.image)
         androidx.compose.material3.Card(colors = CardDefaults.cardColors(Color.White),
             modifier = modifier.run {
                 size(width = cardWidth.dp, height = height.dp).padding(4.dp)
@@ -81,25 +81,23 @@ fun CardListSmallItemScreen(
                             )
                         )
                     }
-                    cardImg.let {
-                        getCommonImageResourceBitMap(SharedRes.images.getImageByFileName(it))?.let { it1 ->
-                            Image(
-                                bitmap = it1,
-                                contentDescription = null,
-                                alignment = Alignment.TopCenter,
-                                modifier = Modifier.fillMaxWidth().size(60.dp)
-                            )
-                        }
+                    cardImg?.let {
+                        Image(
+                            it,
+                            contentDescription = null,
+                            alignment = Alignment.TopCenter,
+                            modifier = Modifier.fillMaxWidth().size(60.dp)
+                        )
                     }
+
+
                     Spacer(modifier = Modifier.height(12.dp))
                     getCommonImageResourceBitMap(SharedRes.images.ic_detail)?.let {
-                        Image(
-                            bitmap = it,
+                        Image(bitmap = it,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp).clickable {
                                 onItemDetailInfoClick?.invoke(card)
-                            }
-                        )
+                            })
                     }
                 }
             }
@@ -128,9 +126,7 @@ fun CardListSmallItemScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = infoMsg,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    text = infoMsg, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.weight(1f))

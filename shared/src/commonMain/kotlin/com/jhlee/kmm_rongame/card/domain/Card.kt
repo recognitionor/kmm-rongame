@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.card.domain
 
+import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,7 +10,7 @@ data class Card(
     val name: String,
     val nameEng: String,
     val grade: Int,
-    val image: String,
+    val image: ByteArray?,
     val description: String,
     val type: HashSet<CardType>,
     val power: Int = 0,

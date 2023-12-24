@@ -93,60 +93,154 @@ plusUserMoney:
 UPDATE UserInfoEntity
 SET money = money + ?
 WHERE id = 1;
---CardEntity
+--CardCombineEntity
 --카드 정보--
 --/*
-
--- */
-CREATE TABLE CardEntity (
+CREATE TABLE CardCombineEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    cardId INTEGER,
+    item1 INTEGER,
+    item2 INTEGER,
+    result TEXT NOT NULL
+);
+
+insertCardCombineEntity:
+INSERT INTO CardCombineEntity(
+    id,
+    item1,
+    item2,
+    result
+) VALUES (?,?, ?, ?);
+
+getCardCombine:
+SELECT *
+FROM CardCombineEntity
+WHERE id = ?;
+
+getCardCombineList:
+SELECT *
+FROM CardCombineEntity
+ORDER BY id ASC;
+
+
+--CardTypeEntity
+--카드 정보--
+--/*
+CREATE TABLE CardTypeEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    strongList TEXT NOT NULL
+);
+
+insertCardTypeEntity:
+INSERT INTO CardTypeEntity(
+    id,
+    name,
+    strongList
+) VALUES (?,?, ?);
+
+getCardType:
+SELECT *
+FROM CardTypeEntity
+WHERE CardTypeEntity.id = ?;
+
+getCardTypeList:
+SELECT *
+FROM CardTypeEntity
+ORDER BY CardTypeEntity.id ASC;
+
+--CardInfoEntity
+--카드 정보--
+--/*
+CREATE TABLE CardInfoEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     nameEng TEXT NOT NULL,
     grade INTEGER,
     image TEXT,
     description TEXT NOT NULL,
     type TEXT NOT NULL,
+    FOREIGN KEY (type) REFERENCES CardTypeEntity(id)
+);
+
+insertCardInfoEntity:
+INSERT INTO CardInfoEntity(
+    id,
+    name,
+    nameEng,
+    grade,
+    image,
+    description,
+    type
+) VALUES (?,?,?,?,?,?,?);
+
+getCardInfo:
+SELECT *
+FROM CardInfoEntity
+WHERE id = ?;
+
+getCardInfoList:
+SELECT *
+FROM CardInfoEntity;
+
+getCardInfoRandom:
+SELECT *
+FROM CardInfoEntity
+WHERE grade <= ?
+ORDER BY RANDOM()
+LIMIT 1;
+
+--CardEntity
+--카드 정보--
+--/*
+CREATE TABLE MyCardEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    cardId INTEGER,
     potential INTEGER,
     upgrade INTEGER,
     power INTEGER
 );
 
-getCardList:
-SELECT *
-FROM CardEntity
-ORDER BY id ASC;
+myCardList:
+SELECT MyCardEntity.*,
+    CardInfoEntity.description,
+    CardInfoEntity.image,
+    CardInfoEntity.name,
+    CardInfoEntity.grade,
+    CardInfoEntity.nameEng,
+    CardInfoEntity.type
+FROM MyCardEntity
+LEFT JOIN CardInfoEntity ON MyCardEntity.cardId = CardInfoEntity.id
+ORDER BY MyCardEntity.id ASC;
 
-getCard:
-SELECT *
-FROM CardEntity
-WHERE id = ?;
+getMyCard:
+SELECT MyCardEntity.*,
+           CardInfoEntity.id AS cardId,
+           CardInfoEntity.description,
+           CardInfoEntity.image,
+           CardInfoEntity.name,
+           CardInfoEntity.grade,
+           CardInfoEntity.nameEng,
+           CardInfoEntity.type
+FROM MyCardEntity
+LEFT JOIN CardInfoEntity ON MyCardEntity.cardId = CardInfoEntity.id
+WHERE MyCardEntity.id = ?;
 
 insertCardEntity:
-INSERT INTO CardEntity(
-    name,
+INSERT INTO MyCardEntity(
     cardId,
-    nameEng,
-    grade,
-    image,
-    description,
-    type,
     potential,
     upgrade,
     power
-) VALUES (?,?,?,?,?,?,?,?,?, ?);
+) VALUES (?,?,?,?);
 
 upgradeCard:
-UPDATE CardEntity
+UPDATE MyCardEntity
 SET upgrade = upgrade + 1,
-    power = ?,
-    nameEng = ?,
-    name = ?,
-    type = ?
+    power = ?
 WHERE id = ?;
 
 removeCard:
-DELETE FROM CardEntity
+DELETE FROM MyCardEntity
 WHERE id = ?;
 
 CREATE TABLE QuizEntity (

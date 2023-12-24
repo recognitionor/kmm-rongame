@@ -11,7 +11,7 @@ object CardCombinationConst {
                     CardCombination(CardConst.WATER, 100f),
                     CardCombination(CardConst.FIRE, 900f)
                 )
-            this[Pair(CardConst.FIRE, CardConst.GROUND)] = arrayListOf(CardCombination(1, 1f))
+            this[Pair(CardConst.FIRE, CardConst.GROUND)] = arrayListOf(CardCombination(1, 1000f))
         }
     }
 }

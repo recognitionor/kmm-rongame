@@ -33,7 +33,6 @@ import com.jhlee.kmm_rongame.card.presentation.CardListScreen
 import com.jhlee.kmm_rongame.card.presentation.CardScreen
 import com.jhlee.kmm_rongame.card.presentation.HomeState
 import com.jhlee.kmm_rongame.card.presentation.HomeViewModel
-import com.jhlee.kmm_rongame.cardgame.presentaion.CardGameState
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainState
@@ -129,7 +128,7 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
 
         HomeState.HOME_SCREEN_COMBINATION -> {
             CardCombinationScreen(appModule) {
-                cardViewModel.getCardList()
+                cardViewModel.getMyCardList()
                 cardViewModel.selectScreen(HomeState.HOME_SCREEN_DEFAULT)
             }
         }
