@@ -31,17 +31,9 @@ import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.constants.GatchaConst
 import com.jhlee.kmm_rongame.constants.GradeConst
-import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
-import com.jhlee.kmm_rongame.core.presentation.getPlatformImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
-import com.seiko.imageloader.AsyncImagePainter
-import com.seiko.imageloader.LocalImageLoader
-import com.seiko.imageloader.rememberAsyncImagePainter
-import dev.icerock.moko.resources.ImageResource
-import dev.icerock.moko.resources.getImageByFileName
 
 @Composable
 fun CardScreen(
