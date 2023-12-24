@@ -2,7 +2,6 @@ package com.jhlee.kmm_rongame.card.data
 
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardCombination
-import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.core.util.Logger
 import kotlinx.datetime.Clock
@@ -23,11 +22,6 @@ class CardUtils {
                 result = true
             }
             return result
-        }
-
-        fun getEnhanceCard(card1: Card, card2: Card): List<CardCombination> {
-            val pair = Pair(card1.cardId, card2.cardId)
-            return CardCombinationConst.COMBINE_LIST[pair] ?: emptyList()
         }
 
         fun selectRandomCard(cardCombinations: List<CardCombination>): Int {
@@ -65,7 +59,7 @@ class CardUtils {
                 6 -> offset = 25
                 7 -> offset = 30
             }
-            return Random(Clock.System.now().epochSeconds).nextInt(cardGrade, cardGrade * offset)
+            return Random(Clock.System.now().epochSeconds).nextInt(cardGrade, offset)
         }
 
         fun getCardRandomPotential(): Int {

@@ -57,7 +57,6 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
     }
 
     override fun getCardTypeInfoList(): Flow<Resource<List<CardType>>> = flow {
-
         emit(Resource.Loading())
         Firebase.storage.reference.child("card_type.csv").let {
             emit(Resource.Loading())
@@ -67,9 +66,17 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                         val csvString = httpClient.get(it.getDownloadUrl()).body<String>()
                         CardTypeDto.parseJson(csvString)
                     }.await()
+                    val cardTypeList = mutableListOf<CardType>()
                     list.forEach {
-                        queries.insertCardTypeEntity(it.id.toLong(), it.name, it.strongList)
+                        val strongStr = it.strongList.ifEmpty { "" }
+                        queries.insertCardTypeEntity(it.id.toLong(), it.name, strongStr)
+                        cardTypeList.add(
+                            CardType(
+                                it.id, it.name, CardTypeDto.parseStrongList(it.strongList)
+                            )
+                        )
                     }
+                    CardTypeConst.TYPE_LIST.addAll(cardTypeList)
                 } catch (e: Exception) {
                     emit(Resource.Error(e.message.toString()))
                 }
@@ -109,8 +116,10 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                         val cardInfo = queries.getCardInfo(it.cardId!!.toLong()).executeAsOne()
                         val list: MutableList<CardTypeEntity> = mutableListOf()
                         cardInfo.type.split("|").forEach { typeId ->
-                            list.add(queries.getCardType(typeId.toLong()).executeAsOne())
+                            val type = queries.getCardType(typeId.toLong()).executeAsOne()
+                            list.add(type)
                         }
+
                         it.toCard(cardInfo, list)
                     }
                 }.await()

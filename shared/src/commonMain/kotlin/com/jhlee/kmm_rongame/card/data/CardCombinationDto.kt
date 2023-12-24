@@ -1,6 +1,5 @@
 package com.jhlee.kmm_rongame.card.data
 
-import com.jhlee.kmm_rongame.core.util.Logger
 import kotlinx.serialization.Serializable
 
 @Serializable

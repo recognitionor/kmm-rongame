@@ -2,9 +2,10 @@ package com.jhlee.kmm_rongame.card.data
 
 import com.jhlee.kmm_rongame.AppDatabase
 import com.jhlee.kmm_rongame.card.domain.Card
+import com.jhlee.kmm_rongame.card.domain.CardCombination
 import com.jhlee.kmm_rongame.card.domain.CardCombinationDataSource
-import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import database.CardTypeEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -37,67 +38,55 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
             try {
                 val card1 = list[0]!!
                 val card2 = list[1]!!
-                val isCard1CanUpgrade = CardUtils.isUpgradeCard(card1)
-
-                if (isCard1CanUpgrade != CardUtils.isUpgradeCard(card2)) {
-                    val upgradeCard: Card
-                    val removeCard: Card
-                    if (isCard1CanUpgrade) {
-                        removeCard = card2
-                        upgradeCard = card1
-                    } else {
-                        removeCard = card1
-                        upgradeCard = card2
+                var combineResult: List<CardCombination> = emptyList()
+                queries.getCardCombineList().executeAsList().forEach {
+                    if (it.item1?.toInt() == card1.cardId && it.item2?.toInt() == card2.cardId) {
+                        combineResult = it.toCombineResult()
                     }
-                    if (upgradeCard.potential <= upgradeCard.upgrade) {
-                        emit(Resource.Error("더 이상 업그레이드 할 수 없어요"))
-                        return@supervisorScope
+                    if (it.item2?.toInt() == card1.cardId && it.item1?.toInt() == card2.cardId) {
+                        combineResult = it.toCombineResult()
                     }
-                    if (upgradeCard.upgrade > 0) {
-                        var isSameType = false
-                        upgradeCard.type.forEach {
-                            if (removeCard.type.contains(it)) {
-                                isSameType = true
-                                return@forEach
-                            }
+                }
+                if (combineResult.isEmpty()) {
+                    val isCard1CanUpgrade = CardUtils.isUpgradeCard(card1)
+                    val isCard2CanUpgrade = CardUtils.isUpgradeCard(card2)
+                    if (isCard1CanUpgrade != isCard2CanUpgrade) {
+                        val upgradeCard: Card
+                        val removeCard: Card
+                        if (isCard1CanUpgrade) {
+                            removeCard = card2
+                            upgradeCard = card1
+                        } else {
+                            removeCard = card1
+                            upgradeCard = card2
                         }
-                        if (!isSameType) {
-                            emit(Resource.Error("다른 속성의 카드와 결합하세요"))
+                        if (upgradeCard.potential <= upgradeCard.upgrade) {
+                            emit(Resource.Error("더 이상 업그레이드 할 수 없어요"))
                             return@supervisorScope
                         }
-                    }
+                        queries.removeCard(removeCard.id.toLong())
+                        queries.upgradeCard(
+                            (upgradeCard.power + removeCard.power).toLong(),
+                            upgradeCard.id.toLong(),
+                        )
 
-                    queries.removeCard(removeCard.id.toLong())
-                    upgradeCard.type.addAll(removeCard.type)
-                    var newName = ""
-                    var newNameEng = ""
-                    if (upgradeCard.upgrade > 0) {
-                        newName = upgradeCard.name
-                        newNameEng = upgradeCard.nameEng
+                        val resultCard =
+                            queries.getMyCard(upgradeCard.id.toLong()).executeAsOne().toCard()
+                        emit(Resource.Success(resultCard))
                     } else {
-                        newName = "${removeCard.name} ${upgradeCard.name}"
-                        newNameEng = "${removeCard.nameEng} ${upgradeCard.nameEng}"
+                        emit(Resource.Error("조합에 문제가 있습니다."))
                     }
-                    queries.upgradeCard(
-                        (upgradeCard.power + removeCard.power).toLong(),
-                        upgradeCard.id.toLong(),
-                    )
-
-                    val resultCard =
-                        queries.getMyCard(upgradeCard.id.toLong()).executeAsOne().toCard()
-                    emit(Resource.Success(resultCard))
-                    return@supervisorScope
                 } else {
-                    val tempCardList = CardUtils.getEnhanceCard(card1, card2)
-                    if (tempCardList.isNotEmpty()) {
-                        val tempCardId = CardUtils.selectRandomCard(tempCardList)
-                        val card = CardConst.COMBINE_CARD_LIST.find {
-                            it.cardId == tempCardId
-                        }!!
-
-                    } else {
-                        emit(Resource.Error("조합이 되는 카드가 아닙니다."))
-                    }
+                    val cardId = CardUtils.selectRandomCard(combineResult)
+                    val cardTemp = queries.getCardInfo(cardId.toLong()).executeAsOne()
+                    val power = CardUtils.getCardRandomPower(cardTemp.grade?.toInt() ?: 0)
+                    val potential = CardUtils.getCardRandomPotential()
+                    val card =
+                        Card.getCardFromCardInfo(cardTemp, power = power, potential = potential)
+                    queries.insertCardEntity(
+                        cardId.toLong(), potential.toLong(), 0, power.toLong()
+                    )
+                    emit(Resource.Success(card))
                 }
             } catch (e: Exception) {
                 emit(Resource.Error("조합에 문제가 있습니다."))

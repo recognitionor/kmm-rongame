@@ -157,7 +157,6 @@ fun CardCombinationScreen(appModule: AppModule, dismiss: () -> Unit) {
                                 state.combineCard,
                                 height = 160f,
                                 onItemDetailInfoClick = {
-                                    Logger.log("click")
                                 }) {
 
                             }

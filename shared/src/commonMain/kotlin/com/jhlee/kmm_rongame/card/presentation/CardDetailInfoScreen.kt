@@ -32,11 +32,11 @@ import com.jhlee.kmm_rongame.common.view.PotentialRatingBar
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
+import com.jhlee.kmm_rongame.core.util.Logger
 
 @Composable
 fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
     val color: Color = GradeConst.TYPE_MAP[card.grade - 1]!!.color
-
 
     val cardImg = rememberBitmapFromBytes(card.image)
     Box(

@@ -104,7 +104,7 @@ CREATE TABLE CardCombineEntity (
 );
 
 insertCardCombineEntity:
-INSERT INTO CardCombineEntity(
+INSERT OR REPLACE INTO CardCombineEntity(
     id,
     item1,
     item2,
@@ -132,7 +132,7 @@ CREATE TABLE CardTypeEntity (
 );
 
 insertCardTypeEntity:
-INSERT INTO CardTypeEntity(
+INSERT OR REPLACE INTO CardTypeEntity(
     id,
     name,
     strongList
@@ -163,7 +163,7 @@ CREATE TABLE CardInfoEntity (
 );
 
 insertCardInfoEntity:
-INSERT INTO CardInfoEntity(
+INSERT OR REPLACE INTO CardInfoEntity(
     id,
     name,
     nameEng,

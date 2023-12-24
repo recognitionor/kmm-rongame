@@ -80,6 +80,7 @@ fun CardScreen(
         val index = (cardStateValue.cardRandomProgress % GradeConst.TYPE_MAP.size)
         color = GradeConst.TYPE_MAP[index]!!.color
         questionImage = getCommonImageResourceBitMap(SharedRes.images.ic_question)
+        cardImg = null
         nameEngStr = ""
         nameStr = ""
         powerStr = ""
