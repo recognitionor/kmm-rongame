@@ -32,6 +32,42 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
         }
     }
 
+    override fun getCardCombinationList(): Flow<Resource<List<CardCombinationInfo>>> = flow {
+        emit(Resource.Loading())
+        supervisorScope {
+            val resultList: MutableList<CardCombinationInfo> = mutableListOf()
+            val cardInfo = queries.getCardInfoList().executeAsList()
+            val cardCombinationInfoList = queries.getCardCombineList().executeAsList()
+            val myCardList = queries.myCardList().executeAsList()
+            cardInfo.forEach { cardInfoEntity ->
+                val card = cardInfoEntity.toCard()
+                var existCombine = false
+                cardCombinationInfoList.forEach {
+                    val cardCombineTemp = it.toCombineResult().find { cardCombination ->
+                        return@find card.cardId == cardCombination.cardId
+                    }
+                    if (cardCombineTemp != null) {
+                        existCombine = true
+                        val isOpened =
+                            myCardList.find { find -> if (find.cardId == card.cardId.toLong()) return@find true else false } != null
+                        resultList.add(
+                            CardCombinationInfo(
+                                card, arrayListOf(
+                                    cardInfo[(it.item1 ?: 0).toInt()].toCard(),
+                                    cardInfo[(it.item2 ?: 0).toInt()].toCard()
+                                ), cardCombineTemp.cardPercent, isOpened
+                            )
+                        )
+                    }
+                }
+                if (!existCombine) {
+                    resultList.add(CardCombinationInfo(card, emptyList(), 166f, card.grade == 1))
+                }
+            }
+            emit(Resource.Success(resultList))
+        }
+    }
+
     override fun combinationCard(list: List<Card?>): Flow<Resource<Card>> = flow {
         emit(Resource.Loading())
         supervisorScope {

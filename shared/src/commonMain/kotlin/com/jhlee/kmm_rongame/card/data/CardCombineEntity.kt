@@ -1,7 +1,6 @@
 package com.jhlee.kmm_rongame.card.data
 
 import com.jhlee.kmm_rongame.card.domain.CardCombination
-import com.jhlee.kmm_rongame.core.util.Logger
 import database.CardCombineEntity
 
 fun CardCombineEntity.toCombineResult(): List<CardCombination> {

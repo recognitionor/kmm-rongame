@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,21 +42,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.card.data.CardCombinationInfo
+import com.jhlee.kmm_rongame.common.view.createDialog
+import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
+import com.jhlee.kmm_rongame.main.presentation.MainState.Companion.NOT_ENOUGH_MONEY_DIALOG
+import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 import kotlinx.coroutines.launch
 
 @Composable
-fun CardCombinationScreen(appModule: AppModule, dismiss: () -> Unit) {
+fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, dismiss: () -> Unit) {
     val viewModel = getViewModel(key = CardCombinationViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { CardCombinationViewModel(appModule.dbCardCombinationDataSource) })
     val state by viewModel.state.collectAsState()
 
     var selectCardSlot by remember { mutableStateOf(-1) }
-    var showDialog by remember { mutableStateOf(false) }
+    var showCardSelectDialog by remember { mutableStateOf(false) }
+    var buyCardCombinationInfo by remember { mutableStateOf<CardCombinationInfo?>(null) }
     val offsetVanish by remember { mutableStateOf(Animatable(1f)) }
     val offsetAppear by remember { mutableStateOf(Animatable(0f)) }
     var cardOpen by remember { mutableStateOf(false) }
@@ -115,7 +121,7 @@ fun CardCombinationScreen(appModule: AppModule, dismiss: () -> Unit) {
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
                 style = TextStyle(
-                    fontSize = 14.sp, fontWeight = FontWeight.Bold
+                    fontSize = 24.sp, fontWeight = FontWeight.Bold
                 )
             )
         }
@@ -135,10 +141,9 @@ fun CardCombinationScreen(appModule: AppModule, dismiss: () -> Unit) {
                                 ) {
                                     CardListSmallItemScreen(state.mySelectedCardEntry[index],
                                         height = 160f,
-                                        onItemDetailInfoClick = {
-                                        }) {
+                                        onItemDetailInfoClick = {}) {
                                         selectCardSlot = index
-                                        showDialog = true
+                                        showCardSelectDialog = true
                                     }
                                     if (state.mySelectedCardEntry[index] != null) {
                                         Image(imageVector = Icons.Default.Clear,
@@ -153,11 +158,9 @@ fun CardCombinationScreen(appModule: AppModule, dismiss: () -> Unit) {
                         }
                     } else {
                         Column(modifier = Modifier.alpha(offsetAppear.value)) {
-                            CardListSmallItemScreen(
-                                state.combineCard,
+                            CardListSmallItemScreen(state.combineCard,
                                 height = 160f,
-                                onItemDetailInfoClick = {
-                                }) {
+                                onItemDetailInfoClick = {}) {
 
                             }
                         }
@@ -186,9 +189,24 @@ fun CardCombinationScreen(appModule: AppModule, dismiss: () -> Unit) {
                 if (state.error.isNotEmpty()) {
                     Text(text = state.error)
                 }
+
+                CardCombinationInfoScreen(state.cardCombinationInfo) {
+                    if ((mainViewModel.state.value.userInfo?.money
+                            ?: 0) >= RuleConst.COMBINATION_INFO_COST
+                    ) {
+                        buyCardCombinationInfo = it
+                    } else {
+                        mainViewModel.showDialog(
+                            NOT_ENOUGH_MONEY_DIALOG,
+                            createDialog = createDialog("돈이 모자랍니다.", "", "img_bank_cat", {
+                                mainViewModel.dismissDialog()
+                            })
+                        )
+                    }
+                }
             }
         }
-        if (showDialog) {
+        if (showCardSelectDialog) {
             Box(
                 modifier = Modifier.fillMaxSize().background(Color.Gray.copy(alpha = 0.8F))
                     .pointerInput(Unit) {
@@ -210,17 +228,17 @@ fun CardCombinationScreen(appModule: AppModule, dismiss: () -> Unit) {
                                 CardListItemScreen(filteredList[(filteredList.size - 1) - index],
                                     height = 160f,
                                     onItemDetailInfoClick = {
-//                                    cardDetailView = it
+
                                     }) {
                                     viewModel.selectMyCard(selectCardSlot, it)
-                                    showDialog = false
+                                    showCardSelectDialog = false
                                 }
                             }
                         }
                         Row {
                             Spacer(modifier = Modifier.weight(1f))
                             Button(onClick = {
-                                showDialog = false
+                                showCardSelectDialog = false
                             }) {
                                 Text(text = "취소")
                             }
@@ -229,6 +247,53 @@ fun CardCombinationScreen(appModule: AppModule, dismiss: () -> Unit) {
 
                     }
                     Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+        if (buyCardCombinationInfo != null) {
+            var dialogTitle by remember { mutableStateOf("해당 카드 조합 정보를 획인 하시려면 ${RuleConst.COMBINATION_INFO_COST}원 이 필요합니다.") }
+            var isDialogVisible by remember { mutableStateOf(true) }
+
+            Box(
+                modifier = Modifier.fillMaxSize().background(Color.Gray.copy(alpha = 0.8F))
+                    .pointerInput(Unit) {
+                        detectTapGestures { }
+                    }, contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    modifier = Modifier.background(Color.White).padding(24.dp).fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = dialogTitle, style = TextStyle(fontSize = 20.sp)
+                    )
+
+                    Row {
+                        Button(onClick = { buyCardCombinationInfo = null }) {
+                            Text("취소")
+                        }
+                        Spacer(modifier = Modifier.width(24.dp))
+                        Button(onClick = {
+                            if (isDialogVisible) {
+                                val sb = StringBuilder()
+                                buyCardCombinationInfo!!.stuffList.forEachIndexed { index, card ->
+                                    sb.append(card.name)
+                                    if (index + 1 < (buyCardCombinationInfo?.stuffList?.size
+                                            ?: 0)
+                                    ) {
+                                        sb.append("+")
+                                    }
+                                }
+                                dialogTitle = "$sb"
+                                isDialogVisible = false
+                            } else {
+                                buyCardCombinationInfo = null
+                            }
+                        }) {
+                            Text("확인")
+                        }
+                    }
                 }
             }
         }

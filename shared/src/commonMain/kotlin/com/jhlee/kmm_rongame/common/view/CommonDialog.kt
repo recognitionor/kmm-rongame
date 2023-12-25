@@ -56,7 +56,7 @@ fun createDialog(
                             fontSize = 28.sp, fontWeight = FontWeight.Bold
                         )
                     )
-                    Spacer(modifier = Modifier.size(100.dp))
+                    Spacer(modifier = Modifier.size(24.dp))
                     if (!image.isNullOrEmpty()) {
                         Image(
                             modifier = Modifier.size(100.dp),

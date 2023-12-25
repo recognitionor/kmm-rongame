@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
-import com.jhlee.kmm_rongame.constants.GatchaConst
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap

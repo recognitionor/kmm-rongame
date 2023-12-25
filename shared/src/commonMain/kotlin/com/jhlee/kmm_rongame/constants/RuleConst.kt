@@ -12,5 +12,7 @@ class RuleConst {
         const val QUIZ_COST = 10
 
         const val GATCHA_COST = 50
+
+        const val COMBINATION_INFO_COST = 100
     }
 }

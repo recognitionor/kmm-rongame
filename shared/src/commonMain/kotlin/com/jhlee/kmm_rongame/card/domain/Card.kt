@@ -1,6 +1,5 @@
 package com.jhlee.kmm_rongame.card.domain
 
-import androidx.compose.ui.graphics.ImageBitmap
 import com.jhlee.kmm_rongame.core.data.ImageStorage
 import database.CardInfoEntity
 import kotlinx.serialization.Serializable

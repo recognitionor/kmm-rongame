@@ -127,7 +127,7 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
         }
 
         HomeState.HOME_SCREEN_COMBINATION -> {
-            CardCombinationScreen(appModule) {
+            CardCombinationScreen(appModule, viewModel) {
                 cardViewModel.getMyCardList()
                 cardViewModel.selectScreen(HomeState.HOME_SCREEN_DEFAULT)
             }

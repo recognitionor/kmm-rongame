@@ -23,8 +23,23 @@ class CardCombinationViewModel(private val cardCombinationDataSource: CardCombin
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
+        getCombinationInfoList()
         getMyCardList()
     }
+
+    private fun getCombinationInfoList() {
+        cardCombinationDataSource.getCardCombinationList().onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _state.update { it.copy(cardCombinationInfo = result.data ?: emptyList()) }
+                }
+
+                is Resource.Error -> {}
+                is Resource.Loading -> {}
+            }
+        }.launchIn(viewModelScope)
+    }
+
 
     private fun getMyCardList() {
         cardCombinationDataSource.getCardList().onEach { result ->
