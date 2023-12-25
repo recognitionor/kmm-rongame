@@ -182,6 +182,10 @@ fun CardCombinationScreen(appModule: AppModule, dismiss: () -> Unit) {
                     }
 
                 }
+
+                if (state.error.isNotEmpty()) {
+                    Text(text = state.error)
+                }
             }
         }
         if (showDialog) {

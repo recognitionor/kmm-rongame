@@ -73,8 +73,10 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                         val resultCard =
                             queries.getMyCard(upgradeCard.id.toLong()).executeAsOne().toCard()
                         emit(Resource.Success(resultCard))
+                        return@supervisorScope
                     } else {
                         emit(Resource.Error("조합에 문제가 있습니다."))
+                        return@supervisorScope
                     }
                 } else {
                     val cardId = CardUtils.selectRandomCard(combineResult)
@@ -83,13 +85,17 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                     val potential = CardUtils.getCardRandomPotential()
                     val card =
                         Card.getCardFromCardInfo(cardTemp, power = power, potential = potential)
+                    queries.removeCard(card1.id.toLong())
+                    queries.removeCard(card2.id.toLong())
                     queries.insertCardEntity(
                         cardId.toLong(), potential.toLong(), 0, power.toLong()
                     )
                     emit(Resource.Success(card))
+                    return@supervisorScope
                 }
             } catch (e: Exception) {
                 emit(Resource.Error("조합에 문제가 있습니다."))
+                return@supervisorScope
             }
         }
     }

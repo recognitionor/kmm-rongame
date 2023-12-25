@@ -10,6 +10,7 @@ import com.jhlee.kmm_rongame.cardgame.domain.CardGameDataSource
 import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import database.CardTypeEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -24,20 +25,10 @@ class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
     private val queries = db.dbQueries
     override fun getEnemyList(selectIndex: Int): Flow<Resource<List<Card>>> = flow {
         try {
-            var untilIndex = 2
             val resultList = arrayListOf<Card>()
-            when (selectIndex) {
-                in 0..5 -> {
-                    untilIndex = 3
-                }
-
-                in 6..10 -> {
-                    untilIndex = 6
-                }
-            }
             repeat(6) {
-                val currentTimeMillis = Clock.System.now().toEpochMilliseconds()
-                val cardInfoTemp = queries.getCardInfoRandom(1).executeAsOne()
+                val gradeTemp = (selectIndex / 16) + 1
+                val cardInfoTemp = queries.getCardInfoRandom(gradeTemp.toLong()).executeAsOne()
                 val list: MutableList<CardTypeEntity> = mutableListOf()
                 cardInfoTemp.type.split("|").forEach { typeId ->
                     list.add(queries.getCardType(typeId.toLong()).executeAsOne())

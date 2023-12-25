@@ -72,11 +72,11 @@ fun CardListItemScreen(
                     Box(modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)) {
                         StarRatingBar(grade, color, size = 12.dp)
                     }
-                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.weight(0.1f))
                     Text(
-                        text = powerStr, modifier = Modifier.weight(0.1f), style = TextStyle(
+                        text = powerStr, modifier = Modifier.weight(1f), style = TextStyle(
                             fontSize = 20.sp, fontWeight = FontWeight.Bold
-                        )
+                        ), textAlign = TextAlign.End
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                 }

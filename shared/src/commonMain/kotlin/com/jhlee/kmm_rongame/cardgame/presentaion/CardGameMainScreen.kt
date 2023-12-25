@@ -58,10 +58,11 @@ fun CardGameMainScreen(mainViewModel: MainViewModel, appModule: AppModule) {
             CardGameViewModel.CARD_GAME_DEFAULT_SCREEN -> {
                 val currentStage = (mainViewModel.state.value.userInfo?.cardStage ?: 0)
                 Column(
-                    modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center
+                    modifier = Modifier.fillMaxSize().padding(bottom = 100.dp),
+                    verticalArrangement = Arrangement.Center
                 ) {
                     LazyVerticalGrid(columns = GridCells.Fixed(4)) {
-                        items(16) { index ->
+                        items(160) { index ->
                             Box(modifier = Modifier.aspectRatio(1f).padding(4.dp).clickable {
                                 if (currentStage >= index) {
                                     val costMoney = (index + 1) * 10

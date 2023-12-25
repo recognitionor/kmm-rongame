@@ -3,6 +3,7 @@ package com.jhlee.kmm_rongame.card.presentation
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardCombinationDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -49,7 +50,13 @@ class CardCombinationViewModel(private val cardCombinationDataSource: CardCombin
                     }
 
                     is Resource.Error -> {
-                        _state.update { it.copy(animationMode = CardCombinationState.ANIMATION_FAIL) }
+                        Logger.log("error : ${result.message}")
+                        _state.update {
+                            it.copy(
+                                animationMode = CardCombinationState.ANIMATION_FAIL,
+                                error = result.message ?: ""
+                            )
+                        }
                     }
 
                     is Resource.Loading -> {}
@@ -63,7 +70,7 @@ class CardCombinationViewModel(private val cardCombinationDataSource: CardCombin
             val tempList = _state.value.mySelectedCardEntry.toMutableList().apply {
                 this[index] = null
             }
-            _state.update { it.copy(mySelectedCardEntry = tempList) }
+            _state.update { it.copy(mySelectedCardEntry = tempList, error = "") }
 
         }
 
@@ -74,7 +81,7 @@ class CardCombinationViewModel(private val cardCombinationDataSource: CardCombin
             val tempList = _state.value.mySelectedCardEntry.toMutableList().apply {
                 this[selectCardSlot] = card
             }
-            _state.update { it.copy(mySelectedCardEntry = tempList) }
+            _state.update { it.copy(mySelectedCardEntry = tempList, error = "") }
         }
     }
 
@@ -83,7 +90,7 @@ class CardCombinationViewModel(private val cardCombinationDataSource: CardCombin
     }
 
     fun clearSelected() {
-        _state.update { it.copy(mySelectedCardEntry = List(2) { null }) }
+        _state.update { it.copy(mySelectedCardEntry = List(2) { null }, error = "") }
     }
 
 

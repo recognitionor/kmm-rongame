@@ -31,6 +31,7 @@ import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.constants.GatchaConst
 import com.jhlee.kmm_rongame.constants.GradeConst
+import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
@@ -85,7 +86,7 @@ fun CardScreen(
     Card(modifier = Modifier.run {
         size(width = cardWidth.dp, height = height.dp).padding(10.dp)
             .border(width = 4.dp, color = color, shape = RoundedCornerShape(8.dp)).clickable {
-                if ((mainStateValue.userInfo?.money ?: 0) >= GatchaConst.GATCHA_COST) {
+                if ((mainStateValue.userInfo?.money ?: 0) >= RuleConst.GATCHA_COST) {
                     cardViewModel.gatchaCard()
                 }
             }

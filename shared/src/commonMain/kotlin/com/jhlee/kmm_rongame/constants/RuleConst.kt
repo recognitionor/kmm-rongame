@@ -11,6 +11,6 @@ class RuleConst {
         // 퀴즈 풀때 차감 금액
         const val QUIZ_COST = 10
 
-        const val GATCHA_COST = 10
+        const val GATCHA_COST = 50
     }
 }
