@@ -1,6 +1,8 @@
 package com.jhlee.kmm_rongame.reward.data
 
 import com.jhlee.kmm_rongame.AppDatabase
+import com.jhlee.kmm_rongame.card.domain.Card
+import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.main.data.toUser
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
@@ -12,7 +14,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 
 class DBRewardDataSource(
-    db: AppDatabase
+    db: AppDatabase,
 ) : MainDataSource {
     private val queries = db.dbQueries
     override fun getFlaticonToken(): Flow<Resource<String>> = flow { }
@@ -65,5 +67,10 @@ class DBRewardDataSource(
         }
     }
 
+    override fun getCardInfoList(): Flow<Resource<Boolean>> = flow { }
+
+    override fun getCardTypeInfoList(): Flow<Resource<Boolean>> = flow { }
+
+    override fun getCardCombineInfoList(): Flow<Resource<Boolean>> = flow { }
 
 }

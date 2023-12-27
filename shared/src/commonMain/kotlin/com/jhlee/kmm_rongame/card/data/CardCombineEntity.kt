@@ -2,14 +2,17 @@ package com.jhlee.kmm_rongame.card.data
 
 import com.jhlee.kmm_rongame.card.domain.CardCombination
 import database.CardCombineEntity
+import database.CardInfoEntity
 
-fun CardCombineEntity.toCombineResult(): List<CardCombination> {
+fun CardCombineEntity.toCombineResult(list: List<CardInfoEntity>): List<CardCombination> {
     val tempList = mutableListOf<CardCombination>()
     result.replace("\"", "").replace("\\", "").split(",").map { combination ->
         val (cardIdStr, cardPercentStr) = combination.split(":")
-        val cardId = cardIdStr.toInt()
         val cardPercent = cardPercentStr.toFloat()
-        tempList.add(CardCombination(cardId, cardPercent))
+        val cardInfo = list.find { it.name == cardIdStr }
+        if (cardInfo != null) {
+            tempList.add(CardCombination(cardInfo.id.toInt(), cardPercent))
+        }
     }
     tempList.sortedByDescending { it.cardPercent }
 

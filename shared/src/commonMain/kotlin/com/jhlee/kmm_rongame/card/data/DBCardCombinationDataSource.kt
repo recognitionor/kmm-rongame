@@ -43,7 +43,8 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                 val card = cardInfoEntity.toCard()
                 var existCombine = false
                 cardCombinationInfoList.forEach {
-                    val cardCombineTemp = it.toCombineResult().find { cardCombination ->
+                    Logger.log("it : $it")
+                    val cardCombineTemp = it.toCombineResult(cardInfo).find { cardCombination ->
                         return@find card.cardId == cardCombination.cardId
                     }
                     if (cardCombineTemp != null) {
@@ -75,12 +76,13 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                 val card1 = list[0]!!
                 val card2 = list[1]!!
                 var combineResult: List<CardCombination> = emptyList()
+                val cardInfoList = queries.getCardInfoList().executeAsList()
                 queries.getCardCombineList().executeAsList().forEach {
                     if (it.item1?.toInt() == card1.cardId && it.item2?.toInt() == card2.cardId) {
-                        combineResult = it.toCombineResult()
+                        combineResult = it.toCombineResult(cardInfoList)
                     }
                     if (it.item2?.toInt() == card1.cardId && it.item1?.toInt() == card2.cardId) {
-                        combineResult = it.toCombineResult()
+                        combineResult = it.toCombineResult(cardInfoList)
                     }
                 }
                 if (combineResult.isEmpty()) {

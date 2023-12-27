@@ -2,6 +2,7 @@ package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.runtime.Composable
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
@@ -22,8 +23,58 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
-//        initCommonInfo()
-        getUserInfo()
+        getCardInfoFromFireBase()
+        getCardTypeFromFireBase()
+        getCardTypeCombinationFromFireBase()
+
+    }
+
+    private fun getCardTypeCombinationFromFireBase() {
+        mainDataSource.getCardCombineInfoList().onEach { result ->
+            when (result) {
+                is Resource.Error -> {
+                }
+
+                is Resource.Success -> {
+                    _state.update { it.copy(isLoading = false) }
+                    getUserInfo()
+                }
+                is Resource.Loading -> {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getCardTypeFromFireBase() {
+        mainDataSource.getCardTypeInfoList().onEach { result ->
+            when (result) {
+                is Resource.Error -> {
+                }
+
+                is Resource.Success -> {}
+                is Resource.Loading -> {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getCardInfoFromFireBase() {
+        mainDataSource.getCardInfoList().onEach { result ->
+            when (result) {
+                is Resource.Error -> {
+                    _state.update { it.copy(isLoading = false) }
+                }
+
+                is Resource.Success -> {
+
+                }
+                is Resource.Loading -> {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun initCommonInfo() {

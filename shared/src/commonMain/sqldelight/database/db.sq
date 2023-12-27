@@ -178,6 +178,11 @@ SELECT *
 FROM CardInfoEntity
 WHERE id = ?;
 
+getCardInfoFromName:
+SELECT *
+FROM CardInfoEntity
+WHERE name = ?;
+
 getCardInfoList:
 SELECT *
 FROM CardInfoEntity;

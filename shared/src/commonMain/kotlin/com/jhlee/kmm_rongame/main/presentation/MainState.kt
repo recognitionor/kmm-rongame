@@ -9,7 +9,7 @@ data class MainState(
     val dialog: (@Composable () -> Unit)? = null,
     val isWholeScreenOpen: Boolean = false,
     val userInfo: UserInfo? = null,
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val error: String = ""
 ) {
     companion object {

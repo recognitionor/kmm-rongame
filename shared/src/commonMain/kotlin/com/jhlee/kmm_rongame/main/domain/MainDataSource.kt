@@ -1,5 +1,7 @@
 package com.jhlee.kmm_rongame.main.domain
 
+import com.jhlee.kmm_rongame.card.domain.Card
+import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.core.domain.Resource
 import kotlinx.coroutines.flow.Flow
 
@@ -11,5 +13,10 @@ interface MainDataSource {
     fun updateUserInfo(userInfo: UserInfo): Flow<Resource<UserInfo>>
 
     fun updateCardStage(): Flow<Resource<UserInfo>>
+
+    fun getCardInfoList(): Flow<Resource<Boolean>>
+
+    fun getCardTypeInfoList(): Flow<Resource<Boolean>>
+    fun getCardCombineInfoList(): Flow<Resource<Boolean>>
 
 }

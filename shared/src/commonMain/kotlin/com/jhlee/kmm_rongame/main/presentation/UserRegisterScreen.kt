@@ -8,7 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserRegisterScreen(state: MainState, onClick: (name: String) -> Unit) {
     var userName by remember { mutableStateOf("") } // 사용자 입력값을 저장할 상태 변수

@@ -21,49 +21,10 @@ class HomeViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
-        getCardTypeFromFireBase()
-        getCardInfoFromFireBase()
-        getCardTypeCombinationFromFireBase()
         getMyCardList()
     }
 
-    private fun getCardTypeCombinationFromFireBase() {
-        cardDataSource.getCardCombineInfoList().onEach { result ->
-            when (result) {
-                is Resource.Error -> {
-                }
 
-                is Resource.Success -> {}
-                is Resource.Loading -> {}
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun getCardTypeFromFireBase() {
-        cardDataSource.getCardTypeInfoList().onEach { result ->
-            when (result) {
-                is Resource.Error -> {
-                }
-
-                is Resource.Success -> {}
-                is Resource.Loading -> {}
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun getCardInfoFromFireBase() {
-        cardDataSource.getCardInfoList().onEach { result ->
-            when (result) {
-                is Resource.Error -> {
-                }
-
-                is Resource.Success -> {
-                    
-                }
-                is Resource.Loading -> {}
-            }
-        }.launchIn(viewModelScope)
-    }
 
     fun getMyCardList() {
         cardDataSource.getMyCardList().onEach { result ->

@@ -5,16 +5,21 @@ import com.jhlee.kmm_rongame.bank.domain.Bank
 import com.jhlee.kmm_rongame.bank.domain.BankDataSource
 import com.jhlee.kmm_rongame.bank.domain.BankUtils
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Clock
+import kotlin.random.Random
 
 class DBBankDataSource(db: AppDatabase) : BankDataSource {
     private val queries = db.dbQueries
     override fun initBank(): Flow<Resource<Bank>> = flow {
-        val bank = Bank(1, "고양이은행", 0, emptyList(), 1)
+        val bank = Bank(
+            1,
+            "고양이은행",
+            0,
+            emptyList(),
+            Random(Clock.System.now().epochSeconds).nextInt(1, 100).toLong()
+        )
         queries.insertBank(bank.id.toLong(), bank.name, bank.interestRate)
         emit(Resource.Success(bank))
     }

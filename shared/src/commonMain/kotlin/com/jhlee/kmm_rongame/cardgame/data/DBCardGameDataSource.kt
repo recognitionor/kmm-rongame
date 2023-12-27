@@ -54,7 +54,7 @@ class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
                 val ability = selectIndex + 1
                 resultList.add(
                     card.copy(
-                        id = it, power = ability, potential = ability, upgrade = ability
+                        id = it, power = ability, potential = 10, upgrade = 10
                     )
                 )
                 delay(1)

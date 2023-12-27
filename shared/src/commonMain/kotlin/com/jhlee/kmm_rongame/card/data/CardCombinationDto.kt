@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CardCombinationDto(
     val id: Int,
-    val item1: Int,
-    val item2: Int,
+    val item1: String,
+    val item2: String,
     val result: String,
 ) {
     companion object {
@@ -15,13 +15,13 @@ data class CardCombinationDto(
             modifiedString.drop(1)
             val dataLines = modifiedString.drop(1)
             val tempList = mutableListOf<CardCombinationDto>()
-            dataLines.forEach {
-                val items = it.split(",\\s*(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex())
+            dataLines.forEachIndexed { index, s ->
+                val items = s.split(",\\s*(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex())
                 try {
                     tempList.add(CardCombinationDto(
-                        id = items[0].toInt(),
-                        item1 = items[1].toInt(),
-                        item2 = items[2].toInt(),
+                        id = index,
+                        item1 = items[1],
+                        item2 = items[2],
                         result = items[3]
                     ))
                 } catch (ignored: Exception) {
