@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.card.data.CardInfoManager
 import com.jhlee.kmm_rongame.card.data.CardTypeConst
 import com.jhlee.kmm_rongame.card.data.CardUtils
 import com.jhlee.kmm_rongame.card.domain.Card
@@ -156,8 +157,8 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                     sb.clear()
                     sb.append("(")
                     it.strongList.forEach { map ->
-                        val typeItem = CardTypeConst.TYPE_LIST[map.key]
-                        sb.append("${typeItem.name} 타입 에게 ${map.value} 추가 데미지")
+                        val typeItem = CardInfoManager.CARD_TYPE_MAP[map.key]
+                        sb.append("${typeItem?.name} 타입 에게 ${map.value} 추가 데미지")
                     }
                     sb.removeRange(sb.length - 1, sb.length)
                     sb.append(")")

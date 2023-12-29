@@ -23,55 +23,27 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
-        getCardInfoFromFireBase()
-        getCardTypeFromFireBase()
-        getCardTypeCombinationFromFireBase()
-
+        initCardInfo()
     }
 
-    private fun getCardTypeCombinationFromFireBase() {
-        mainDataSource.getCardCombineInfoList().onEach { result ->
+    private fun initCardInfo() {
+        mainDataSource.initCardWholeData().onEach { result ->
             when (result) {
-                is Resource.Error -> {
-                }
-
                 is Resource.Success -> {
-                    _state.update { it.copy(isLoading = false) }
+                    _state.update {
+                        it.copy(isLoading = false)
+                    }
                     getUserInfo()
                 }
-                is Resource.Loading -> {
-                    _state.update { it.copy(isLoading = true) }
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
 
-    private fun getCardTypeFromFireBase() {
-        mainDataSource.getCardTypeInfoList().onEach { result ->
-            when (result) {
+                is Resource.Loading -> {
+                    _state.update {
+                        it.copy(isLoading = true)
+                    }
+                }
+
                 is Resource.Error -> {
-                }
-
-                is Resource.Success -> {}
-                is Resource.Loading -> {
-                    _state.update { it.copy(isLoading = true) }
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun getCardInfoFromFireBase() {
-        mainDataSource.getCardInfoList().onEach { result ->
-            when (result) {
-                is Resource.Error -> {
-                    _state.update { it.copy(isLoading = false) }
-                }
-
-                is Resource.Success -> {
-
-                }
-                is Resource.Loading -> {
-                    _state.update { it.copy(isLoading = true) }
+                    _state.update { it.copy(error = result.message ?: "") }
                 }
             }
         }.launchIn(viewModelScope)

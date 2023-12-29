@@ -43,7 +43,6 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                 val card = cardInfoEntity.toCard()
                 var existCombine = false
                 cardCombinationInfoList.forEach {
-                    Logger.log("it : $it")
                     val cardCombineTemp = it.toCombineResult(cardInfo).find { cardCombination ->
                         return@find card.cardId == cardCombination.cardId
                     }
@@ -110,6 +109,7 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
 
                         val resultCard =
                             queries.getMyCard(upgradeCard.id.toLong()).executeAsOne().toCard()
+                        Logger.log("resultCard : ${resultCard.type}")
                         emit(Resource.Success(resultCard))
                         return@supervisorScope
                     } else {

@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class CardType(
     var id: Int,
     var name: String,
-    var strongList: HashMap<Int, Int>
+    var strongList: HashMap<String, Int>,
+    var weakList: HashMap<String, Int>
 )

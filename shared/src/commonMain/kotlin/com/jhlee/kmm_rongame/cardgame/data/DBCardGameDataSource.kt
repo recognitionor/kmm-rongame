@@ -1,6 +1,7 @@
 package com.jhlee.kmm_rongame.cardgame.data
 
 import com.jhlee.kmm_rongame.AppDatabase
+import com.jhlee.kmm_rongame.card.data.CardInfoManager
 import com.jhlee.kmm_rongame.card.data.CardUtils
 import com.jhlee.kmm_rongame.card.data.parseHashMap
 import com.jhlee.kmm_rongame.card.data.toCard
@@ -29,18 +30,14 @@ class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
             repeat(6) {
                 val gradeTemp = (selectIndex / 16) + 1
                 val cardInfoTemp = queries.getCardInfoRandom(gradeTemp.toLong()).executeAsOne()
-                val list: MutableList<CardTypeEntity> = mutableListOf()
-                cardInfoTemp.type.split("|").forEach { typeId ->
-                    list.add(queries.getCardType(typeId.toLong()).executeAsOne())
-                }
                 val cardTypeSet: HashSet<CardType> = hashSetOf()
-                list.forEach { type ->
-                    cardTypeSet.add(
-                        CardType(
-                            type.id.toInt(), type.name, parseHashMap(type.strongList)
-                        )
-                    )
+                cardInfoTemp.type.split("|").forEach { typeId ->
+                    val cardType = queries.getCardType(typeId.toLong()).executeAsOne()
+                    CardInfoManager.CARD_TYPE_MAP[cardType.name]?.let { cardType ->
+                        cardTypeSet.add(cardType)
+                    }
                 }
+
                 val card = Card(
                     cardId = cardInfoTemp.id.toInt(),
                     name = cardInfoTemp.name,

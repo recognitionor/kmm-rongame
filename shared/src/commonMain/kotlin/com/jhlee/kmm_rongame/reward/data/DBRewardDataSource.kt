@@ -1,14 +1,13 @@
 package com.jhlee.kmm_rongame.reward.data
 
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import com.jhlee.kmm_rongame.AppDatabase
-import com.jhlee.kmm_rongame.card.domain.Card
-import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.main.data.toUser
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
@@ -23,7 +22,7 @@ class DBRewardDataSource(
         return flow {
             try {
                 emit(Resource.Loading())
-                val userInfoList = queries.getUserInfo().asFlow().mapToList().firstOrNull()
+                val userInfoList = queries.getUserInfo().asFlow().mapToList(currentCoroutineContext()).firstOrNull()
                 val userInfo = userInfoList?.firstOrNull()
                 if (userInfo != null) {
                     emit(Resource.Success(userInfo.toUser()))
@@ -58,7 +57,7 @@ class DBRewardDataSource(
     override fun updateCardStage(): Flow<Resource<UserInfo>> = flow {
         emit(Resource.Loading())
         queries.nextCardStage()
-        val userInfoList = queries.getUserInfo().asFlow().mapToList().firstOrNull()
+        val userInfoList = queries.getUserInfo().asFlow().mapToList(currentCoroutineContext()).firstOrNull()
         val userInfo = userInfoList?.firstOrNull()
         if (userInfo != null) {
             emit(Resource.Success(userInfo.toUser()))
@@ -67,10 +66,6 @@ class DBRewardDataSource(
         }
     }
 
-    override fun getCardInfoList(): Flow<Resource<Boolean>> = flow { }
-
-    override fun getCardTypeInfoList(): Flow<Resource<Boolean>> = flow { }
-
-    override fun getCardCombineInfoList(): Flow<Resource<Boolean>> = flow { }
+    override fun initCardWholeData(): Flow<Resource<Boolean>> = flow {  }
 
 }

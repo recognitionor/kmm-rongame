@@ -4,7 +4,7 @@ plugins {
     id("com.android.library")
 
     id("org.jetbrains.compose")
-    id("com.squareup.sqldelight")
+    id("app.cash.sqldelight").version("2.0.0")
     id("dev.icerock.mobile.multiplatform-resources")
     kotlin("plugin.serialization") version "1.5.10"
 }
@@ -61,8 +61,8 @@ plugins {
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 
-                implementation("com.squareup.sqldelight:runtime:1.5.5")
-                implementation("com.squareup.sqldelight:coroutines-extensions:1.5.5")
+                implementation("app.cash.sqldelight:runtime:2.0.0")
+                implementation("app.cash.sqldelight:coroutines-extensions:2.0.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
                 api("dev.icerock.moko:resources:0.23.0")
 
@@ -94,7 +94,7 @@ plugins {
         val androidMain by getting {
             dependencies {
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
-                implementation("com.squareup.sqldelight:android-driver:1.5.5")
+                implementation("app.cash.sqldelight:android-driver:2.0.0")
                 implementation("androidx.appcompat:appcompat:1.6.1")
                 implementation("androidx.activity:activity-compose:1.7.2")
                 implementation("io.ktor:ktor-client-android:$ktorVersion")
@@ -108,7 +108,7 @@ plugins {
         val iosSimulatorArm64Main by getting
         val iosMain by getting {
             dependencies {
-                implementation("com.squareup.sqldelight:native-driver:1.5.5")
+                implementation("app.cash.sqldelight:native-driver:2.0.0")
                 implementation("io.ktor:ktor-client-darwin:$ktorVersion")
             }
             dependsOn(commonMain)
@@ -146,11 +146,17 @@ multiplatformResources {
     multiplatformResourcesPackage = "com.jhlee.kmm_rongame"
     multiplatformResourcesClassName = "SharedRes"
 }
-
 sqldelight {
-    database("AppDatabase") {
-        packageName = "com.jhlee.kmm_rongame"
-        sourceFolders = listOf("sqldelight")
+    databases {
+        create("AppDatabase") {
+            packageName.set("com.jhlee.kmm_rongame")
+
+//            dialect("app.cash.sqldelight:mysql-dialect:2.0.0")
+            verifyMigrations.set(true)
+            deriveSchemaFromMigrations.set(true)
+            migrationOutputFileFormat.set("sql")
+            migrationOutputDirectory.set(file("sqldelight/migrations"))
+        }
     }
 }
 

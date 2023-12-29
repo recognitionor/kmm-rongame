@@ -3,7 +3,6 @@ package com.jhlee.kmm_rongame.card.data
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.core.data.ImageStorage
-import com.jhlee.kmm_rongame.core.util.Logger
 import database.CardInfoEntity
 import database.CardTypeEntity
 import database.GetMyCard
@@ -27,14 +26,14 @@ suspend fun MyCardList.toCard(): Card {
     )
 }
 
-fun parseHashMap(input: String): HashMap<Int, Int> {
+fun parseHashMap(input: String): HashMap<String, Int> {
     val keyValueRegex = Regex("(\\d+):(\\d+)")
     val matchResults = keyValueRegex.findAll(input)
 
-    val hashMap = HashMap<Int, Int>()
+    val hashMap = HashMap<String, Int>()
 
     for (matchResult in matchResults) {
-        val key = matchResult.groupValues[1].toIntOrNull() ?: 0
+        val key = matchResult.groupValues[1]
         val value = matchResult.groupValues[2].toIntOrNull() ?: 0
         hashMap[key] = value
     }
@@ -46,9 +45,11 @@ suspend fun MyCardList.toCard(
     cardInfoEntity: CardInfoEntity,
     typeList: MutableList<CardTypeEntity>,
 ): Card {
-    val cardTypeSet: HashSet<CardType> = hashSetOf<CardType>()
+    val cardTypeSet: HashSet<CardType> = hashSetOf()
     typeList.forEach {
-        cardTypeSet.add(CardType(it.id.toInt(), it.name, parseHashMap(it.strongList)))
+        CardInfoManager.CARD_TYPE_MAP[it.name]?.let { cardType ->
+            cardTypeSet.add(cardType)
+        }
     }
     return Card(
         id.toInt(),
@@ -67,9 +68,11 @@ suspend fun MyCardList.toCard(
 
 suspend fun GetMyCard.toCard(): Card {
     val pairs = type?.split("|") ?: emptyList()
-    val tempSet : HashSet<CardType> = hashSetOf()
+    val tempSet: HashSet<CardType> = hashSetOf()
     for (pair in pairs) {
-        tempSet.add(CardTypeConst.TYPE_LIST[pair.toInt()])
+        CardInfoManager.getCardTypeFromId(pair.toInt())?.let {
+            tempSet.add(it)
+        }
     }
     return Card(
         id.toInt(),

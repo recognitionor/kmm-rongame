@@ -13,7 +13,7 @@ class GameUtils {
             val sb = StringBuilder()
             myCard.type.forEach { myType ->
                 enemyCard.type.forEach { enemyType ->
-                    val strong = myType.strongList[enemyType.id]
+                    val strong = myType.strongList[enemyType.name]
                     if (strong != null) {
                         sb.append("${myType.name} 타입은 ${enemyType.name} 에게 $strong 추가로 공격한다.\n")
                         myPower += strong
@@ -23,7 +23,7 @@ class GameUtils {
 
             enemyCard.type.forEach { enemyType ->
                 myCard.type.forEach { myType ->
-                    val strong = enemyType.strongList[myType.id]
+                    val strong = enemyType.strongList[myType.name]
                     if (strong != null) {
                         sb.append("${enemyType.name} 타입은 ${myType.name} 에게 $strong 추가로 공격한다.\n")
                         enemyPower += strong
@@ -32,7 +32,7 @@ class GameUtils {
             }
             myCard.type.forEach { myType ->
                 enemyCard.type.forEach { enemyType ->
-                    val strong = myType.strongList[enemyType.id]
+                    val strong = myType.strongList[enemyType.name]
                     if (strong != null) {
                         myPower += strong
                     }

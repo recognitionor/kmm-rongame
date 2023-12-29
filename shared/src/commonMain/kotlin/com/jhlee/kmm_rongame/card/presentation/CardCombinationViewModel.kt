@@ -65,7 +65,6 @@ class CardCombinationViewModel(private val cardCombinationDataSource: CardCombin
                     }
 
                     is Resource.Error -> {
-                        Logger.log("error : ${result.message}")
                         _state.update {
                             it.copy(
                                 animationMode = CardCombinationState.ANIMATION_FAIL,

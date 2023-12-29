@@ -1,6 +1,5 @@
 package com.jhlee.kmm_rongame.card.data
 
-import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.core.util.Logger
 import kotlinx.serialization.Serializable
 
@@ -12,17 +11,16 @@ data class CardTypeDto(
 ) {
     companion object {
 
-        suspend fun parseStrongList(strongList: String): HashMap<Int, Int> {
-            val resultMap = hashMapOf<Int, Int>()
+        suspend fun parseStrongList(strongList: String): HashMap<String, Int> {
+            val resultMap = hashMapOf<String, Int>()
             try {
                 val pairs = strongList.split("|")
                 for (pair in pairs) {
                     val (keyStr, valueStr) = pair.split(":")
-                    val key = keyStr.toInt()
                     val value = valueStr.toInt()
-                    resultMap[key] = value
+                    resultMap[keyStr] = value
                 }
-            } catch (e: Exception) { }
+            } catch (e: Exception) { Logger.log("error : $e")}
             return resultMap
         }
 

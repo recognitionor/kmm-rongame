@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.card.data
 
+import androidx.compose.material3.Card
 import com.jhlee.kmm_rongame.AppDatabase
 import com.jhlee.kmm_rongame.Firebase
 import com.jhlee.kmm_rongame.card.domain.Card
@@ -9,6 +10,7 @@ import com.jhlee.kmm_rongame.constants.GatchaConst
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.storage
 import database.CardTypeEntity
 import io.ktor.client.HttpClient
@@ -37,10 +39,10 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                             val type = queries.getCardType(typeId.toLong()).executeAsOne()
                             list.add(type)
                         }
-
                         it.toCard(cardInfo, list)
                     }
                 }.await()
+
                 emit(Resource.Success(cardList))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message.toString()))
@@ -70,7 +72,9 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                 }
                 val cardTypeSet: HashSet<CardType> = hashSetOf()
                 list.forEach {
-                    cardTypeSet.add(CardType(it.id.toInt(), it.name, parseHashMap(it.strongList)))
+                    CardInfoManager.CARD_TYPE_MAP[it.name]?.let { cardType ->
+                        cardTypeSet.add(cardType)
+                    }
                 }
                 val card = Card(
                     cardId = cardInfoTemp.id.toInt(),

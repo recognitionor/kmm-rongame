@@ -75,7 +75,6 @@ fun CardCombinationInfoScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Logger.log("${cardCombinationInfo.resultCard.name} - ${cardCombinationInfo.isOpened}")
                         if (cardCombinationInfo.resultCard.grade == 1) {
                             Text(
                                 modifier = Modifier.weight(1f),
