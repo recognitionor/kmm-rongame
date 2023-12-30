@@ -84,6 +84,7 @@ UPDATE UserInfoEntity
 SET cardStage = cardStage + 1
 WHERE id = 1;
 
+
 minusUserMoney:
 UPDATE UserInfoEntity
 SET money = money - ?

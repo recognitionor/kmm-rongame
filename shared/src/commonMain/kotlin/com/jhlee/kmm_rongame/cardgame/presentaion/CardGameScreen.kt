@@ -360,7 +360,7 @@ fun CardGameScreen(
             var rewardPoint = 0
             resultStr = if (enemyScore < myScore) {
                 rewardPoint = ((state.selectStageIndex + 1) * 2) * 10
-                mainViewmodel.updateCardStage()
+                mainViewmodel.updateCardStage(state.selectStageIndex)
                 "승"
             } else if (enemyScore > myScore) {
                 "패"

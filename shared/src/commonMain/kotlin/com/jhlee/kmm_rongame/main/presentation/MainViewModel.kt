@@ -79,15 +79,17 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
         }
     }
 
-    fun updateCardStage() {
-        mainDataSource.updateCardStage().onEach { result ->
-            when (result) {
-                is Resource.Success -> {}
-                is Resource.Error -> {}
-                is Resource.Loading -> {}
-            }
+    fun updateCardStage(selectStageIndex: Int) {
+        if ((state.value.userInfo?.cardStage ?: 0) <= selectStageIndex) {
+            mainDataSource.updateCardStage().onEach { result ->
+                when (result) {
+                    is Resource.Success -> {}
+                    is Resource.Error -> {}
+                    is Resource.Loading -> {}
+                }
 
-        }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
+        }
     }
 
     fun updateUserMoney(money: Int, callBack: ((isResult: Boolean) -> Unit)? = null) {
