@@ -152,10 +152,10 @@ sqldelight {
             packageName.set("com.jhlee.kmm_rongame")
 
 //            dialect("app.cash.sqldelight:mysql-dialect:2.0.0")
-            verifyMigrations.set(true)
-            deriveSchemaFromMigrations.set(true)
-            migrationOutputFileFormat.set("sql")
-            migrationOutputDirectory.set(file("sqldelight/migrations"))
+//            verifyMigrations.set(true)
+//            deriveSchemaFromMigrations.set(true)
+//            migrationOutputFileFormat.set("sql")
+//            migrationOutputDirectory.set(file("sqldelight/migrations"))
         }
     }
 }

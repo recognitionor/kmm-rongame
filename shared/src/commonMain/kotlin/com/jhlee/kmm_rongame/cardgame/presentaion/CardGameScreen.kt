@@ -41,7 +41,6 @@ import com.jhlee.kmm_rongame.card.presentation.CardListItemScreen
 import com.jhlee.kmm_rongame.card.presentation.CardListSmallItemScreen
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
-import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 
 @Composable
@@ -49,7 +48,7 @@ fun CardGameScreen(
     mainViewmodel: MainViewModel,
     viewModel: CardGameViewModel,
     state: CardGameState,
-    dismiss: () -> Unit
+    dismiss: () -> Unit,
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var selectCardSlot by remember { mutableStateOf(-1) }
@@ -63,7 +62,6 @@ fun CardGameScreen(
             myScore++
         }
     }
-
     Scaffold(topBar = {
         Row {
             getCommonImageResourceBitMap(SharedRes.images.ic_back)?.let {
@@ -361,7 +359,7 @@ fun CardGameScreen(
             var resultStr = ""
             var rewardPoint = 0
             resultStr = if (enemyScore < myScore) {
-                rewardPoint = ((selectCardSlot) * 2) * 10
+                rewardPoint = ((state.selectStageIndex + 1) * 2) * 10
                 mainViewmodel.updateCardStage()
                 "승"
             } else if (enemyScore > myScore) {
@@ -370,10 +368,9 @@ fun CardGameScreen(
                 rewardPoint = (selectCardSlot) * 10
                 "무승부"
             }
-
             Column(
                 modifier = Modifier.background(Color.White).fillMaxWidth()
-                    .align(Alignment.CenterHorizontally).padding(start = 20.dp, end = 20.dp)
+                    .align(Alignment.CenterHorizontally).padding(20.dp)
             ) {
                 Text(
                     resultStr,
@@ -466,11 +463,12 @@ fun CardGameScreen(
                 detectTapGestures { }
             }, contentAlignment = Alignment.Center
         ) {
-            CardDetailInfoScreen(it) {
-                cardDetailView = null
+            Box(modifier = Modifier.padding(20.dp)) {
+                CardDetailInfoScreen(it) {
+                    cardDetailView = null
+                }
             }
         }
     }
-
 }
 

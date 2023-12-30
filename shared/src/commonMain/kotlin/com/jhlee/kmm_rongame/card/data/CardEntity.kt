@@ -3,8 +3,8 @@ package com.jhlee.kmm_rongame.card.data
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.core.data.ImageStorage
+import com.jhlee.kmm_rongame.core.util.Logger
 import database.CardInfoEntity
-import database.CardTypeEntity
 import database.GetMyCard
 import database.MyCardList
 import kotlinx.serialization.json.Json.Default.decodeFromString
@@ -43,12 +43,12 @@ fun parseHashMap(input: String): HashMap<String, Int> {
 
 suspend fun MyCardList.toCard(
     cardInfoEntity: CardInfoEntity,
-    typeList: MutableList<CardTypeEntity>,
 ): Card {
     val cardTypeSet: HashSet<CardType> = hashSetOf()
-    typeList.forEach {
-        CardInfoManager.CARD_TYPE_MAP[it.name]?.let { cardType ->
-            cardTypeSet.add(cardType)
+    type?.split("|")?.forEach { typeName ->
+        CardInfoManager.CARD_TYPE_MAP[typeName]?.let {
+            Logger.log("cardType : $it")
+            cardTypeSet.add(it)
         }
     }
     return Card(

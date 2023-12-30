@@ -40,7 +40,9 @@ fun CardGameMainScreen(mainViewModel: MainViewModel, appModule: AppModule) {
     val viewModel = getViewModel(key = BankViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { CardGameViewModel(appModule.dbCardGameDataSource) })
     val state by viewModel.state.collectAsState()
-
+    Logger.log("CardGameMainScreen :  ${state.isLoading}" )
+    Logger.log("CardGameMainScreen :  ${state.screenMode}" )
+    Logger.log("CardGameMainScreen :  ${state.screenMode}" )
     Box(
         modifier = Modifier.fillMaxSize().background(
             color = Color.White // 기본 배경 색상

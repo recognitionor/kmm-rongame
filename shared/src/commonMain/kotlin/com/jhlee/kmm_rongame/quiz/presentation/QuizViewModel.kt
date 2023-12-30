@@ -1,7 +1,6 @@
 package com.jhlee.kmm_rongame.quiz.presentation
 
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.quiz.domain.Quiz
 import com.jhlee.kmm_rongame.quiz.domain.QuizDataSource
 import dev.icerock.moko.mvvm.viewmodel.ViewModel

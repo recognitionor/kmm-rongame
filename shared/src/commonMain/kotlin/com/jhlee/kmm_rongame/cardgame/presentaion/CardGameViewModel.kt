@@ -3,7 +3,6 @@ package com.jhlee.kmm_rongame.cardgame.presentaion
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.cardgame.domain.CardGameDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +12,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 class CardGameViewModel(private val cardGameDataSource: CardGameDataSource) : ViewModel() {
     companion object {
@@ -39,8 +39,11 @@ class CardGameViewModel(private val cardGameDataSource: CardGameDataSource) : Vi
                     _state.update { it.copy(myCardEntry = result.data ?: emptyList()) }
                 }
 
-                is Resource.Loading -> {}
-                is Resource.Error -> {}
+                is Resource.Loading -> {
+                }
+
+                is Resource.Error -> {
+                }
             }
 
         }.launchIn(viewModelScope)
@@ -82,7 +85,8 @@ class CardGameViewModel(private val cardGameDataSource: CardGameDataSource) : Vi
                 }
 
                 is Resource.Loading -> {}
-                is Resource.Error -> {}
+                is Resource.Error -> {
+                }
             }
         }.launchIn(viewModelScope)
     }
@@ -125,20 +129,22 @@ class CardGameViewModel(private val cardGameDataSource: CardGameDataSource) : Vi
             val sb = StringBuilder()
             myCard.type.forEach { myType ->
                 enemyCard.type.forEach { enemyType ->
-                    val strong = myType.strongList[enemyType.name]
-                    if (strong != null) {
-                        sb.append("${myType.name} 타입은 ${enemyType.name} 에게 $strong 추가로 공격한다.\n")
-                        myPower += strong
+                    if (myType.strongList.contains(enemyType.name)) {
+                        val strong = (myType.strongList[enemyType.name] ?: 0) * 0.1
+                        sb.append("${myType.name} 타입은 ${enemyType.name} 에게 ${strong * 100}% 추가로 공격한다.\n")
+                        myPower += (myPower * strong).roundToInt()
                     }
                 }
             }
 
             enemyCard.type.forEach { enemyType ->
                 myCard.type.forEach { myType ->
-                    val strong = enemyType.strongList[myType.name]
-                    if (strong != null) {
-                        sb.append("${enemyType.name} 타입은 ${myType.name} 에게 $strong 추가로 공격한다.\n")
-                        enemyPower += strong
+                    if (myType.strongList.contains(enemyType.name)) {
+                        val strong = enemyType.strongList[myType.name]
+                        if (strong != null) {
+                            sb.append("${enemyType.name} 타입은 ${myType.name} 에게 $strong 추가로 공격한다.\n")
+                            enemyPower += strong
+                        }
                     }
                 }
             }

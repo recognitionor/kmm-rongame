@@ -2,7 +2,6 @@ package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.runtime.Composable
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 import dev.icerock.moko.mvvm.viewmodel.ViewModel

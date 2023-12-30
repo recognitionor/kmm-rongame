@@ -2,24 +2,20 @@ package com.jhlee.kmm_rongame.cardgame.data
 
 import com.jhlee.kmm_rongame.AppDatabase
 import com.jhlee.kmm_rongame.card.data.CardInfoManager
-import com.jhlee.kmm_rongame.card.data.CardUtils
-import com.jhlee.kmm_rongame.card.data.parseHashMap
 import com.jhlee.kmm_rongame.card.data.toCard
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.cardgame.domain.CardGameDataSource
-import com.jhlee.kmm_rongame.constants.CardConst
 import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
+import database.CardInfoEntity
 import database.CardTypeEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.supervisorScope
-import kotlinx.datetime.Clock
-import kotlin.random.Random
 
 class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
 
@@ -27,13 +23,28 @@ class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
     override fun getEnemyList(selectIndex: Int): Flow<Resource<List<Card>>> = flow {
         try {
             val resultList = arrayListOf<Card>()
+
             repeat(6) {
-                val gradeTemp = (selectIndex / 16) + 1
-                val cardInfoTemp = queries.getCardInfoRandom(gradeTemp.toLong()).executeAsOne()
+                val cardInfoTemp = if (it < 3) {
+                    var cardTemp: CardInfoEntity? = null
+                    try {
+                        cardTemp = queries.getCardInfo(selectIndex.toLong() + it).executeAsOne()
+                    } catch (_: Exception) {
+                    }
+                    if (cardTemp == null) {
+                        val gradeTemp = (selectIndex / 16) + 1
+                        cardTemp = queries.getCardInfoRandom(gradeTemp.toLong()).executeAsOne()
+                    }
+                    cardTemp
+                } else {
+                    val gradeTemp = (selectIndex / 16) + 1
+                    queries.getCardInfoRandom(gradeTemp.toLong()).executeAsOne()
+                }
+
+
                 val cardTypeSet: HashSet<CardType> = hashSetOf()
-                cardInfoTemp.type.split("|").forEach { typeId ->
-                    val cardType = queries.getCardType(typeId.toLong()).executeAsOne()
-                    CardInfoManager.CARD_TYPE_MAP[cardType.name]?.let { cardType ->
+                cardInfoTemp.type.split("|").forEach { typeName ->
+                    CardInfoManager.CARD_TYPE_MAP[typeName]?.let { cardType ->
                         cardTypeSet.add(cardType)
                     }
                 }
@@ -58,23 +69,22 @@ class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
             }
             emit(Resource.Success(resultList))
         } catch (e: Exception) {
+            Logger.log("enemy $e")
             emit(Resource.Error(e.message ?: "getEnemyList"))
         }
     }
 
     override fun getMyCardList(): Flow<Resource<List<Card>>> = flow {
+        Logger.log("getMyCardList")
         emit(Resource.Loading())
         supervisorScope {
             val cardList = async {
                 queries.myCardList().executeAsList().map {
                     val cardInfo = queries.getCardInfo(it.cardId!!.toLong()).executeAsOne()
-                    val list: MutableList<CardTypeEntity> = mutableListOf()
-                    cardInfo.type.split("|").forEach { typeId ->
-                        list.add(queries.getCardType(typeId.toLong()).executeAsOne())
-                    }
-                    it.toCard(cardInfo, list)
+                    it.toCard(cardInfo)
                 }
             }.await()
+            Logger.log("Success")
             emit(Resource.Success(cardList))
         }
     }

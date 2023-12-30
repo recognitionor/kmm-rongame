@@ -1,6 +1,5 @@
 package com.jhlee.kmm_rongame.test.presentation
 
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.test.domain.Test
 import com.jhlee.kmm_rongame.test.domain.TestDataSource
 import dev.icerock.moko.mvvm.viewmodel.ViewModel

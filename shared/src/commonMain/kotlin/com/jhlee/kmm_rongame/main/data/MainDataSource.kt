@@ -136,8 +136,11 @@ class MainDataSourceImpl(
                         cardInfo = queries.getCardInfo(it.id.toLong()).executeAsOne()
                     } catch (_: Exception) {
                     }
+
                     val image: String?
-                    if (cardInfo?.image == null) {
+                    Logger.log("img path : ${cardInfo?.image}")
+                    if (!ImageStorage.existImage(cardInfo?.image ?: "")) {
+                        Logger.log("11")
                         val imgArray = httpClient.get(it.image).body<ByteArray>()
                         image = ImageStorage.saveImage(imgArray)
                         queries.insertCardInfoEntity(
@@ -204,8 +207,8 @@ class MainDataSourceImpl(
         emit(Resource.Loading())
         try {
             initCardType()
-            initCardCombination()
             initCardInfo()
+            initCardCombination()
         } catch (e: Exception) {
             emit(Resource.Error("data load fail"))
             return@flow

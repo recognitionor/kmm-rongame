@@ -4,6 +4,7 @@ import android.content.Context
 import com.jhlee.kmm_rongame.core.util.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.UUID
 
 actual class ImageStorage {
@@ -37,6 +38,10 @@ actual class ImageStorage {
             return withContext(Dispatchers.IO) {
                 context?.deleteFile(fileName)
             }
+        }
+
+        actual suspend fun existImage(filePath: String): Boolean {
+            return File(context?.filesDir, filePath).exists()
         }
     }
 

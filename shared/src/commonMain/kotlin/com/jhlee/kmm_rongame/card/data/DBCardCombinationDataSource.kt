@@ -21,11 +21,7 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
             val cardList = async {
                 queries.myCardList().executeAsList().map {
                     val cardInfo = queries.getCardInfo(it.cardId!!.toLong()).executeAsOne()
-                    val list: MutableList<CardTypeEntity> = mutableListOf()
-                    cardInfo.type.split("|").forEach { typeId ->
-                        list.add(queries.getCardType(typeId.toLong()).executeAsOne())
-                    }
-                    it.toCard(cardInfo, list)
+                    it.toCard(cardInfo)
                 }
             }.await()
             emit(Resource.Success(cardList))

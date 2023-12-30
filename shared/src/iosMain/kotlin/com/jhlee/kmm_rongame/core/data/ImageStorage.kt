@@ -45,6 +45,7 @@ actual class ImageStorage {
                     )
                 }
 
+
                 data.writeToFile(
                     path = fullPath,
                     atomically = true
@@ -70,6 +71,11 @@ actual class ImageStorage {
             withContext(Dispatchers.Default) {
                 fileManager.removeItemAtPath(fileName, null)
             }
+        }
+
+        actual suspend fun existImage(filePath: String): Boolean {
+            val fileManager = NSFileManager.defaultManager
+            return fileManager.fileExistsAtPath(filePath)
         }
     }
 }
