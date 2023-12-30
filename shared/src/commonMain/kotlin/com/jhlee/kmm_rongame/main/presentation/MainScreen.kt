@@ -27,30 +27,30 @@ fun MainScreen(appModule: AppModule) {
     val viewModel = getViewModel(key = MainViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { MainViewModel(appModule.dbMainDataSource) })
     val state: MainState by viewModel.state.collectAsState()
-    if (state.isLoading) {
-        SplashScreen()
-    } else {
-        Scaffold(bottomBar = {
-            if (state.userInfo != null && !state.isWholeScreenOpen) {
-                NavigationBar {
-                    MainScreenItem.SCREEN_LIST.forEachIndexed { index, item ->
-                        NavigationBarItem(icon = {
-                            Icon(
-                                item.icon, contentDescription = item.name
-                            )
-                        },
-                            label = { Text(item.name) },
-                            selected = selectedItem.value == index,
-                            onClick = { selectedItem.value = index })
-                    }
+    Scaffold(bottomBar = {
+        if (state.userInfo != null && !state.isWholeScreenOpen) {
+            NavigationBar {
+                MainScreenItem.SCREEN_LIST.forEachIndexed { index, item ->
+                    NavigationBarItem(icon = {
+                        Icon(
+                            item.icon, contentDescription = item.name
+                        )
+                    },
+                        label = { Text(item.name) },
+                        selected = selectedItem.value == index,
+                        onClick = { selectedItem.value = index })
                 }
             }
-        }) {
-            Box {
-                if (state.userInfo == null) {
-                    UserRegisterScreen(state) {
-                        viewModel.registerUser(it)
-                    }
+        }
+    }) {
+        Box {
+            if (state.userInfo == null) {
+                UserRegisterScreen(state) {
+                    viewModel.registerUser(it)
+                }
+            } else {
+                if (state.isCardInfoLoading) {
+                    SplashScreen()
                 } else {
                     // 여기에서 선택된 아이템에 따라 다른 컴포저블을 표시합니다.
                     when (selectedItem.value) {
@@ -60,10 +60,8 @@ fun MainScreen(appModule: AppModule) {
                     }
                 }
             }
-
         }
     }
-
     when (state.openDialog) {
         MainState.NO_DIALOG -> {}
         else -> {

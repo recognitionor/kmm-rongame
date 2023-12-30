@@ -124,6 +124,7 @@ class MainDataSourceImpl(
     }
 
     private suspend fun initCardInfo() {
+        Logger.log("initCardInfo()")
         Firebase.storage.reference.child("card.csv").let {
             supervisorScope {
                 val list = async {
@@ -138,9 +139,7 @@ class MainDataSourceImpl(
                     }
 
                     val image: String?
-                    Logger.log("img path : ${cardInfo?.image}")
-                    if (!ImageStorage.existImage(cardInfo?.image ?: "")) {
-                        Logger.log("11")
+                    if (cardInfo?.image == null || !ImageStorage.existImage(cardInfo?.image ?: "")) {
                         val imgArray = httpClient.get(it.image).body<ByteArray>()
                         image = ImageStorage.saveImage(imgArray)
                         queries.insertCardInfoEntity(
@@ -159,6 +158,7 @@ class MainDataSourceImpl(
     }
 
     private suspend fun initCardCombination() {
+        Logger.log("initCardCombination()")
         Firebase.storage.reference.child("card_combine.csv").let {
             supervisorScope {
                 val list = async {
@@ -177,6 +177,7 @@ class MainDataSourceImpl(
     }
 
     private suspend fun initCardType() {
+        Logger.log("initCardType()")
         Firebase.storage.reference.child("card_type.csv").let {
             supervisorScope {
                 val list = async {

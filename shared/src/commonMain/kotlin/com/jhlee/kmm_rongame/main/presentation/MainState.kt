@@ -10,6 +10,7 @@ data class MainState(
     val isWholeScreenOpen: Boolean = false,
     val userInfo: UserInfo? = null,
     val isLoading: Boolean = true,
+    val isCardInfoLoading: Boolean = true,
     val error: String = ""
 ) {
     companion object {

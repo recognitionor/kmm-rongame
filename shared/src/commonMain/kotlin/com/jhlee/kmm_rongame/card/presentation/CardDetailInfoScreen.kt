@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.card.data.CardUtils
 import com.jhlee.kmm_rongame.card.domain.Card
+import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.common.view.PotentialRatingBar
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.core.presentation.getString
@@ -165,10 +166,8 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                                 width = 2.dp, color = Color.Green, shape = RoundedCornerShape(12.dp)
                             ).padding(12.dp)
                         ) {
-                            card.type.forEach {
-                                it.strongList.forEach { type ->
-                                    Text(text = "${type.key} + ${type.value * 10}%")
-                                }
+                            cardTypeToMap(card.type, true).forEach { type ->
+                                Text(text = "${type.key} + ${type.value * 10}%")
                             }
                         }
                     }
@@ -186,10 +185,8 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                                 width = 2.dp, color = Color.Red, shape = RoundedCornerShape(12.dp)
                             ).padding(12.dp)
                         ) {
-                            card.type.forEach {
-                                it.weakList.forEach { type ->
-                                    Text(text = "${type.key} + ${type.value * 10}% 피해")
-                                }
+                            cardTypeToMap(card.type, false).forEach { type ->
+                                Text(text = "${type.key} + ${type.value * 10}% 피해")
                             }
                         }
                     }
@@ -204,4 +201,31 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
             Spacer(modifier = Modifier.weight(1f)) // 빈 공간을 추가하여 버튼을 아래로 밀어냅니다
         }
     }
+}
+
+fun cardTypeToMap(type: HashSet<CardType>, isString: Boolean): HashMap<String, Int> {
+    val tempSet = hashMapOf<String, Int>()
+    if (isString) {
+        type.forEach {
+            it.strongList.forEach { type ->
+                if (tempSet.contains(type.key)) {
+                    tempSet[type.key] = type.value + type.value
+                } else {
+                    tempSet[type.key] = type.value
+                }
+            }
+        }
+    } else {
+        type.forEach {
+            it.weakList.forEach { type ->
+                if (tempSet.contains(type.key)) {
+                    tempSet[type.key] = type.value + type.value
+                } else {
+                    tempSet[type.key] = type.value
+                }
+            }
+        }
+    }
+
+    return tempSet
 }

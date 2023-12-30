@@ -2,6 +2,7 @@ package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.runtime.Composable
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
@@ -22,6 +23,7 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
+        getUserInfo()
         initCardInfo()
     }
 
@@ -29,19 +31,21 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
         mainDataSource.initCardWholeData().onEach { result ->
             when (result) {
                 is Resource.Success -> {
+                    Logger.log("SUCCESS")
                     _state.update {
-                        it.copy(isLoading = false)
+                        it.copy(isCardInfoLoading = false)
                     }
-                    getUserInfo()
                 }
 
                 is Resource.Loading -> {
+                    Logger.log("Loading")
                     _state.update {
-                        it.copy(isLoading = true)
+                        it.copy(isCardInfoLoading = true)
                     }
                 }
 
                 is Resource.Error -> {
+                    Logger.log("ERROR ${result.message}")
                     _state.update { it.copy(error = result.message ?: "") }
                 }
             }

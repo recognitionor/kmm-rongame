@@ -6,7 +6,6 @@ import com.jhlee.kmm_rongame.card.domain.CardCombination
 import com.jhlee.kmm_rongame.card.domain.CardCombinationDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
-import database.CardTypeEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -80,6 +79,7 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                         combineResult = it.toCombineResult(cardInfoList)
                     }
                 }
+                // 일반 강화 로직
                 if (combineResult.isEmpty()) {
                     val isCard1CanUpgrade = CardUtils.isUpgradeCard(card1)
                     val isCard2CanUpgrade = CardUtils.isUpgradeCard(card2)
@@ -113,18 +113,25 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                         return@supervisorScope
                     }
                 } else {
+                    // 결합 로직
                     val cardId = CardUtils.selectRandomCard(combineResult)
                     val cardTemp = queries.getCardInfo(cardId.toLong()).executeAsOne()
-                    val power = CardUtils.getCardRandomPower(cardTemp.grade?.toInt() ?: 0)
                     val potential = CardUtils.getCardRandomPotential()
+
+                    val powerTemp = CardUtils.getCardRandomPower(cardTemp.grade?.toInt() ?: 0)
                     val card =
-                        Card.getCardFromCardInfo(cardTemp, power = power, potential = potential)
+                        Card.getCardFromCardInfo(cardTemp, power = powerTemp, potential = potential)
+                    val power = if (card1.grade < card.grade || card2.grade < card.grade) {
+                        card1.power + card2.power
+                    } else {
+                        powerTemp
+                    }
                     queries.removeCard(card1.id.toLong())
                     queries.removeCard(card2.id.toLong())
                     queries.insertCardEntity(
                         cardId.toLong(), potential.toLong(), 0, power.toLong()
                     )
-                    emit(Resource.Success(card))
+                    emit(Resource.Success(card.copy(power = power)))
                     return@supervisorScope
                 }
             } catch (e: Exception) {

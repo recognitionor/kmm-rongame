@@ -3,7 +3,7 @@
     <string name="hello_world">Hello world</string>
     <string name="hello_x">Hello %s</string>
 
-    <string name="app_name">ronGame</string>
+    <string name="app_name">아빠가 만든 게임</string>
 
     <!--common-->
     <string name="start">시작</string>
