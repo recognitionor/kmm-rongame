@@ -141,22 +141,24 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
 
                 if (bankState.commentList.isNotEmpty()) {
                     val comment =
-                        "${(bankState.commentList[bankState.commentIndex % bankState.commentList.size])}"
+                        (bankState.commentList[bankState.commentIndex % bankState.commentList.size])
                     StoryDialog(content = comment)
                 }
 
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Row {
-                    Button(modifier = Modifier.weight(1f), onClick = {
-                        mainViewModel.showDialog(MainState.BANK_VIEW_MODE_DEPOSIT_DIALOG,
-                            createDepositDialog(
-                                "내가 가진 돈 :", "맡기실 돈을 입력 해주세요", mainState.userInfo?.money ?: 0
-                            ) {
-                                viewModel.processDeposit(it)
-                                mainViewModel.dismissDialog()
-                            })
-                    }) {
+                    Button(modifier = Modifier.weight(1f),
+                        enabled = (mainState.userInfo?.money ?: 0) >= 100,
+                        onClick = {
+                            mainViewModel.showDialog(MainState.BANK_VIEW_MODE_DEPOSIT_DIALOG,
+                                createDepositDialog(
+                                    "내가 가진 돈 :", "맡기실 돈을 입력 해주세요", mainState.userInfo?.money ?: 0
+                                ) {
+                                    viewModel.processDeposit(it)
+                                    mainViewModel.dismissDialog()
+                                })
+                        }) {
                         Text(text = "입금")
                     }
                 }
@@ -245,7 +247,7 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
 }
 
 fun createDepositDialog(
-    title: String, content: String, totalMyMoney: Int, confirm: (Int) -> Unit
+    title: String, content: String, totalMyMoney: Int, confirm: (Int) -> Unit,
 ): @Composable () -> Unit = {
     Box(
         modifier = Modifier.fillMaxSize().background(Color.Gray.copy(alpha = 0.8F))
@@ -286,13 +288,13 @@ fun createDepositDialog(
                 }
 
                 Row {
-                    Button(enabled = inputData >= 100, onClick = {
+                    Button(enabled = (inputData >= 100) && true, onClick = {
                         confirm.invoke(inputData)
                     }) {
                         Text(text = getString(SharedRes.strings.confirm))
                     }
                     Spacer(Modifier.width(20.dp))
-                    Button(enabled = inputData >= 100, onClick = {
+                    Button(enabled = true, onClick = {
                         confirm.invoke(0)
                     }) {
                         Text(text = getString(SharedRes.strings.cancel))

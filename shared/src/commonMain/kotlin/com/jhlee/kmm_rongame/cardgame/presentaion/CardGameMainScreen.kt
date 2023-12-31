@@ -40,9 +40,9 @@ fun CardGameMainScreen(mainViewModel: MainViewModel, appModule: AppModule) {
     val viewModel = getViewModel(key = BankViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { CardGameViewModel(appModule.dbCardGameDataSource) })
     val state by viewModel.state.collectAsState()
-    Logger.log("CardGameMainScreen :  ${state.isLoading}" )
-    Logger.log("CardGameMainScreen :  ${state.screenMode}" )
-    Logger.log("CardGameMainScreen :  ${state.screenMode}" )
+    Logger.log("CardGameMainScreen :  ${state.isLoading}")
+    Logger.log("CardGameMainScreen :  ${state.screenMode}")
+    Logger.log("CardGameMainScreen :  ${state.screenMode}")
     Box(
         modifier = Modifier.fillMaxSize().background(
             color = Color.White // 기본 배경 색상
@@ -68,19 +68,32 @@ fun CardGameMainScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                             Box(modifier = Modifier.aspectRatio(1f).padding(4.dp).clickable {
                                 if (currentStage >= index) {
                                     val costMoney = (index + 1) * 10
-                                    mainViewModel.showDialog(
-                                        MainState.QUIZ_INFO_DIALOG, createDialog("Start(시작) ",
-                                            "$costMoney 원이 듭니다.",
-                                            "img_cloud_dragon",
-                                            {
-                                                mainViewModel.updateUserMoney(-(costMoney))
-                                                viewModel.getCardGame(index)
-                                                mainViewModel.dismissDialog()
-                                            },
-                                            {
-                                                mainViewModel.dismissDialog()
-                                            })
-                                    )
+                                    if ((mainViewModel.state.value.userInfo?.money
+                                            ?: 0) >= costMoney
+                                    ) {
+                                        mainViewModel.showDialog(
+                                            MainState.QUIZ_INFO_DIALOG, createDialog("Start(시작) ",
+                                                "$costMoney 원이 듭니다.",
+                                                "img_cloud_dragon",
+                                                {
+                                                    mainViewModel.updateUserMoney(-(costMoney))
+                                                    viewModel.getCardGame(index)
+                                                    mainViewModel.dismissDialog()
+                                                },
+                                                {
+                                                    mainViewModel.dismissDialog()
+                                                })
+                                        )
+                                    } else {
+                                        mainViewModel.showDialog(
+                                            MainState.CARD_NOT_START_DIALOG, createDialog("아직 안되요",
+                                                "돈이 부족 해요 \uD83D\uDE25",
+                                                "img_cloud_dragon",
+                                                positiveButtonCallback = {
+                                                    mainViewModel.dismissDialog()
+                                                })
+                                        )
+                                    }
                                 } else {
                                     mainViewModel.showDialog(
                                         MainState.CARD_NOT_START_DIALOG, createDialog("아직 안되요",

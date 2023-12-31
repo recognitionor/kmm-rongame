@@ -79,7 +79,6 @@ fun Calendar(
     val lastDayOfMonth = firstDayOfMonth.plus(1, kotlinx.datetime.DateTimeUnit.MONTH).minus(
         1, kotlinx.datetime.DateTimeUnit.DAY
     )
-
     val daysInMonth = firstDayOfMonth.periodUntil(lastDayOfMonth).days
     val startDayOfWeek = (firstDayOfMonth.dayOfWeek.ordinal + 1) % 7
 
@@ -103,9 +102,7 @@ fun Calendar(
     }
 
     Spacer(modifier = Modifier.height(8.dp))
-
-    val weeks = (daysInMonth + startDayOfWeek - 2) / 7 + 1
-
+    val weeks = (daysInMonth + startDayOfWeek) / 7 + 1
     Column(modifier = Modifier.fillMaxWidth()) {
         for (week in 0 until weeks) {
             Row(modifier = Modifier.fillMaxWidth()) {
