@@ -66,6 +66,5 @@ class DBRewardDataSource(
         }
     }
 
-    override fun initCardWholeData(): Flow<Resource<Boolean>> = flow {  }
-
+    override fun initCardWholeData(isReset: Boolean): Flow<Resource<Boolean>> = flow {  }
 }

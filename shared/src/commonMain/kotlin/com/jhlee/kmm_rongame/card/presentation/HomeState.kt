@@ -17,6 +17,7 @@ data class HomeState(
     companion object {
         const val HOME_SCREEN_DEFAULT = 0
         const val HOME_SCREEN_COMBINATION = 1
+        const val HOME_SCREEN_SETTING = 2
 
     }
 }

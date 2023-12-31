@@ -123,7 +123,8 @@ class MainDataSourceImpl(
         }
     }
 
-    private suspend fun initCardInfo() {
+
+    private suspend fun initCardInfo(isReset: Boolean = false) {
         Logger.log("initCardInfo()")
         Firebase.storage.reference.child("card.csv").let {
             supervisorScope {
@@ -138,27 +139,34 @@ class MainDataSourceImpl(
                     } catch (_: Exception) {
                     }
 
-                    val image: String?
-                    if (cardInfo?.image == null || !ImageStorage.existImage(cardInfo?.image ?: "")) {
-                        val imgArray = httpClient.get(it.image).body<ByteArray>()
-                        image = ImageStorage.saveImage(imgArray)
-                        queries.insertCardInfoEntity(
-                            it.id.toLong(),
-                            it.name,
-                            it.nameEng,
-                            it.grade.toLong(),
-                            image,
-                            it.description,
-                            it.type
-                        )
-                    }
+                    val image: String? =
+                        if (isReset || cardInfo?.image == null || !ImageStorage.existImage(
+                                cardInfo.image ?: ""
+                            )
+                        ) {
+                            val imgArray = httpClient.get(it.image).body<ByteArray>()
+                            ImageStorage.saveImage(imgArray)
+                        } else {
+                            cardInfo.image
+                        }
+                    queries.insertCardInfoEntity(
+                        it.id.toLong(),
+                        it.name,
+                        it.nameEng,
+                        it.grade.toLong(),
+                        image,
+                        it.description,
+                        it.type
+                    )
+                }
+                queries.getCardInfoList().executeAsList().forEach {
+                    Logger.log("cardInfo : $it")
                 }
             }
         }
     }
 
     private suspend fun initCardCombination() {
-        Logger.log("initCardCombination()")
         Firebase.storage.reference.child("card_combine.csv").let {
             supervisorScope {
                 val list = async {
@@ -171,6 +179,9 @@ class MainDataSourceImpl(
                     queries.insertCardCombineEntity(
                         it.id.toLong(), item1Id, item2Id, it.result
                     )
+                }
+                queries.getCardCombineList().executeAsList().forEach {
+                    Logger.log("combine : $it")
                 }
             }
         }
@@ -185,6 +196,7 @@ class MainDataSourceImpl(
                     CardTypeDto.parseJson(csvString)
                 }.await()
                 list.forEach {
+                    Logger.log("it $it")
                     val strongStr = it.strongList.ifEmpty { "" }
                     queries.insertCardTypeEntity(it.id.toLong(), it.name, strongStr)
                     CardTypeDto.parseStrongList(it.strongList)
@@ -204,14 +216,14 @@ class MainDataSourceImpl(
         }
     }
 
-    override fun initCardWholeData(): Flow<Resource<Boolean>> = flow {
+    override fun initCardWholeData(isReset: Boolean): Flow<Resource<Boolean>> = flow {
         emit(Resource.Loading())
         try {
             initCardType()
-            initCardInfo()
+            initCardInfo(isReset)
             initCardCombination()
         } catch (e: Exception) {
-            emit(Resource.Error("data load fail"))
+            emit(Resource.Error("data load fail ${e.message}"))
             return@flow
         }
         emit(Resource.Success(true))

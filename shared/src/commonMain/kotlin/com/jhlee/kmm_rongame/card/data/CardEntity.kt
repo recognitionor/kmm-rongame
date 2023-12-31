@@ -47,7 +47,6 @@ suspend fun MyCardList.toCard(
     val cardTypeSet: HashSet<CardType> = hashSetOf()
     type?.split("|")?.forEach { typeName ->
         CardInfoManager.CARD_TYPE_MAP[typeName]?.let {
-            Logger.log("cardType : $it")
             cardTypeSet.add(it)
         }
     }

@@ -6,6 +6,7 @@ import com.jhlee.kmm_rongame.card.domain.CardCombination
 import com.jhlee.kmm_rongame.card.domain.CardCombinationDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
+import io.ktor.util.Identity.decode
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -41,6 +42,7 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                     val cardCombineTemp = it.toCombineResult(cardInfo).find { cardCombination ->
                         return@find card.cardId == cardCombination.cardId
                     }
+                    //Logger.log("cardCombineTemp :  $cardCombineTemp")
                     if (cardCombineTemp != null) {
                         existCombine = true
                         val isOpened =

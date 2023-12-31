@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +38,7 @@ import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
+import com.jhlee.kmm_rongame.setting.SettingScreen
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 
@@ -68,8 +70,31 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                         viewModel.getUserInfo()
                         cardViewModel.refreshDoneUserInfo()
                     }
-                    state.userInfo?.let {
-                        UserInfoScreen(it)
+
+
+
+                    Row {
+
+                        state.userInfo?.let {
+                            UserInfoScreen(it)
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Column(modifier = Modifier.clickable {
+                            cardViewModel.selectScreen(HomeState.HOME_SCREEN_SETTING)
+                        }.width(80.dp).padding(20.dp)) {
+                            getCommonImageResourceBitMap(SharedRes.images.ic_setting)?.let {
+                                Image(
+                                    bitmap = it,
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                            Text(
+                                text = "설정",
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
 
                     Row(
@@ -129,6 +154,12 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
         HomeState.HOME_SCREEN_COMBINATION -> {
             CardCombinationScreen(appModule, viewModel) {
                 cardViewModel.getMyCardList()
+                cardViewModel.selectScreen(HomeState.HOME_SCREEN_DEFAULT)
+            }
+        }
+
+        HomeState.HOME_SCREEN_SETTING -> {
+            SettingScreen(appModule, viewModel) {
                 cardViewModel.selectScreen(HomeState.HOME_SCREEN_DEFAULT)
             }
         }

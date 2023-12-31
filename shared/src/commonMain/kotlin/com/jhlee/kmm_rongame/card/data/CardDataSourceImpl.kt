@@ -29,12 +29,6 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                 val cardList = async {
                     queries.myCardList().executeAsList().map {
                         val cardInfo = queries.getCardInfo(it.cardId!!.toLong()).executeAsOne()
-
-                        CardInfoManager.CARD_TYPE_MAP
-//                        cardInfo.type.split("|").forEach { typeId ->
-//                            val type = queries.getCardType(typeId.toLong()).executeAsOne()
-//                            list.add(type)
-//                        }
                         it.toCard(cardInfo)
                     }
                 }.await()

@@ -27,8 +27,8 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
         initCardInfo()
     }
 
-    private fun initCardInfo() {
-        mainDataSource.initCardWholeData().onEach { result ->
+    fun initCardInfo(isReset: Boolean = false) {
+        mainDataSource.initCardWholeData(isReset).onEach { result ->
             when (result) {
                 is Resource.Success -> {
                     Logger.log("SUCCESS")

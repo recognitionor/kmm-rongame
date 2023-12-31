@@ -1,8 +1,5 @@
 package com.jhlee.kmm_rongame
 
-import android.widget.Toast
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
@@ -12,6 +9,7 @@ import java.util.concurrent.TimeUnit
 
 class AndroidPlatform : Platform {
     override val name: String = "Android ${android.os.Build.VERSION.SDK_INT}"
+    override val version: String = "1.0.0"
 }
 
 actual fun getPlatform(): Platform = AndroidPlatform()
