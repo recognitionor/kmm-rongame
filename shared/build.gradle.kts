@@ -47,7 +47,7 @@ plugins {
     }
 
     sourceSets {
-        val ktorVersion = "2.3.0"
+        val ktorVersion = "2.3.2-eap-692"
         val commonMain by getting {
             dependencies {
                 implementation(compose.runtime)
