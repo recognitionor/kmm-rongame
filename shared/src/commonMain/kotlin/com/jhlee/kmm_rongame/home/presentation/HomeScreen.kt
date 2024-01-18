@@ -20,6 +20,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.card.presentation.CardCombinationScreen
 import com.jhlee.kmm_rongame.card.presentation.CardDetailInfoScreen
 import com.jhlee.kmm_rongame.card.presentation.CardListScreen
@@ -49,6 +52,10 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
         factory = viewModelFactory { HomeViewModel(appModule.dbCardDataSource) })
     val cardStateValue by cardViewModel.state.collectAsState()
     val state: MainState by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit){
+        backKeyListener = null
+    }
 
     when (cardStateValue.homeScreenMode) {
         HomeState.HOME_SCREEN_DEFAULT -> {

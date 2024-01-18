@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -24,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.bank.presentation.BankViewModel
 import com.jhlee.kmm_rongame.common.view.createDialog
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
@@ -40,9 +43,17 @@ fun CardGameMainScreen(mainViewModel: MainViewModel, appModule: AppModule) {
     val viewModel = getViewModel(key = BankViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { CardGameViewModel(appModule.dbCardGameDataSource) })
     val state by viewModel.state.collectAsState()
-    Logger.log("CardGameMainScreen :  ${state.isLoading}")
-    Logger.log("CardGameMainScreen :  ${state.screenMode}")
-    Logger.log("CardGameMainScreen :  ${state.screenMode}")
+    LaunchedEffect(Unit) {
+        backKeyListener = {
+            mainViewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            backKeyListener = null
+        }
+    }
     Box(
         modifier = Modifier.fillMaxSize().background(
             color = Color.White // 기본 배경 색상

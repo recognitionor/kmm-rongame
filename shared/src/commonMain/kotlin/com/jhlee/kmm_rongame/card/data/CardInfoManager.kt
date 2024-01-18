@@ -1,7 +1,6 @@
 package com.jhlee.kmm_rongame.card.data
 
 import com.jhlee.kmm_rongame.card.domain.CardType
-import database.CardInfoEntity
 
 object CardInfoManager {
 

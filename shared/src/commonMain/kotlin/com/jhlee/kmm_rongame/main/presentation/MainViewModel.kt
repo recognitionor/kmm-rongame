@@ -27,6 +27,12 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
         initCardInfo()
     }
 
+    fun selectedTab(selectedTab: Int) {
+        _state.update {
+            it.copy(selectedTab = selectedTab)
+        }
+    }
+
     fun initCardInfo(isReset: Boolean = false) {
         mainDataSource.initCardWholeData(isReset).onEach { result ->
             when (result) {

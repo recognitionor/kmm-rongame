@@ -2,8 +2,8 @@ package com.jhlee.kmm_rongame.card.data
 
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.core.data.ImageStorage
-import database.CardInfoEntity
 import kotlinx.serialization.Serializable
+import migrations.CardInfoEntity
 
 @Serializable
 data class CardCombinationInfo(

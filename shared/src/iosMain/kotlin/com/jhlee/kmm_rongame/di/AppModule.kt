@@ -5,6 +5,8 @@ import com.jhlee.kmm_rongame.attend.data.DBAttendDataSource
 import com.jhlee.kmm_rongame.attend.domain.AttendDataSource
 import com.jhlee.kmm_rongame.bank.data.DBBankDataSource
 import com.jhlee.kmm_rongame.bank.domain.BankDataSource
+import com.jhlee.kmm_rongame.book.data.DBBookDataSource
+import com.jhlee.kmm_rongame.book.domain.BookDataSource
 import com.jhlee.kmm_rongame.card.data.DBCardCombinationDataSource
 import com.jhlee.kmm_rongame.card.data.CardDataSourceImpl
 import com.jhlee.kmm_rongame.card.domain.CardCombinationDataSource
@@ -80,6 +82,13 @@ actual class AppModule {
     }
     actual val dbCardCombinationDataSource: CardCombinationDataSource by lazy {
         DBCardCombinationDataSource(
+            db = AppDatabase(
+                driver = DatabaseDriverFactory().create()
+            )
+        )
+    }
+    actual val dbBookDataSource: BookDataSource by lazy {
+        DBBookDataSource(
             db = AppDatabase(
                 driver = DatabaseDriverFactory().create()
             )

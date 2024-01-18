@@ -9,6 +9,11 @@ class Utils {
 
     companion object {
 
+        fun removeSpecialCharacters(input: String): String {
+            // 특수 문자를 제외한 문자들만 남기고 제거
+            return input.replace(Regex("[^A-Za-z0-9가-힣 ]", RegexOption.IGNORE_CASE), "")
+        }
+
         fun formatUnixEpochTime(epochTime: Long): String {
             val instant = Instant.fromEpochSeconds(epochTime)
             val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -24,9 +29,9 @@ class Utils {
         }
 
         fun getCurrentDateInFormat(
-            format: String = "yyyyMMdd", instant: Instant = Clock.System.now()
+            format: String = "yyyyMMdd", instant: Instant = Clock.System.now(),
 
-        ): String {
+            ): String {
             val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
 
             // 원하는 포맷에 따라 문자열 생성

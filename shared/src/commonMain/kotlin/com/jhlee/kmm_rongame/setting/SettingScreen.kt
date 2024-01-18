@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +14,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,8 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jhlee.kmm_rongame.Platform
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.getPlatform
@@ -35,6 +36,14 @@ import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 @Composable
 fun SettingScreen(appModule: AppModule, viewModel: MainViewModel, dismiss: () -> Unit) {
     var showMessage by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        backKeyListener = { dismiss.invoke() }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { backKeyListener = null }
+    }
+
     Scaffold(topBar = {
         Row {
             getCommonImageResourceBitMap(SharedRes.images.ic_back)?.let {
@@ -78,7 +87,9 @@ fun SettingScreen(appModule: AppModule, viewModel: MainViewModel, dismiss: () ->
                 if (showMessage) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = "게임을 좋아하하는 현시점 6살의 나의 아들에게 도파민의 홍수속에서 도파민의 노예가 되지말고 보다 잘 자라기를 바라는 마음에서 만들어 보았습니다. " + "아비는 게임회사에 다니지만 게임을 만드는 사람은 아니다 보니 많은 부침과 더딤이 있었습니다. " + "많이 부족 하지만 주경야독 하며 부지런히 만들어 여기 까지 오게 되었습니다." + "이 세상 모든 엄마 아빠 들 에게 존경심을 표하며 이 앱을 올려봅니다."
+                        text = "게임을 좋아 하는 현시점 6살의 나의 아들 에게, 도파민의 홍수속 에서 도파민의 노예가 되지 말고 보다 잘 자라기를 바라는 마음이 있단다." +
+                                "명색이 애비가 게임을 만들진 않지만 게임회사에 다니고 있는데 아들을 위해 공부도 할겸 만들어 보았다."
+
                     )
                 }
             }

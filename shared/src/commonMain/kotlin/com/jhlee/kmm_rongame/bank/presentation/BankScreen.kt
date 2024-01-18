@@ -17,13 +17,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -41,20 +39,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.bank.domain.BankUtils
 import com.jhlee.kmm_rongame.common.view.NumberInputField
 import com.jhlee.kmm_rongame.common.view.StoryDialog
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
+import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 import com.jhlee.kmm_rongame.utils.Utils
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
-import kotlinx.datetime.Clock
-import kotlin.time.Duration
 
 @Composable
 fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -> Unit) {
@@ -75,12 +72,16 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
         )
     }
     LaunchedEffect(Unit) {
+        backKeyListener = {
+            dismiss.invoke()
+        }
         mainViewModel.setWholeScreen(true)
         viewModel.setComment(commentList.value)
     }
 
     DisposableEffect(Unit) {
         onDispose {
+            backKeyListener = null
             mainViewModel.dismissDialog()
             mainViewModel.setWholeScreen(false)
         }
@@ -141,8 +142,15 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
 
                 if (bankState.commentList.isNotEmpty()) {
                     val comment =
-                        (bankState.commentList[bankState.commentIndex % bankState.commentList.size])
-                    StoryDialog(content = comment)
+                        if (bankState.commentIndex != 0 && bankState.commentIndex % 100 == 0) {
+                            getString(SharedRes.strings.bank_gift)
+                        } else {
+                            (bankState.commentList[bankState.commentIndex % bankState.commentList.size])
+                        }
+
+                    Box(modifier = Modifier.clickable {
+                        viewModel.addCommentIndex()
+                    }) { StoryDialog(content = comment) }
                 }
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -196,7 +204,7 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
                                         } else {
                                             Text(
                                                 text = "찾은간 금액 : ${item.amount}",
-                                                color = Color.Red,
+                                                color = LightColorScheme.error,
                                                 style = TextStyle(
                                                     fontSize = 16.sp, fontWeight = FontWeight.Bold
                                                 )
@@ -219,7 +227,7 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
                                         var title = ""
                                         var color: Color = Color.Gray
                                         if (BankUtils.hasDayPassed(item.date)) {
-                                            color = Color.Green
+                                            color = LightColorScheme.primary
                                             title = "이자와 출금"
                                         } else {
                                             color = Color.Gray

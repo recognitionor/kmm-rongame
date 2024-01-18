@@ -12,16 +12,19 @@ import kotlin.random.Random
 
 class DBBankDataSource(db: AppDatabase) : BankDataSource {
     private val queries = db.dbQueries
-    override fun initBank(): Flow<Resource<Bank>> = flow {
-        val bank = Bank(
-            1,
-            "고양이은행",
-            0,
-            emptyList(),
-            Random(Clock.System.now().epochSeconds).nextInt(1, 100).toLong()
-        )
-        queries.insertBank(bank.id.toLong(), bank.name, bank.interestRate)
-        emit(Resource.Success(bank))
+    override fun initBank(): Flow<Resource<Bank>> {
+        val flow: Flow<Resource<Bank>> = flow {
+            val bank = Bank(
+                1,
+                "고양이은행",
+                0,
+                emptyList(),
+                Random(Clock.System.now().toEpochMilliseconds()).nextInt(1, 100).toLong()
+            )
+            queries.insertBank(bank.id.toLong(), bank.name, bank.interestRate)
+            emit(Resource.Success(bank))
+        }
+        return flow
     }
 
     override fun getBank(bankId: Long): Flow<Resource<Bank>> = flow {
@@ -69,4 +72,9 @@ class DBBankDataSource(db: AppDatabase) : BankDataSource {
         }
     }
 
+    override fun gift(): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        queries.plusUserMoney(100)
+        emit(Resource.Success(Unit))
+    }
 }

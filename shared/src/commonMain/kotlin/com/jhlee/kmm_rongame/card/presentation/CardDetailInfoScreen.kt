@@ -2,6 +2,7 @@ package com.jhlee.kmm_rongame.card.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,11 +12,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,21 +32,37 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.card.data.CardUtils
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.common.view.PotentialRatingBar
 import com.jhlee.kmm_rongame.constants.GradeConst
+import com.jhlee.kmm_rongame.core.data.speakTextToSpeech
+import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
+import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 
 @Composable
 fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
+    LaunchedEffect(Unit) {
+        backKeyListener = {
+            onDismiss.invoke()
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            backKeyListener = null
+        }
+    }
     val color: Color = GradeConst.TYPE_MAP[card.grade - 1]!!.color
 
     val cardImg = rememberBitmapFromBytes(card.image)
+
+
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally, // 수평 방향 가운데 정렬
@@ -55,14 +77,28 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                     horizontalArrangement = Arrangement.Center, // Row 내에서 가로 방향 가운데 정렬
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    cardImg?.let {
-                        Image(
-                            bitmap = cardImg,
-                            contentDescription = null,
-                            modifier = Modifier.weight(1f, true).padding(24.dp),
-                            contentScale = ContentScale.Crop
-                        )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f, true).padding(24.dp).clickable {
+                            speakTextToSpeech(card.nameEng)
+                        }) {
+                        cardImg?.let {
+                            Image(
+                                bitmap = cardImg,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(18.dp))
+
+                        getCommonImageResourceBitMap(SharedRes.images.ic_sound)?.let {
+                            Image(
+                                bitmap = it,
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp)
+                            )
+                        }
                     }
+
 
 
                     Column(modifier = Modifier.weight(1f)) {
@@ -127,7 +163,7 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
             } else {
                 Box(
                     modifier = Modifier.fillMaxWidth().border(
-                        width = 2.dp, color = Color.Red, shape = RoundedCornerShape(12.dp)
+                        width = 2.dp, color = LightColorScheme.error, shape = RoundedCornerShape(12.dp)
                     ).padding(20.dp)
                 ) {
                     Text(
@@ -163,7 +199,7 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                         )
                         Column(
                             modifier = Modifier.fillMaxSize().border(
-                                width = 2.dp, color = Color.Green, shape = RoundedCornerShape(12.dp)
+                                width = 2.dp, color = LightColorScheme.primary, shape = RoundedCornerShape(12.dp)
                             ).padding(12.dp)
                         ) {
                             cardTypeToMap(card.type, true).forEach { type ->
@@ -182,7 +218,7 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                         )
                         Column(
                             modifier = Modifier.fillMaxSize().border(
-                                width = 2.dp, color = Color.Red, shape = RoundedCornerShape(12.dp)
+                                width = 2.dp, color = LightColorScheme.error, shape = RoundedCornerShape(12.dp)
                             ).padding(12.dp)
                         ) {
                             cardTypeToMap(card.type, false).forEach { type ->

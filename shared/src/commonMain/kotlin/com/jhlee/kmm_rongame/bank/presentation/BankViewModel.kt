@@ -32,6 +32,11 @@ class BankViewModel(private val bankDataSource: BankDataSource) : ViewModel() {
         _state.update {
             it.copy(commentIndex = (state.value.commentIndex.plus(1)))
         }
+        if (state.value.commentIndex != 0 && state.value.commentIndex % 100 == 0) {
+            bankDataSource.gift().onEach {
+                _state.update { it.copy(needUserRefresh = true) }
+            }.launchIn(viewModelScope)
+        }
     }
 
     fun processDeposit(depositMoney: Int) {
@@ -55,6 +60,7 @@ class BankViewModel(private val bankDataSource: BankDataSource) : ViewModel() {
                 is Resource.Success -> {
                     getBank()
                 }
+
                 is Resource.Loading -> {}
                 is Resource.Error -> {}
             }

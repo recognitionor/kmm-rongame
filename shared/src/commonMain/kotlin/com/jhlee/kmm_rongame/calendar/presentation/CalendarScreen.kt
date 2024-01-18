@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.reward.presentation.RewardViewModel
+import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -89,7 +90,7 @@ fun Calendar(
     Row(modifier = Modifier.fillMaxWidth()) {
         for (dayOfWeek in daysOfWeek) {
             Surface(
-                color = Color.Yellow, modifier = Modifier.weight(1f)
+                color = LightColorScheme.tertiary, modifier = Modifier.weight(1f)
             ) {
                 Text(
                     fontSize = 10.sp,

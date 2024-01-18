@@ -4,10 +4,10 @@ import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.util.Logger
-import database.CardInfoEntity
 import database.GetMyCard
 import database.MyCardList
 import kotlinx.serialization.json.Json.Default.decodeFromString
+import migrations.CardInfoEntity
 
 suspend fun MyCardList.toCard(): Card {
     val tempSet = decodeFromString(type ?: "") as HashSet<CardType>

@@ -19,6 +19,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.presentation.CardDetailInfoScreen
 import com.jhlee.kmm_rongame.card.presentation.CardListItemScreen
@@ -42,6 +45,7 @@ import com.jhlee.kmm_rongame.card.presentation.CardListSmallItemScreen
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
+import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 
 @Composable
 fun CardGameScreen(
@@ -55,6 +59,17 @@ fun CardGameScreen(
     var cardDetailView by remember { mutableStateOf<Card?>(null) }
     var enemyScore = 0
     var myScore = 0
+    LaunchedEffect(Unit) {
+        backKeyListener = {
+            dismiss.invoke()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            backKeyListener = null
+        }
+    }
     state.resultMap.forEach {
         if (it.value[0] > it.value[1]) {
             enemyScore++
@@ -136,7 +151,7 @@ fun CardGameScreen(
                                             Alignment.Center
                                         ),
                                         fontSize = 50.sp,
-                                        color = Color.Red,
+                                        color = LightColorScheme.error,
                                         textAlign = TextAlign.Center,
                                         style = TextStyle(
                                             fontFamily = FontFamily.Default,
@@ -194,7 +209,7 @@ fun CardGameScreen(
                                         Text(
                                             modifier = Modifier.fillMaxWidth(),
                                             text = "상대 카드",
-                                            color = Color.Red,
+                                            color = LightColorScheme.error,
                                             textAlign = TextAlign.Center,
                                             style = TextStyle(
                                                 fontSize = 24.sp,
@@ -240,7 +255,7 @@ fun CardGameScreen(
                                             Text(
                                                 modifier = Modifier.weight(1f),
                                                 text = state.enemyFinalPower.toString(),
-                                                color = Color.Red,
+                                                color = LightColorScheme.error,
                                                 textAlign = TextAlign.Center,
                                                 style = TextStyle(
                                                     fontSize = 30.sp,
@@ -251,7 +266,7 @@ fun CardGameScreen(
                                             Text(
                                                 modifier = Modifier.weight(1f),
                                                 text = state.myFinalPower.toString(),
-                                                color = Color.Green,
+                                                color = LightColorScheme.primary,
                                                 textAlign = TextAlign.Center,
                                                 style = TextStyle(
                                                     fontSize = 30.sp,
@@ -278,7 +293,7 @@ fun CardGameScreen(
                                         Text(
                                             modifier = Modifier.fillMaxWidth(),
                                             text = "내 카드",
-                                            color = Color.Green,
+                                            color = LightColorScheme.primary,
                                             textAlign = TextAlign.Center,
                                             style = TextStyle(
                                                 fontSize = 24.sp,
@@ -333,7 +348,7 @@ fun CardGameScreen(
                                     Text(
                                         text = resultString,
                                         fontSize = 50.sp,
-                                        color = Color.Green,
+                                        color = LightColorScheme.primary,
                                         textAlign = TextAlign.Center,
                                         style = TextStyle(
                                             fontFamily = FontFamily.Default,

@@ -1,9 +1,9 @@
 package com.jhlee.kmm_rongame.quiz.data
 
 import com.jhlee.kmm_rongame.quiz.domain.Quiz
-import database.QuizEntity
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json.Default.decodeFromString
+import migrations.QuizEntity
 
 @Serializable
 data class QuizDto(
@@ -39,7 +39,7 @@ data class QuizDto(
                         imageUrl = items[3],
                         answer = items[4].toInt(),
                         question = items[5].replace("'", "").replace("\"", "").replace("\"", "")
-                            .replace("\\n", "\n"),
+                            .replace("\\n", "\n").replace("\\\"", "").trim('"'),
                         choiceList = items[6].split("|"),
                         time = items[7].toLong(),
                         chance = items[8].toInt(),

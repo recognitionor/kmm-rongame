@@ -18,7 +18,7 @@ import com.jhlee.kmm_rongame.main.domain.FlaticonAuth
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 import com.jhlee.kmm_rongame.storage
-import database.CardInfoEntity
+import migrations.CardInfoEntity
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -125,7 +125,6 @@ class MainDataSourceImpl(
 
 
     private suspend fun initCardInfo(isReset: Boolean = false) {
-        Logger.log("initCardInfo()")
         Firebase.storage.reference.child("card.csv").let {
             supervisorScope {
                 val list = async {
@@ -149,46 +148,64 @@ class MainDataSourceImpl(
                         } else {
                             cardInfo.image
                         }
-                    queries.insertCardInfoEntity(
-                        it.id.toLong(),
-                        it.name,
-                        it.nameEng,
-                        it.grade.toLong(),
-                        image,
-                        it.description,
-                        it.type
-                    )
-                }
-                queries.getCardInfoList().executeAsList().forEach {
-                    Logger.log("cardInfo : $it")
+                    try {
+                        queries.insertCardInfoEntity(
+                            it.id.toLong(),
+                            it.name,
+                            it.nameEng,
+                            it.grade.toLong(),
+                            image,
+                            it.description,
+                            it.type
+                        )
+                    } catch (e:Exception) {
+
+                    }
                 }
             }
         }
     }
 
     private suspend fun initCardCombination() {
+        Logger.log("initCardCombination")
         Firebase.storage.reference.child("card_combine.csv").let {
             supervisorScope {
                 val list = async {
                     val csvString = httpClient.get(it.getDownloadUrl()).body<String>()
                     CardCombinationDto.parseJson(csvString)
                 }.await()
-                list.forEach {
-                    val item1Id = queries.getCardInfoFromName(it.item1).executeAsOne().id
-                    val item2Id = queries.getCardInfoFromName(it.item2).executeAsOne().id
+                Logger.log("initCardCombination-1")
+                list.forEach { dto ->
+
+                    val item1Id = queries.getCardInfoFromName(dto.item1).executeAsOne().id
+                    Logger.log("item1Id $item1Id")
+                    val item2Id = queries.getCardInfoFromName(dto.item2).executeAsOne().id
+                    Logger.log("item2Id $item2Id")
+
                     queries.insertCardCombineEntity(
-                        it.id.toLong(), item1Id, item2Id, it.result
+                        dto.id.toLong(), item1Id, item2Id, dto.result
                     )
-                }
-                queries.getCardCombineList().executeAsList().forEach {
-                    Logger.log("combine : $it")
+
+                    dto.result.split(",").forEach {
+                        val temp = it.split(":")
+                        val name = temp[0]
+                        val percent = temp[1]
+                        try {
+                            val card = queries.getCardInfoFromName(name).executeAsOne()
+                            Logger.log("insertCardPadigree-insert")
+                            queries.insertCardPadigree(
+                                card.id, item1Id, item2Id, percent.toLong(), 0
+                            )
+                        } catch (e: Exception) {
+                            Logger.log("error :${e.message} - $name")
+                        }
+                    }
                 }
             }
         }
     }
 
     private suspend fun initCardType() {
-        Logger.log("initCardType()")
         Firebase.storage.reference.child("card_type.csv").let {
             supervisorScope {
                 val list = async {
@@ -196,7 +213,6 @@ class MainDataSourceImpl(
                     CardTypeDto.parseJson(csvString)
                 }.await()
                 list.forEach {
-                    Logger.log("it $it")
                     val strongStr = it.strongList.ifEmpty { "" }
                     queries.insertCardTypeEntity(it.id.toLong(), it.name, strongStr)
                     CardTypeDto.parseStrongList(it.strongList)
@@ -217,17 +233,19 @@ class MainDataSourceImpl(
     }
 
     override fun initCardWholeData(isReset: Boolean): Flow<Resource<Boolean>> = flow {
+        Logger.log("initCArdWholeData")
         emit(Resource.Loading())
         try {
             initCardType()
+            Logger.log("initCArdWholeData-1")
             initCardInfo(isReset)
+            Logger.log("initCArdWholeData-2")
             initCardCombination()
+            Logger.log("initCArdWholeData-3")
         } catch (e: Exception) {
             emit(Resource.Error("data load fail ${e.message}"))
             return@flow
         }
         emit(Resource.Success(true))
     }
-
-
 }

@@ -1,6 +1,6 @@
 package com.jhlee.kmm_rongame.card.data
 
-import com.jhlee.kmm_rongame.quiz.data.QuizDto
+import com.jhlee.kmm_rongame.utils.Utils.Companion.removeSpecialCharacters
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -24,11 +24,11 @@ data class CardInfoDto(
                 try {
                     val cardInfoDto = CardInfoDto(
                         id = items[0].toInt(),
-                        name = items[1],
-                        nameEng = items[2],
+                        name = removeSpecialCharacters(items[1]),
+                        nameEng = removeSpecialCharacters(items[2]),
                         grade = items[3].toInt(),
                         image = items[4],
-                        description = items[5],
+                        description = items[5].replace("\\\"", "").trim('"'),
                         type = items[6],
                     )
                     tempList.add(cardInfoDto)

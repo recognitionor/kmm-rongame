@@ -1,8 +1,8 @@
 package com.jhlee.kmm_rongame.card.domain
 
 import com.jhlee.kmm_rongame.core.data.ImageStorage
-import database.CardInfoEntity
 import kotlinx.serialization.Serializable
+import migrations.CardInfoEntity
 
 @Serializable
 data class Card(
@@ -17,6 +17,7 @@ data class Card(
     val power: Int = 0,
     val potential: Int = 0,
     val upgrade: Int = 0,
+    val count: Int = 0,
 ) {
     companion object {
         suspend fun getCardFromCardInfo(
@@ -35,7 +36,8 @@ data class Card(
                 grade = cardInfoEntity.grade?.toInt() ?: 0,
                 upgrade = upgrade,
                 power = power,
-                potential = potential
+                potential = potential,
+                count = cardInfoEntity.count.toInt()
             )
         }
     }

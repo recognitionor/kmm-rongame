@@ -7,10 +7,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import com.jhlee.kmm_rongame.backKeyListener
+import com.jhlee.kmm_rongame.book.presentation.BookScreen
 import com.jhlee.kmm_rongame.cardgame.presentaion.CardGameMainScreen
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
@@ -22,11 +24,35 @@ import dev.icerock.moko.mvvm.compose.viewModelFactory
 @Composable
 fun MainScreen(appModule: AppModule) {
 
-    val selectedItem = remember { mutableStateOf(0) }
-
     val viewModel = getViewModel(key = MainViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { MainViewModel(appModule.dbMainDataSource) })
     val state: MainState by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        backKeyListener = {
+            Logger.log("state : ${state.selectedTab}")
+            when (state.selectedTab) {
+                MainState.NAVIGATION_TAB_HOME -> {
+                    backKeyListener = null
+                }
+                MainState.NAVIGATION_TAB_GAME -> {
+                    viewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
+                }
+                MainState.NAVIGATION_TAB_BOOK -> {
+                    viewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
+                }
+                MainState.NAVIGATION_TAB_REWARD -> {
+                    viewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
+                }
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { }
+    }
+
+
     Scaffold(bottomBar = {
         if (state.userInfo != null && !state.isWholeScreenOpen) {
             NavigationBar {
@@ -37,8 +63,8 @@ fun MainScreen(appModule: AppModule) {
                         )
                     },
                         label = { Text(item.name) },
-                        selected = selectedItem.value == index,
-                        onClick = { selectedItem.value = index })
+                        selected = state.selectedTab == index,
+                        onClick = { viewModel.selectedTab(index) })
                 }
             }
         }
@@ -53,10 +79,11 @@ fun MainScreen(appModule: AppModule) {
                     SplashScreen()
                 } else {
                     // 여기에서 선택된 아이템에 따라 다른 컴포저블을 표시합니다.
-                    when (selectedItem.value) {
-                        0 -> HomeScreen(viewModel, appModule)
-                        1 -> CardGameMainScreen(viewModel, appModule)
-                        2 -> RewardScreen(viewModel, appModule)
+                    when (state.selectedTab) {
+                        MainState.NAVIGATION_TAB_HOME -> HomeScreen(viewModel, appModule)
+                        MainState.NAVIGATION_TAB_GAME -> CardGameMainScreen(viewModel, appModule)
+                        MainState.NAVIGATION_TAB_BOOK -> BookScreen(viewModel, appModule)
+                        MainState.NAVIGATION_TAB_REWARD -> RewardScreen(viewModel, appModule)
                     }
                 }
             }

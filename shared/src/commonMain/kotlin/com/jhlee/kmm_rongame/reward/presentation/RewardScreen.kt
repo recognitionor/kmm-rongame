@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.bank.presentation.BankScreen
 import com.jhlee.kmm_rongame.calendar.presentation.CalendarScreen
 import com.jhlee.kmm_rongame.card.presentation.HomeViewModel
@@ -38,6 +41,18 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
     val title = getString(SharedRes.strings.quiz)
     val message = getString(SharedRes.strings.etc_mini_game_quiz)
     val state: RewardState by rewardViewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        backKeyListener = {
+            mainViewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            backKeyListener = null
+        }
+    }
 
     if (state.rewardScreenSelected == RewardViewModel.REWARD_DEFAULT_SCREEN) {
 

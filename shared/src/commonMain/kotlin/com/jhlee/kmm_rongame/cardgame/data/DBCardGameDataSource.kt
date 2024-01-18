@@ -9,13 +9,12 @@ import com.jhlee.kmm_rongame.cardgame.domain.CardGameDataSource
 import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
-import database.CardInfoEntity
-import database.CardTypeEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.supervisorScope
+import migrations.CardInfoEntity
 
 class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
 

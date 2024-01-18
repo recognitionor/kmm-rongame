@@ -29,6 +29,7 @@ import com.jhlee.kmm_rongame.card.data.CardCombinationInfo
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
 import com.jhlee.kmm_rongame.core.util.Logger
+import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 import kotlin.math.roundToInt
 
 @Composable
@@ -111,7 +112,7 @@ fun CardCombinationInfoScreen(
                     Text(
                         text = "확률 : ${((cardCombinationInfo.percent / 1000) * 100).roundToInt()}%",
                         style = TextStyle(
-                            fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Red
+                            fontSize = 14.sp, fontWeight = FontWeight.Bold, color = LightColorScheme.error
                         )
                     )
                 }
