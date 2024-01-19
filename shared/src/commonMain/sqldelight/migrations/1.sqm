@@ -105,16 +105,3 @@ CREATE TABLE BankHistoryEntity (
     interestRate INTEGER NOT NULL,
     date INTEGER NOT NULL
 );
-
-CREATE TABLE CardPadigreeEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    cardId INTEGER NOT NULL REFERENCES CardInfoEntity(id),
-    itemId1 INTEGER NOT NULL REFERENCES CardInfoEntity(id),
-    itemId2 INTEGER NOT NULL REFERENCES CardInfoEntity(id),
-    percent INTEGER,
-    count INTEGER NOT NULL DEFAULT 0
-);
-
-ALTER TABLE CardInfoEntity ADD COLUMN count INTEGER NOT NULL DEFAULT 0;
-
-

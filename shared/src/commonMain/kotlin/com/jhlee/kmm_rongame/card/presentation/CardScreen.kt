@@ -1,6 +1,7 @@
 package com.jhlee.kmm_rongame.card.presentation
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.TextStyle
@@ -28,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.common.view.ClickableDefaults
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.constants.RuleConst
@@ -83,12 +86,14 @@ fun CardScreen(
     }
 
     Card(modifier = Modifier.run {
-        size(width = cardWidth.dp, height = height.dp).padding(10.dp)
-            .border(width = 4.dp, color = color, shape = RoundedCornerShape(8.dp)).clickable {
+        background(shape = RoundedCornerShape(8.dp), color = Color.White).size(
+            width = cardWidth.dp, height = height.dp
+        ).padding(10.dp).border(width = 4.dp, color = color, shape = RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(8.dp)).then(ClickableDefaults.getDefaultClickable {
                 if ((mainStateValue.userInfo?.money ?: 0) >= RuleConst.GATCHA_COST) {
                     cardViewModel.gatchaCard()
                 }
-            }
+            })
     }, colors = CardDefaults.cardColors(Color.White)) {
         Box(
             modifier = Modifier.padding(12.dp)

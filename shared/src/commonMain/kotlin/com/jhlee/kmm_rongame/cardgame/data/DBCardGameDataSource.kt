@@ -74,7 +74,6 @@ class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
     }
 
     override fun getMyCardList(): Flow<Resource<List<Card>>> = flow {
-        Logger.log("getMyCardList")
         emit(Resource.Loading())
         supervisorScope {
             val cardList = async {

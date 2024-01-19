@@ -42,7 +42,6 @@ class BookViewModel(private val bookDataSource: BookDataSource) : ViewModel() {
         bookDataSource.getBookList().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    Logger.log("success ${result.data}")
                     _state.update {
                         it.copy(
                             bookList = result.data ?: emptyList(), isLoading = false

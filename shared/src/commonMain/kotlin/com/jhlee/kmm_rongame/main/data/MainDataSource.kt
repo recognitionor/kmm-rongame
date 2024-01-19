@@ -132,6 +132,7 @@ class MainDataSourceImpl(
                     return@async CardInfoDto.parseJson(csvString)
                 }.await()
                 list.forEach {
+                    Logger.log("dto ${it.type}")
                     var cardInfo: CardInfoEntity? = null
                     try {
                         cardInfo = queries.getCardInfo(it.id.toLong()).executeAsOne()
@@ -159,7 +160,7 @@ class MainDataSourceImpl(
                             it.type
                         )
                     } catch (e:Exception) {
-
+                        Logger.log("error $e")
                     }
                 }
             }
@@ -192,13 +193,10 @@ class MainDataSourceImpl(
                         val percent = temp[1]
                         try {
                             val card = queries.getCardInfoFromName(name).executeAsOne()
-                            Logger.log("insertCardPadigree-insert")
                             queries.insertCardPadigree(
                                 card.id, item1Id, item2Id, percent.toLong(), 0
                             )
-                        } catch (e: Exception) {
-                            Logger.log("error :${e.message} - $name")
-                        }
+                        } catch (_: Exception) {}
                     }
                 }
             }

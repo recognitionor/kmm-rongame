@@ -35,7 +35,6 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
             }
             App(AppModule(LocalContext.current))
             ImageStorage.setContext(this)
-
         }
     }
 

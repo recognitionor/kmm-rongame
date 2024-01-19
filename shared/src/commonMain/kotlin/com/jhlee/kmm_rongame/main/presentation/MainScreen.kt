@@ -1,6 +1,8 @@
 package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -11,6 +13,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.book.presentation.BookScreen
 import com.jhlee.kmm_rongame.cardgame.presentaion.CardGameMainScreen
@@ -55,7 +59,7 @@ fun MainScreen(appModule: AppModule) {
 
     Scaffold(bottomBar = {
         if (state.userInfo != null && !state.isWholeScreenOpen) {
-            NavigationBar {
+            NavigationBar(modifier = Modifier.height(80.dp)) {
                 MainScreenItem.SCREEN_LIST.forEachIndexed { index, item ->
                     NavigationBarItem(icon = {
                         Icon(
@@ -69,7 +73,8 @@ fun MainScreen(appModule: AppModule) {
             }
         }
     }) {
-        Box {
+
+        Box(modifier = Modifier.padding(bottom = 80.dp)) {
             if (state.userInfo == null) {
                 UserRegisterScreen(state) {
                     viewModel.registerUser(it)

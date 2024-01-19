@@ -154,7 +154,7 @@ sqldelight {
 //            dialect("app.cash.sqldelight:mysql-dialect:2.0.0")
             verifyMigrations.set(true)
             deriveSchemaFromMigrations.set(true)
-            migrationOutputFileFormat.set("sql")
+            migrationOutputFileFormat.set(".sqm")
             migrationOutputDirectory.set(file("sqldelight/migrations"))
         }
     }
