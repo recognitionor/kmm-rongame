@@ -1,7 +1,7 @@
 package com.jhlee.kmm_rongame.attend.data
 
 import com.jhlee.kmm_rongame.attend.domain.Attend
-import database.AttendEntity
+import migrations.AttendEntity
 
 fun AttendEntity.toAttend(): Attend {
     return Attend(

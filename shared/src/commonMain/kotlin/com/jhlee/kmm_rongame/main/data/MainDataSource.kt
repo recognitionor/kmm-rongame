@@ -18,7 +18,7 @@ import com.jhlee.kmm_rongame.main.domain.FlaticonAuth
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 import com.jhlee.kmm_rongame.storage
-import database.CardInfoEntity
+import migrations.CardInfoEntity
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -218,10 +218,17 @@ class MainDataSourceImpl(
 
     override fun initCardWholeData(isReset: Boolean): Flow<Resource<Boolean>> = flow {
         emit(Resource.Loading())
+        queries.insertPlayer(0, "MF")
+        val test = queries.getPlayerList().executeAsList()
+        Logger.log("test $test")
+        queries.insertCardPedigree(0, 1, 2, 100, 0)
+        val test2 = queries.getCardPadigreeList().executeAsList()
+
+        Logger.log("test2 $test2")
         try {
-            initCardType()
-            initCardInfo(isReset)
-            initCardCombination()
+//            initCardType()
+//            initCardInfo(isReset)
+//            initCardCombination()
         } catch (e: Exception) {
             emit(Resource.Error("data load fail ${e.message}"))
             return@flow

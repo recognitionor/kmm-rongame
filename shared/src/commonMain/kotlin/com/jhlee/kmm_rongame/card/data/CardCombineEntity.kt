@@ -1,8 +1,8 @@
 package com.jhlee.kmm_rongame.card.data
 
 import com.jhlee.kmm_rongame.card.domain.CardCombination
-import database.CardCombineEntity
-import database.CardInfoEntity
+import migrations.CardCombineEntity
+import migrations.CardInfoEntity
 
 fun CardCombineEntity.toCombineResult(list: List<CardInfoEntity>): List<CardCombination> {
     val tempList = mutableListOf<CardCombination>()

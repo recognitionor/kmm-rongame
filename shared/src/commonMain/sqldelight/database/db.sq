@@ -1,22 +1,11 @@
 import kotlin.Boolean;
 
-CREATE TABLE testEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    test TEXT NOT NULL
-);
 
 getTestList:
 SELECT *
 FROM testEntity
 ORDER BY id ASC;
 
---AttendEntity
---출석 정보--
-CREATE TABLE AttendEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    date INTEGER NOT NULL UNIQUE
-);
 
 insertAttend:
 INSERT OR REPLACE
@@ -28,15 +17,6 @@ getAttendList:
 SELECT *
 FROM AttendEntity
 ORDER BY id ASC;
-
-
---CommonEntity
---공통 정보--
-CREATE TABLE CommonEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    token TEXT NOT NULL,
-    expires INTEGER
-);
 
 getCommonInfo:
 SELECT *
@@ -51,14 +31,7 @@ INTO CommonEntity(
     expires
 ) VALUES (1,?, ?);
 
---UserInfoEntity
---유저 정보--
-CREATE TABLE UserInfoEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    money INTEGER,
-    cardStage INTEGER
-);
+
 
 getUserInfo:
 SELECT *
@@ -94,15 +67,6 @@ plusUserMoney:
 UPDATE UserInfoEntity
 SET money = money + ?
 WHERE id = 1;
---CardCombineEntity
---카드 정보--
---/*
-CREATE TABLE CardCombineEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    item1 INTEGER,
-    item2 INTEGER,
-    result TEXT NOT NULL
-);
 
 insertCardCombineEntity:
 INSERT OR REPLACE INTO CardCombineEntity(
@@ -123,14 +87,6 @@ FROM CardCombineEntity
 ORDER BY id ASC;
 
 
---CardTypeEntity
---카드 정보--
---/*
-CREATE TABLE CardTypeEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    strongList TEXT NOT NULL
-);
 
 insertCardTypeEntity:
 INSERT OR REPLACE INTO CardTypeEntity(
@@ -149,19 +105,6 @@ SELECT *
 FROM CardTypeEntity
 ORDER BY CardTypeEntity.id ASC;
 
---CardInfoEntity
---카드 정보--
---/*
-CREATE TABLE CardInfoEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    nameEng TEXT NOT NULL,
-    grade INTEGER,
-    image TEXT,
-    description TEXT NOT NULL,
-    type TEXT NOT NULL,
-    FOREIGN KEY (type) REFERENCES CardTypeEntity(id)
-);
 
 insertCardInfoEntity:
 INSERT OR REPLACE INTO CardInfoEntity(
@@ -195,16 +138,6 @@ WHERE grade <= ?
 ORDER BY RANDOM()
 LIMIT 1;
 
---CardEntity
---카드 정보--
---/*
-CREATE TABLE MyCardEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    cardId INTEGER,
-    potential INTEGER,
-    upgrade INTEGER,
-    power INTEGER
-);
 
 myCardList:
 SELECT MyCardEntity.*,
@@ -249,22 +182,6 @@ removeCard:
 DELETE FROM MyCardEntity
 WHERE id = ?;
 
-CREATE TABLE QuizEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    category TEXT NOT NULL,
-    level INTEGER,
-    imageUrl TEXT NOT NULL,
-    answer INTEGER,
-    question TEXT NOT NULL,
-    choiceList TEXT NOT NULL,
-    time INTEGER,
-    chance INTEGER,
-    reward INTEGER,
-    description TEXT NOT NULL,
-    selected INTEGER,
-    durationTime INTEGER,
-    status INTEGER AS Boolean
-);
 
 insertQuizEntity:
 INSERT  OR REPLACE INTO QuizEntity(
@@ -290,21 +207,6 @@ FROM QuizEntity
 ORDER BY RANDOM()
 LIMIT 3;
 
--- WHERE id IN (148, 149, 147);
--- */
-CREATE TABLE BankEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    interestRate INTEGER NOT NULL
-);
-
-CREATE TABLE BankHistoryEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    bank_id INTEGER NOT NULL REFERENCES BankEntity(id),
-    amount INTEGER NOT NULL,
-    interestRate INTEGER NOT NULL,
-    date INTEGER NOT NULL
-);
 
 getBank:
 SELECT *
@@ -342,3 +244,37 @@ WHERE id = ?;
 removeBankHistory:
 DELETE FROM BankHistoryEntity
 WHERE id = ?;
+
+
+insertPlayer:
+INSERT OR REPLACE
+INTO Player(
+    id,
+    position
+) VALUES (?, ?);
+
+getPlayerList:
+SELECT *
+FROM Player
+ORDER BY id ASC;
+
+
+insertCardPedigree:
+INSERT OR REPLACE
+INTO CardPedigreeEntity(
+    cardId,
+    itemId1,
+    itemId2,
+    percent,
+    count
+) VALUES (?,?,?,?,?);
+
+addCountCardPedigreeEntity:
+UPDATE CardPedigreeEntity
+SET count = count + 1
+WHERE id = ?;
+
+getCardPadigreeList:
+SELECT *
+FROM CardPedigreeEntity
+ORDER BY id ASC;

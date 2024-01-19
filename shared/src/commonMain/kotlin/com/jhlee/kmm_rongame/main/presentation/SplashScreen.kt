@@ -35,20 +35,20 @@ fun SplashScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.weight(1f))
-            getCommonImageResourceBitMap(SharedRes.images.app_icon)?.let {
-                Image(bitmap = it, contentDescription = null, modifier = Modifier.width(100.dp))
-            }
+//            getCommonImageResourceBitMap(SharedRes.images.app_icon)?.let {
+//                Image(bitmap = it, contentDescription = null, modifier = Modifier.width(100.dp))
+//            }
             Spacer(modifier = Modifier.height(34.dp))
             CircularProgressIndicator(modifier = Modifier.weight(1f))
             Spacer(modifier = Modifier.height(14.dp))
-            Text(
-                text = getString(SharedRes.strings.app_name),
-                color = Color.DarkGray,
-                style = TextStyle(
-                    fontSize = 35.sp, fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.weight(1f)
-            )
+//            Text(
+//                text = getString(SharedRes.strings.app_name),
+//                color = Color.DarkGray,
+//                style = TextStyle(
+//                    fontSize = 35.sp, fontWeight = FontWeight.Bold
+//                ),
+//                modifier = Modifier.weight(1f)
+//            )
         }
     }
 }

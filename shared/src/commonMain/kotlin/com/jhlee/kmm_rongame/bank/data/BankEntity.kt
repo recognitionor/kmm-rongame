@@ -1,7 +1,7 @@
 package com.jhlee.kmm_rongame.bank.data
 
 import com.jhlee.kmm_rongame.bank.domain.Bank
-import database.BankEntity
+import migrations.BankEntity
 
 fun BankEntity.toBank(historyList: List<Bank.History> = emptyList()): Bank {
     historyList.forEach {

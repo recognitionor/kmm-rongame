@@ -1,9 +1,9 @@
 package com.jhlee.kmm_rongame.quiz.data
 
 import com.jhlee.kmm_rongame.quiz.domain.Quiz
-import database.QuizEntity
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json.Default.decodeFromString
+import migrations.QuizEntity
 
 @Serializable
 data class QuizDto(

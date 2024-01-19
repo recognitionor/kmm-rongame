@@ -1,7 +1,7 @@
 package com.jhlee.kmm_rongame.reward.data
 
 import com.jhlee.kmm_rongame.main.domain.UserInfo
-import database.UserInfoEntity
+import migrations.UserInfoEntity
 
 suspend fun UserInfoEntity.toUser(): UserInfo {
     return UserInfo(
