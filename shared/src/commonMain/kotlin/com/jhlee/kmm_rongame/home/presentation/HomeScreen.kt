@@ -62,7 +62,7 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
             Box(modifier = Modifier.fillMaxSize().padding(15.dp)) {
                 Column(
                     modifier = Modifier.fillMaxHeight()
-                        .padding(bottom = 70.dp, start = 16.dp, end = 16.dp)
+                        .padding(start = 16.dp, end = 16.dp)
                 ) {
 
                     if (cardStateValue.isShowCardInfoDialog) {

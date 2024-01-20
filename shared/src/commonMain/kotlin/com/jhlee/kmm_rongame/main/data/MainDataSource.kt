@@ -18,7 +18,6 @@ import com.jhlee.kmm_rongame.main.domain.FlaticonAuth
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 import com.jhlee.kmm_rongame.storage
-import migrations.CardInfoEntity
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -32,6 +31,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.supervisorScope
 import kotlinx.datetime.Clock
+import migrations.CardInfoEntity
 
 class MainDataSourceImpl(
     db: AppDatabase, private val httpClient: HttpClient,
@@ -159,7 +159,7 @@ class MainDataSourceImpl(
                             it.description,
                             it.type
                         )
-                    } catch (e:Exception) {
+                    } catch (e: Exception) {
                         Logger.log("error $e")
                     }
                 }
@@ -168,21 +168,15 @@ class MainDataSourceImpl(
     }
 
     private suspend fun initCardCombination() {
-        Logger.log("initCardCombination")
         Firebase.storage.reference.child("card_combine.csv").let {
             supervisorScope {
                 val list = async {
                     val csvString = httpClient.get(it.getDownloadUrl()).body<String>()
                     CardCombinationDto.parseJson(csvString)
                 }.await()
-                Logger.log("initCardCombination-1")
                 list.forEach { dto ->
-
                     val item1Id = queries.getCardInfoFromName(dto.item1).executeAsOne().id
-                    Logger.log("item1Id $item1Id")
                     val item2Id = queries.getCardInfoFromName(dto.item2).executeAsOne().id
-                    Logger.log("item2Id $item2Id")
-
                     queries.insertCardCombineEntity(
                         dto.id.toLong(), item1Id, item2Id, dto.result
                     )
@@ -193,11 +187,24 @@ class MainDataSourceImpl(
                         val percent = temp[1]
                         try {
                             val card = queries.getCardInfoFromName(name).executeAsOne()
-                            queries.insertCardPadigree(
-                                card.id, item1Id, item2Id, percent.toLong(), 0
-                            )
-                        } catch (_: Exception) {}
+                            val isExist =
+                                queries.existCardPadigree(card.id, item1Id, item2Id).executeAsOne()
+                            if (!isExist) {
+                                queries.insertCardPadigree(
+                                    card.id, item1Id, item2Id, percent.toLong(), 0
+                                )
+                            }
+                        } catch (_: Exception) {
+                        }
                     }
+                }
+                val test = queries.getCardCombineList().executeAsList()
+                val test2 = queries.getCardPadigreeList().executeAsList()
+                test.forEach {
+                    Logger.log("getCardCombineList : $it")
+                }
+                test2.forEach {
+                    Logger.log("getCardPadigreeList : $it")
                 }
             }
         }
@@ -231,15 +238,11 @@ class MainDataSourceImpl(
     }
 
     override fun initCardWholeData(isReset: Boolean): Flow<Resource<Boolean>> = flow {
-        Logger.log("initCArdWholeData")
         emit(Resource.Loading())
         try {
             initCardType()
-            Logger.log("initCArdWholeData-1")
             initCardInfo(isReset)
-            Logger.log("initCArdWholeData-2")
             initCardCombination()
-            Logger.log("initCArdWholeData-3")
         } catch (e: Exception) {
             emit(Resource.Error("data load fail ${e.message}"))
             return@flow

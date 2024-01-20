@@ -28,7 +28,6 @@ import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.card.data.CardCombinationInfo
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 import kotlin.math.roundToInt
 
@@ -50,8 +49,6 @@ fun CardCombinationInfoScreen(
         LazyVerticalGrid(columns = GridCells.Fixed(1)) {
             items(cardCombinationInfo.size) { index ->
                 val cardCombinationInfo = cardCombinationInfo[index]
-                val stuffImage =
-                    cardCombinationInfo.stuffList.map { rememberBitmapFromBytes(it.image) }
                 val cardImg = rememberBitmapFromBytes(cardCombinationInfo.resultCard.image)
                 Row(
                     modifier = Modifier.fillMaxWidth().height(200.dp).padding(36.dp).clickable {
@@ -60,15 +57,28 @@ fun CardCombinationInfoScreen(
                         }
                     }, verticalAlignment = Alignment.CenterVertically
                 ) {
-                    cardImg?.let {
-                        Image(
-                            bitmap = it,
-                            contentDescription = null,
-                            colorFilter = if (cardCombinationInfo.isOpened) null else ColorFilter.tint(
-                                Color.Black
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        cardImg?.let {
+                            Image(
+                                bitmap = it,
+                                contentDescription = null,
+                                colorFilter = if (cardCombinationInfo.isOpened) null else ColorFilter.tint(
+                                    Color.Black
+                                )
                             )
+                        }
+                        val name =
+                            if (cardCombinationInfo.isOpened) cardCombinationInfo.resultCard.name else "?"
+                        Text(
+                            name, style = TextStyle(
+                                fontSize = 24.sp, color = Color.Black, fontWeight = FontWeight.Bold
+                            ), textAlign = TextAlign.Center
                         )
                     }
+
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Row(
@@ -87,15 +97,21 @@ fun CardCombinationInfoScreen(
                             )
                         } else {
                             if (cardCombinationInfo.isOpened) {
-                                stuffImage.forEach { imageBitmap ->
-                                    imageBitmap?.let {
-                                        Image(
-                                            bitmap = imageBitmap,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(40.dp)
-                                        )
+                                cardCombinationInfo.stuffList.forEach {
+                                    val image = rememberBitmapFromBytes(it.image)
+                                    Column(
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        image?.let { image ->
+                                            Image(
+                                                bitmap = image,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(40.dp)
+                                            )
+                                        }
+                                        Text(text = it.name, textAlign = TextAlign.Center)
                                     }
-                                    Spacer(modifier = Modifier.width(12.dp))
                                 }
                             } else {
                                 getCommonImageResourceBitMap(SharedRes.images.ic_lock)?.let {
@@ -112,7 +128,9 @@ fun CardCombinationInfoScreen(
                     Text(
                         text = "확률 : ${((cardCombinationInfo.percent / 1000) * 100).roundToInt()}%",
                         style = TextStyle(
-                            fontSize = 14.sp, fontWeight = FontWeight.Bold, color = LightColorScheme.error
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = LightColorScheme.error
                         )
                     )
                 }

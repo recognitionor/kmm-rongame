@@ -22,7 +22,6 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
     private val queries = db.dbQueries
 
     override fun getMyCardList(): Flow<Resource<List<Card>>> = flow {
-        Logger.log("getMyCardList :")
         emit(Resource.Loading())
         supervisorScope {
             try {
@@ -44,6 +43,7 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
 
 
     override fun gatchaBasicCard(): Flow<Resource<Card>> {
+        Logger.log("gatchaBasicCard")
         val cardGrade = 1
         return flow {
             try {
@@ -55,6 +55,7 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                     kotlinx.coroutines.delay(offsetTime)
                     count = count.minus(offsetTime.toInt())
                 }
+
                 val cardInfoTemp = queries.getCardInfoRandom(1).executeAsOne()
                 val cardTypeSet: HashSet<CardType> = hashSetOf()
                 cardInfoTemp.type.split("|").forEach { typeName ->
@@ -75,6 +76,7 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                     potential = CardUtils.getCardRandomPotential()
                 )
                 queries.minusUserMoney(RuleConst.GATCHA_COST.toLong())
+                queries.addCountCardInfo(card.cardId.toLong())
                 queries.insertCardEntity(
                     cardId = card.cardId.toLong(),
                     power = card.power.toLong(),
@@ -83,6 +85,7 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                 )
                 emit(Resource.Success(card))
             } catch (e: IOException) {
+                Logger.log("e : ${e.message}")
                 emit(Resource.Error(e.message as String))
             }
         }

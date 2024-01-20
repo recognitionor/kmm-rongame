@@ -46,7 +46,6 @@ import com.jhlee.kmm_rongame.card.data.CardCombinationInfo
 import com.jhlee.kmm_rongame.common.view.createDialog
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainState.Companion.NOT_ENOUGH_MONEY_DIALOG
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
@@ -159,8 +158,7 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                         }
                     } else {
                         Column(modifier = Modifier.alpha(offsetAppear.value)) {
-                            CardListSmallItemScreen(
-                                state.combineCard,
+                            CardListSmallItemScreen(state.combineCard,
                                 height = 160f,
                                 onItemDetailInfoClick = {}) {
 
@@ -185,7 +183,6 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                         }
                         Text("합체(Combine)")
                     }
-
                 }
 
                 if (state.error.isNotEmpty()) {
@@ -272,12 +269,14 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                     )
 
                     Row {
-                        Button(onClick = { buyCardCombinationInfo = null }) {
-                            Text("취소")
+                        if (isDialogVisible) {
+                            Button(onClick = { buyCardCombinationInfo = null }) {
+                                Text("취소")
+                            }
                         }
+
                         Spacer(modifier = Modifier.width(24.dp))
                         Button(onClick = {
-                            mainViewModel.updateUserMoney(-RuleConst.COMBINATION_INFO_COST)
                             if (isDialogVisible) {
                                 val sb = StringBuilder()
                                 buyCardCombinationInfo!!.stuffList.forEachIndexed { index, card ->
@@ -293,6 +292,8 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                             } else {
                                 buyCardCombinationInfo = null
                             }
+                            viewModel.openCombine(buyCardCombinationInfo?.resultCard?.cardId ?: 0)
+                            mainViewModel.updateUserMoney(-RuleConst.COMBINATION_INFO_COST)
                         }) {
                             Text("확인")
                         }

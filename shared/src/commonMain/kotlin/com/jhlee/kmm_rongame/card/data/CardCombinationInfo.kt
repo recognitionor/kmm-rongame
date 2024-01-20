@@ -21,6 +21,7 @@ suspend fun CardInfoEntity.toCard(): Card {
         description = this.description,
         type = HashSet(),
         grade = this.grade?.toInt() ?: 0,
-        image = ImageStorage.getImage(this.image ?: "")
+        image = ImageStorage.getImage(this.image ?: ""),
+        count = count.toInt()
     )
 }

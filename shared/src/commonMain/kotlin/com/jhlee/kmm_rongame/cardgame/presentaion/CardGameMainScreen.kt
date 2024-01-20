@@ -71,7 +71,7 @@ fun CardGameMainScreen(mainViewModel: MainViewModel, appModule: AppModule) {
             CardGameViewModel.CARD_GAME_DEFAULT_SCREEN -> {
                 val currentStage = (mainViewModel.state.value.userInfo?.cardStage ?: 0)
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(top = 50.dp, bottom = 100.dp),
+                    modifier = Modifier.fillMaxSize().padding(top = 50.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
                     LazyVerticalGrid(columns = GridCells.Fixed(4)) {

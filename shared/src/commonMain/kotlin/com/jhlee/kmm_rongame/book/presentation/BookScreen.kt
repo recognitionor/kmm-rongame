@@ -35,7 +35,7 @@ fun BookScreen(viewModel: MainViewModel, appModule: AppModule) {
     val state: BookState by viewModel.state.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxWidth().padding(30.dp),
+        modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -80,8 +80,5 @@ fun BookScreen(viewModel: MainViewModel, appModule: AppModule) {
 
             }
         }
-        Spacer(modifier = Modifier.height(150.dp))
     }
-
-
 }

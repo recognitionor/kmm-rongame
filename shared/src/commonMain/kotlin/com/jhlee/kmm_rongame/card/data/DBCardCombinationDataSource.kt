@@ -6,7 +6,6 @@ import com.jhlee.kmm_rongame.card.domain.CardCombination
 import com.jhlee.kmm_rongame.card.domain.CardCombinationDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
-import io.ktor.util.Identity.decode
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -30,36 +29,19 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
 
     override fun getCardCombinationList(): Flow<Resource<List<CardCombinationInfo>>> = flow {
         emit(Resource.Loading())
+        val resultList = mutableListOf<CardCombinationInfo>()
         supervisorScope {
-            val resultList: MutableList<CardCombinationInfo> = mutableListOf()
-            val cardInfo = queries.getCardInfoList().executeAsList()
-            val cardCombinationInfoList = queries.getCardCombineList().executeAsList()
-            val myCardList = queries.myCardList().executeAsList()
-            cardInfo.forEach { cardInfoEntity ->
-                val card = cardInfoEntity.toCard()
-                var existCombine = false
-                cardCombinationInfoList.forEach {
-                    val cardCombineTemp = it.toCombineResult(cardInfo).find { cardCombination ->
-                        return@find card.cardId == cardCombination.cardId
-                    }
-                    //Logger.log("cardCombineTemp :  $cardCombineTemp")
-                    if (cardCombineTemp != null) {
-                        existCombine = true
-                        val isOpened =
-                            myCardList.find { find -> if (find.cardId == card.cardId.toLong()) return@find true else false } != null
-                        resultList.add(
-                            CardCombinationInfo(
-                                card, arrayListOf(
-                                    cardInfo[(it.item1 ?: 0).toInt()].toCard(),
-                                    cardInfo[(it.item2 ?: 0).toInt()].toCard()
-                                ), cardCombineTemp.cardPercent, isOpened
-                            )
-                        )
-                    }
-                }
-                if (!existCombine) {
-                    resultList.add(CardCombinationInfo(card, emptyList(), 166f, card.grade == 1))
-                }
+            queries.getCardPadigreeList().executeAsList().forEach { item ->
+                val resultItem = queries.getCardInfo(item.cardId).executeAsOne()
+                val stuffItem1 = queries.getCardInfo(item.itemId1).executeAsOne()
+                val stuffItem2 = queries.getCardInfo(item.itemId2).executeAsOne()
+                val cardCombinationInfo = CardCombinationInfo(
+                    resultItem.toCard(),
+                    listOf(stuffItem1, stuffItem2).map { it.toCard() },
+                    item.percent?.toFloat() ?: 0f,
+                    item.count > 0
+                )
+                resultList.add(cardCombinationInfo)
             }
             emit(Resource.Success(resultList))
         }
@@ -107,7 +89,6 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
 
                         val resultCard =
                             queries.getMyCard(upgradeCard.id.toLong()).executeAsOne().toCard()
-                        Logger.log("resultCard : ${resultCard.type}")
                         emit(Resource.Success(resultCard))
                         return@supervisorScope
                     } else {
@@ -133,6 +114,7 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                     queries.insertCardEntity(
                         cardId.toLong(), potential.toLong(), 0, power.toLong()
                     )
+                    queries.addCountCardPadigreeEntity(cardId.toLong())
                     emit(Resource.Success(card.copy(power = power)))
                     return@supervisorScope
                 }
@@ -141,6 +123,18 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                 return@supervisorScope
             }
         }
+    }
+
+    override fun openCombine(cardId: Int): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        supervisorScope {
+            try {
+                queries.addCountCardPadigreeEntity(cardId.toLong())
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message ?: "error"))
+            }
+        }
+        emit(Resource.Success(Unit))
     }
 
 }

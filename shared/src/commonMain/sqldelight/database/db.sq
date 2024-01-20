@@ -255,7 +255,7 @@ INTO CardPadigreeEntity(
 addCountCardPadigreeEntity:
 UPDATE CardPadigreeEntity
 SET count = count + 1
-WHERE id = ?;
+WHERE  cardId= ?;
 
 getCardPadigreeList:
 SELECT *
@@ -266,3 +266,11 @@ addCountCardInfo:
 UPDATE CardInfoEntity
 SET count = count + 1
 WHERE id = ?;
+
+existCardPadigree:
+SELECT EXISTS (
+    SELECT 1
+    FROM CardPadigreeEntity
+    WHERE cardId = ? AND itemId1 = ? AND itemId2 = ?
+) AS existCardPadigree;
+

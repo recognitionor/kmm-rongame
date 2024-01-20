@@ -15,12 +15,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.jhlee.kmm_rongame.Platform
 import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.book.presentation.BookScreen
 import com.jhlee.kmm_rongame.cardgame.presentaion.CardGameMainScreen
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.home.presentation.HomeScreen
+import com.jhlee.kmm_rongame.isAndroid
 import com.jhlee.kmm_rongame.reward.presentation.RewardScreen
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
@@ -39,12 +41,15 @@ fun MainScreen(appModule: AppModule) {
                 MainState.NAVIGATION_TAB_HOME -> {
                     backKeyListener = null
                 }
+
                 MainState.NAVIGATION_TAB_GAME -> {
                     viewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
                 }
+
                 MainState.NAVIGATION_TAB_BOOK -> {
                     viewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
                 }
+
                 MainState.NAVIGATION_TAB_REWARD -> {
                     viewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
                 }
@@ -56,10 +61,10 @@ fun MainScreen(appModule: AppModule) {
         onDispose { }
     }
 
-
+    val navigationBarHeight = if (isAndroid()) 80.dp else 110.dp
     Scaffold(bottomBar = {
         if (state.userInfo != null && !state.isWholeScreenOpen) {
-            NavigationBar(modifier = Modifier.height(80.dp)) {
+            NavigationBar(modifier = Modifier.height(navigationBarHeight)) {
                 MainScreenItem.SCREEN_LIST.forEachIndexed { index, item ->
                     NavigationBarItem(icon = {
                         Icon(
@@ -74,7 +79,7 @@ fun MainScreen(appModule: AppModule) {
         }
     }) {
 
-        Box(modifier = Modifier.padding(bottom = 80.dp)) {
+        Box(modifier = Modifier.padding(bottom = navigationBarHeight)) {
             if (state.userInfo == null) {
                 UserRegisterScreen(state) {
                     viewModel.registerUser(it)

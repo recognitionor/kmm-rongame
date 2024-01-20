@@ -3,7 +3,6 @@ package com.jhlee.kmm_rongame.card.presentation
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardCombinationDataSource
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -48,6 +47,21 @@ class CardCombinationViewModel(private val cardCombinationDataSource: CardCombin
             }
 
         }.launchIn(viewModelScope)
+    }
+
+    fun openCombine(cardId: Int) {
+        cardCombinationDataSource.openCombine(cardId).onEach { result ->
+            when (result) {
+                is Resource.Error -> {}
+                is Resource.Success -> {
+                    getCombinationInfoList()
+                }
+
+                is Resource.Loading -> {}
+            }
+        }.launchIn(
+            viewModelScope
+        )
     }
 
     fun combinationCard() {

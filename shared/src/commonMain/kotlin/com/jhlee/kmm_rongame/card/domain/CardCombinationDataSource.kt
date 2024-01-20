@@ -9,4 +9,6 @@ interface CardCombinationDataSource {
 
     fun getCardCombinationList(): Flow<Resource<List<CardCombinationInfo>>>
     fun combinationCard(list: List<Card?>): Flow<Resource<Card>>
+
+    fun openCombine(cardId: Int): Flow<Resource<Unit>>
 }
