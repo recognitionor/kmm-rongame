@@ -1,3 +1,5 @@
+import kotlin.Boolean;
+
 CREATE TABLE CardPadigreeEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     cardId INTEGER NOT NULL REFERENCES CardInfoEntity(id),
@@ -9,4 +11,19 @@ CREATE TABLE CardPadigreeEntity (
 
 ALTER TABLE CardInfoEntity ADD COLUMN count INTEGER NOT NULL DEFAULT 0;
 
+CREATE TABLE CardCollectorEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    cardId INTEGER,
+    isDone INTEGER AS Boolean DEFAULT 0,
+    reward INTEGER NOT NULL,
+    grade INTEGER,
+    upgrade INTEGER,
+    count INTEGER NOT NULL DEFAULT 0
+);
 
+CREATE TABLE DBVersionEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    type INTEGER NOT NULL DEFAULT 0,
+    version INTEGER NOT NULL DEFAULT 0,
+    isDone INTEGER AS Boolean
+);

@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.jhlee.kmm_rongame.Platform
 import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.book.presentation.BookScreen
 import com.jhlee.kmm_rongame.cardgame.presentaion.CardGameMainScreen
@@ -24,6 +23,7 @@ import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.home.presentation.HomeScreen
 import com.jhlee.kmm_rongame.isAndroid
 import com.jhlee.kmm_rongame.reward.presentation.RewardScreen
+import com.jhlee.kmm_rongame.test.presentation.TestScreen
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 
@@ -60,53 +60,61 @@ fun MainScreen(appModule: AppModule) {
     DisposableEffect(Unit) {
         onDispose { }
     }
-
+    val isTestMode = false
     val navigationBarHeight = if (isAndroid()) 80.dp else 110.dp
-    Scaffold(bottomBar = {
-        if (state.userInfo != null && !state.isWholeScreenOpen) {
-            NavigationBar(modifier = Modifier.height(navigationBarHeight)) {
-                MainScreenItem.SCREEN_LIST.forEachIndexed { index, item ->
-                    NavigationBarItem(icon = {
-                        Icon(
-                            item.icon, contentDescription = item.name
-                        )
-                    },
-                        label = { Text(item.name) },
-                        selected = state.selectedTab == index,
-                        onClick = { viewModel.selectedTab(index) })
+//    viewModel.updateUserMoney(1000000)
+    if (isTestMode) {
+        TestScreen(appModule)
+    } else {
+        Scaffold(bottomBar = {
+            if (state.userInfo != null && !state.isWholeScreenOpen) {
+                NavigationBar(modifier = Modifier.height(navigationBarHeight)) {
+                    MainScreenItem.SCREEN_LIST.forEachIndexed { index, item ->
+                        NavigationBarItem(icon = {
+                            Icon(
+                                item.icon, contentDescription = item.name
+                            )
+                        },
+                            label = { Text(item.name) },
+                            selected = state.selectedTab == index,
+                            onClick = { viewModel.selectedTab(index) })
+                    }
                 }
             }
-        }
-    }) {
+        }) {
 
-        Box(modifier = Modifier.padding(bottom = navigationBarHeight)) {
-            if (state.userInfo == null) {
-                UserRegisterScreen(state) {
-                    viewModel.registerUser(it)
-                }
-            } else {
-                if (state.isCardInfoLoading) {
-                    SplashScreen()
+            Box(modifier = Modifier.padding(bottom = if (state.isWholeScreenOpen) 0.dp else navigationBarHeight)) {
+                if (state.userInfo == null) {
+                    UserRegisterScreen(state) {
+                        viewModel.registerUser(it)
+                    }
                 } else {
-                    // 여기에서 선택된 아이템에 따라 다른 컴포저블을 표시합니다.
-                    when (state.selectedTab) {
-                        MainState.NAVIGATION_TAB_HOME -> HomeScreen(viewModel, appModule)
-                        MainState.NAVIGATION_TAB_GAME -> CardGameMainScreen(viewModel, appModule)
-                        MainState.NAVIGATION_TAB_BOOK -> BookScreen(viewModel, appModule)
-                        MainState.NAVIGATION_TAB_REWARD -> RewardScreen(viewModel, appModule)
+                    if (state.isCardInfoLoading) {
+                        SplashScreen(state)
+                    } else {
+                        // 여기에서 선택된 아이템에 따라 다른 컴포저블을 표시합니다.
+                        when (state.selectedTab) {
+                            MainState.NAVIGATION_TAB_HOME -> HomeScreen(viewModel, appModule)
+                            MainState.NAVIGATION_TAB_GAME -> CardGameMainScreen(
+                                viewModel, appModule
+                            )
+
+                            MainState.NAVIGATION_TAB_BOOK -> BookScreen(viewModel, appModule)
+                            MainState.NAVIGATION_TAB_REWARD -> RewardScreen(viewModel, appModule)
+                        }
                     }
                 }
             }
         }
     }
+
+
     when (state.openDialog) {
         MainState.NO_DIALOG -> {}
         else -> {
             state.dialog?.invoke()
         }
     }
-
-
 }
 
 

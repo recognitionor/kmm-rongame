@@ -1,6 +1,7 @@
 package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.runtime.Composable
+import com.jhlee.kmm_rongame.constants.DBVersion
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
@@ -37,21 +38,34 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
         mainDataSource.initCardWholeData(isReset).onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    Logger.log("SUCCESS")
                     _state.update {
                         it.copy(isCardInfoLoading = false)
                     }
                 }
 
                 is Resource.Loading -> {
-                    Logger.log("Loading")
+                    Logger.log("Loading : ${result.data}")
+                    val loadMsg = when (result.data?.first) {
+                        DBVersion.CARD_DB_TYPE -> {
+                            "Card정보 초기화"
+                        }
+
+                        DBVersion.CARDCOMBINE_DB_TYPE -> {
+                            "Card 조합 정보 초기화"
+                        }
+
+                        else -> {
+                            "기타 정보 초기화"
+                        }
+                    }
+                    val progress =
+                        "$loadMsg - ${result.data?.third ?: "0"}/${result.data?.second ?: "0"}"
                     _state.update {
-                        it.copy(isCardInfoLoading = true)
+                        it.copy(isCardInfoLoading = true, progress = progress)
                     }
                 }
 
                 is Resource.Error -> {
-                    Logger.log("ERROR ${result.message}")
                     _state.update { it.copy(error = result.message ?: "") }
                 }
             }

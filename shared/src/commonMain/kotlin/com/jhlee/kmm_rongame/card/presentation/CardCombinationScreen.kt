@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.card.data.CardCombinationInfo
 import com.jhlee.kmm_rongame.common.view.createDialog
 import com.jhlee.kmm_rongame.constants.RuleConst
@@ -67,7 +69,16 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
     var cardOpen by remember { mutableStateOf(false) }
     val offsetX by remember { mutableStateOf(Animatable(0f)) }
     val scope = rememberCoroutineScope()
-
+    LaunchedEffect(Unit) {
+        backKeyListener = {
+            dismiss.invoke()
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            backKeyListener = null
+        }
+    }
     LaunchedEffect(state, state.animationMode) {
         when (state.animationMode) {
             CardCombinationState.ANIMATION_FAIL -> {
@@ -245,7 +256,6 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                         }
 
                     }
-                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }

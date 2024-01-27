@@ -478,7 +478,7 @@ fun CardGameScreen(
                 detectTapGestures { }
             }, contentAlignment = Alignment.Center
         ) {
-            Box(modifier = Modifier.padding(20.dp)) {
+            Box {
                 CardDetailInfoScreen(it) {
                     cardDetailView = null
                 }

@@ -12,6 +12,6 @@ interface MainDataSource {
 
     fun updateCardStage(): Flow<Resource<UserInfo>>
 
-    fun initCardWholeData(isReset: Boolean = false): Flow<Resource<Boolean>>
+    fun initCardWholeData(isReset: Boolean = false): Flow<Resource<Triple<Int, Int, Int>>>
 
 }

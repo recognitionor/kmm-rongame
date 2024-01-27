@@ -1,6 +1,7 @@
 package com.jhlee.kmm_rongame.quiz.presentation
 
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.quiz.domain.Quiz
 import com.jhlee.kmm_rongame.quiz.domain.QuizDataSource
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
@@ -20,7 +21,7 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
-        getQuizListFromDB()
+        getQuizListFromFireBase()
     }
 
     fun clearQuizInfo() {
@@ -61,40 +62,6 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
             }
         }
     }
-
-    private fun getQuizListFromDB() {
-        dataSource.getQuizListsFromDB().onEach { result ->
-            when (result) {
-                is Resource.Loading -> {
-                    _state.update {
-                        it.copy(quizStatus = QuizState.QUIZ_STATUS_LOADING)
-                    }
-                }
-
-                is Resource.Error -> {
-                    getQuizListFromFireBase()
-                    _state.update {
-                        it.copy(quizStatus = QuizState.QUIZ_STATUS_READY)
-                    }
-                }
-
-                is Resource.Success -> {
-                    if ((result.data?.size ?: 0) > 0) {
-                        _state.update {
-                            it.copy(
-                                quizStatus = QuizState.QUIZ_STATUS_ING,
-                                quizList = result.data ?: emptyList()
-                            )
-                        }
-                        quizStart()
-                    } else {
-                        getQuizListFromFireBase()
-                    }
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
-
     fun nextStage() {
         if (_state.value.quizList.size - 1 <= _state.value.quizIndex) {
             val quizCount = _state.value.quizList.size
@@ -122,6 +89,7 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
     }
 
     private fun quizStart() {
+        Logger.log("quizStart")
         val quiz = _state.value.quizList[_state.value.quizIndex]
         _state.update {
             it.copy(
@@ -136,6 +104,7 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
             var progressTime = 0L
             while (quizTime > progressTime) {
                 if (_state.value.quizStatus != QuizState.QUIZ_STATUS_ING) {
+                    Logger.log("break")
                     break
                 }
 
@@ -166,7 +135,18 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
         dataSource.getQuizListsFromRemote().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    insertQuizListToDB(result.data ?: emptyList())
+                    Logger.log("success : ${result.data?.size}")
+                    if ((result.data?.size ?: 0) > 0) {
+                        _state.update {
+                            it.copy(
+                                quizStatus = QuizState.QUIZ_STATUS_ING,
+                                quizList = result.data ?: emptyList()
+                            )
+                        }
+                        quizStart()
+                    } else {
+                        getQuizListFromFireBase()
+                    }
                 }
 
                 is Resource.Loading -> {
@@ -181,25 +161,6 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
                     }
                 }
             }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun insertQuizListToDB(list: List<Quiz>) {
-        dataSource.insertQuizListToDB(list).onEach { result ->
-            when (result) {
-                is Resource.Success -> {
-                    getQuizListFromDB()
-                }
-
-                is Resource.Error -> {
-
-                }
-
-                is Resource.Loading -> {
-
-                }
-            }
-
         }.launchIn(viewModelScope)
     }
 }

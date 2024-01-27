@@ -11,6 +11,7 @@ data class MainState(
     val selectedTab: Int = 0,
     val userInfo: UserInfo? = null,
     val isLoading: Boolean = true,
+    val progress: String = "",
     val isCardInfoLoading: Boolean = true,
     val error: String = "",
 ) {

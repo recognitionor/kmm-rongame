@@ -22,7 +22,9 @@ class DBRewardDataSource(
         return flow {
             try {
                 emit(Resource.Loading())
-                val userInfoList = queries.getUserInfo().asFlow().mapToList(currentCoroutineContext()).firstOrNull()
+                val userInfoList =
+                    queries.getUserInfo().asFlow().mapToList(currentCoroutineContext())
+                        .firstOrNull()
                 val userInfo = userInfoList?.firstOrNull()
                 if (userInfo != null) {
                     emit(Resource.Success(userInfo.toUser()))
@@ -57,7 +59,8 @@ class DBRewardDataSource(
     override fun updateCardStage(): Flow<Resource<UserInfo>> = flow {
         emit(Resource.Loading())
         queries.nextCardStage()
-        val userInfoList = queries.getUserInfo().asFlow().mapToList(currentCoroutineContext()).firstOrNull()
+        val userInfoList =
+            queries.getUserInfo().asFlow().mapToList(currentCoroutineContext()).firstOrNull()
         val userInfo = userInfoList?.firstOrNull()
         if (userInfo != null) {
             emit(Resource.Success(userInfo.toUser()))
@@ -66,5 +69,6 @@ class DBRewardDataSource(
         }
     }
 
-    override fun initCardWholeData(isReset: Boolean): Flow<Resource<Boolean>> = flow {  }
+    override fun initCardWholeData(isReset: Boolean): Flow<Resource<Triple<Int, Int, Int>>> =
+        flow { }
 }

@@ -20,11 +20,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.jhlee.kmm_rongame.book.presentation.BookState
 
 @Composable
-fun CustomDropDownMenu(selectCallback: () -> Unit) {
+fun CustomDropDownMenu(selectCallback: (sortIndex: Int) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    val items = listOf("A", "B", "C", "D", "E", "F")
+    val items = BookState.SORT_LIST
     var selectedIndex by remember { mutableStateOf(0) }
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
@@ -53,7 +54,7 @@ fun CustomDropDownMenu(selectCallback: () -> Unit) {
                 }, onClick = {
                     expanded = false
                     selectedIndex = index
-                    selectCallback.invoke()
+                    selectCallback.invoke(index)
                 })
             }
         }

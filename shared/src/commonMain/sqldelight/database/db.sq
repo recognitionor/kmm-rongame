@@ -104,7 +104,7 @@ FROM CardTypeEntity
 ORDER BY CardTypeEntity.id ASC;
 
 insertCardInfoEntity:
-INSERT INTO CardInfoEntity(
+INSERT OR REPLACE INTO CardInfoEntity(
     id,
     name,
     nameEng,
@@ -274,3 +274,43 @@ SELECT EXISTS (
     WHERE cardId = ? AND itemId1 = ? AND itemId2 = ?
 ) AS existCardPadigree;
 
+
+updateCardCollectorEntity:
+UPDATE CardCollectorEntity
+SET isDone = 1
+WHERE id = ?;
+
+getCardCollectList:
+SELECT *
+    FROM CardCollectorEntity
+    ORDER BY isDone DESC;
+
+insertCardCollectorEntity:
+INSERT
+INTO CardCollectorEntity(
+    cardId,
+    count,
+    grade,
+    reward,
+    upgrade
+) VALUES (?,?,?,?, ?);
+
+
+
+insertDBVersion:
+INSERT
+INTO DBVersionEntity(
+    version,
+    type,
+    isDone
+) VALUES (?,?,?);
+
+
+getVersion:
+    SELECT *
+        FROM DBVersionEntity
+        WHERE type = ? AND version = ? AND isDone = 1;
+
+getVersionList:
+    SELECT *
+        FROM DBVersionEntity;

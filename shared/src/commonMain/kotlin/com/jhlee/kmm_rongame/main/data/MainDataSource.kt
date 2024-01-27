@@ -9,6 +9,7 @@ import com.jhlee.kmm_rongame.card.data.CardInfoDto
 import com.jhlee.kmm_rongame.card.data.CardInfoManager
 import com.jhlee.kmm_rongame.card.data.CardTypeDto
 import com.jhlee.kmm_rongame.card.domain.CardType
+import com.jhlee.kmm_rongame.constants.DBVersion
 import com.jhlee.kmm_rongame.core.data.HttpConst
 import com.jhlee.kmm_rongame.core.data.HttpConst.FLATICON_URL
 import com.jhlee.kmm_rongame.core.data.ImageStorage
@@ -24,11 +25,12 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.url
-import kotlinx.coroutines.async
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.supervisorScope
 import kotlinx.datetime.Clock
 import migrations.CardInfoEntity
@@ -124,129 +126,198 @@ class MainDataSourceImpl(
     }
 
 
-    private suspend fun initCardInfo(isReset: Boolean = false) {
-        Firebase.storage.reference.child("card.csv").let {
-            supervisorScope {
-                val list = async {
-                    val csvString = httpClient.get(it.getDownloadUrl()).body<String>()
-                    return@async CardInfoDto.parseJson(csvString)
-                }.await()
-                list.forEach {
-                    Logger.log("dto ${it.type}")
-                    var cardInfo: CardInfoEntity? = null
-                    try {
-                        cardInfo = queries.getCardInfo(it.id.toLong()).executeAsOne()
-                    } catch (_: Exception) {
-                    }
+    private suspend fun initCardInfo(
+        isReset: Boolean = false,
+        csvString: String,
+        flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
+        isResult: (Boolean) -> Unit,
 
-                    val image: String? =
-                        if (isReset || cardInfo?.image == null || !ImageStorage.existImage(
-                                cardInfo.image ?: ""
-                            )
-                        ) {
-                            val imgArray = httpClient.get(it.image).body<ByteArray>()
-                            ImageStorage.saveImage(imgArray)
-                        } else {
-                            cardInfo.image
-                        }
-                    try {
-                        queries.insertCardInfoEntity(
-                            it.id.toLong(),
-                            it.name,
-                            it.nameEng,
-                            it.grade.toLong(),
-                            image,
-                            it.description,
-                            it.type
+        ) {
+        var result = true
+        val list = CardInfoDto.parseJson(csvString)
+        list.forEachIndexed { index, it ->
+            var cardInfo: CardInfoEntity? = null
+            try {
+                cardInfo = queries.getCardInfo(it.id.toLong()).executeAsOne()
+            } catch (_: Exception) {
+            }
+
+            val image: String? = if (isReset || cardInfo?.image == null || !ImageStorage.existImage(
+                    cardInfo.image ?: ""
+                )
+            ) {
+                val imgArray = httpClient.get(it.image).body<ByteArray>()
+                ImageStorage.saveImage(imgArray)
+            } else {
+                cardInfo.image
+            }
+            try {
+                queries.insertCardInfoEntity(
+                    it.id.toLong(),
+                    it.name,
+                    it.nameEng,
+                    it.grade.toLong(),
+                    image,
+                    it.description,
+                    it.type
+                )
+            } catch (e: Exception) {
+                Logger.log("error $e")
+                result = false
+            }
+            flowCollector.emit(
+                Resource.Loading(
+                    Triple(
+                        DBVersion.CARD_DB_TYPE, list.size, index + 1
+                    )
+                )
+            )
+        }
+        isResult.invoke(result)
+    }
+
+    private suspend fun initCardCombination(
+        csvString: String,
+        flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
+        isResult: (Boolean) -> Unit
+    ) {
+        val list = CardCombinationDto.parseJson(csvString)
+        var result = true
+        list.forEach { dto ->
+            val item1Id = queries.getCardInfoFromName(dto.item1).executeAsOne().id
+            val item2Id = queries.getCardInfoFromName(dto.item2).executeAsOne().id
+            queries.insertCardCombineEntity(
+                dto.id.toLong(), item1Id, item2Id, dto.result
+            )
+
+            dto.result.split(",").forEachIndexed { index, it ->
+                val temp = it.split(":")
+                val name = temp[0]
+                val percent = temp[1]
+                try {
+                    val card = queries.getCardInfoFromName(name).executeAsOne()
+                    val isExist =
+                        queries.existCardPadigree(card.id, item1Id, item2Id).executeAsOne()
+                    if (!isExist) {
+                        queries.insertCardPadigree(
+                            card.id, item1Id, item2Id, percent.toLong(), 0
                         )
-                    } catch (e: Exception) {
-                        Logger.log("error $e")
                     }
+                } catch (_: Exception) {
+                    result = false
                 }
-            }
-        }
-    }
-
-    private suspend fun initCardCombination() {
-        Firebase.storage.reference.child("card_combine.csv").let {
-            supervisorScope {
-                val list = async {
-                    val csvString = httpClient.get(it.getDownloadUrl()).body<String>()
-                    CardCombinationDto.parseJson(csvString)
-                }.await()
-                list.forEach { dto ->
-                    val item1Id = queries.getCardInfoFromName(dto.item1).executeAsOne().id
-                    val item2Id = queries.getCardInfoFromName(dto.item2).executeAsOne().id
-                    queries.insertCardCombineEntity(
-                        dto.id.toLong(), item1Id, item2Id, dto.result
+                flowCollector.emit(
+                    Resource.Loading(
+                        Triple(
+                            DBVersion.CARDCOMBINE_DB_TYPE,
+                            list.size,
+                            index + 1
+                        )
                     )
-
-                    dto.result.split(",").forEach {
-                        val temp = it.split(":")
-                        val name = temp[0]
-                        val percent = temp[1]
-                        try {
-                            val card = queries.getCardInfoFromName(name).executeAsOne()
-                            val isExist =
-                                queries.existCardPadigree(card.id, item1Id, item2Id).executeAsOne()
-                            if (!isExist) {
-                                queries.insertCardPadigree(
-                                    card.id, item1Id, item2Id, percent.toLong(), 0
-                                )
-                            }
-                        } catch (_: Exception) {
-                        }
-                    }
-                }
-                val test = queries.getCardCombineList().executeAsList()
-                val test2 = queries.getCardPadigreeList().executeAsList()
-                test.forEach {
-                    Logger.log("getCardCombineList : $it")
-                }
-                test2.forEach {
-                    Logger.log("getCardPadigreeList : $it")
-                }
+                )
             }
         }
+        isResult(result)
     }
 
-    private suspend fun initCardType() {
-        Firebase.storage.reference.child("card_type.csv").let {
-            supervisorScope {
-                val list = async {
-                    val csvString = httpClient.get(it.getDownloadUrl()).body<String>()
-                    CardTypeDto.parseJson(csvString)
-                }.await()
-                list.forEach {
-                    val strongStr = it.strongList.ifEmpty { "" }
-                    queries.insertCardTypeEntity(it.id.toLong(), it.name, strongStr)
-                    CardTypeDto.parseStrongList(it.strongList)
-                    CardInfoManager.CARD_TYPE_ID_MAP[it.id] = it.name
-                    CardInfoManager.CARD_TYPE_MAP[it.name] = CardType(
-                        it.id, it.name, CardTypeDto.parseStrongList(it.strongList), hashMapOf()
+    private suspend fun initCardType(
+        csvString: String,
+        flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
+        isResult: (Boolean) -> Unit
+    ) {
+        val list = CardTypeDto.parseJson(csvString)
+        var result = true
+        list.forEachIndexed { index, it ->
+            try {
+                val strongStr = it.strongList.ifEmpty { "" }
+                queries.insertCardTypeEntity(it.id.toLong(), it.name, strongStr)
+                CardTypeDto.parseStrongList(it.strongList)
+                CardInfoManager.CARD_TYPE_ID_MAP[it.id] = it.name
+                CardInfoManager.CARD_TYPE_MAP[it.name] = CardType(
+                    it.id, it.name, CardTypeDto.parseStrongList(it.strongList), hashMapOf()
+                )
+            } catch (e: Exception) {
+                result = false
+            }
+            flowCollector.emit(
+                Resource.Loading(
+                    Triple(
+                        DBVersion.CARDTYPE_DB_TYPE,
+                        list.size,
+                        index + 1
                     )
-                }
-                CardInfoManager.CARD_TYPE_MAP.forEach { entry ->
-                    entry.value.strongList.forEach { strong ->
-                        CardInfoManager.CARD_TYPE_MAP[strong.key]?.let {
-                            it.weakList[entry.key] = strong.value
-                        }
-                    }
+                )
+            )
+        }
+        CardInfoManager.CARD_TYPE_MAP.forEach { entry ->
+            entry.value.strongList.forEach { strong ->
+                CardInfoManager.CARD_TYPE_MAP[strong.key]?.let {
+                    it.weakList[entry.key] = strong.value
                 }
             }
         }
+        isResult(result)
     }
 
-    override fun initCardWholeData(isReset: Boolean): Flow<Resource<Boolean>> = flow {
+    override fun initCardWholeData(isReset: Boolean): Flow<Resource<Triple<Int, Int, Int>>> = flow {
         emit(Resource.Loading())
-        try {
-            initCardType()
-            initCardInfo(isReset)
-            initCardCombination()
-        } catch (e: Exception) {
-            emit(Resource.Error("data load fail ${e.message}"))
-            return@flow
+        supervisorScope {
+            try {
+                initVersion(isReset, this@flow)
+            } catch (e: Exception) {
+                emit(Resource.Error("data load fail ${e.message}"))
+                return@supervisorScope
+            }
+
+            emit(Resource.Success(Triple(0, 0, 0)))
         }
-        emit(Resource.Success(true))
+    }
+
+    private suspend fun initVersion(
+        isReset: Boolean, flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>
+    ) {
+        val time = Clock.System.now().toEpochMilliseconds()
+        DBVersion.DB_CARD_FILE_LIST.forEachIndexed { index, path ->
+            val versionTemp = Firebase.storage.reference.child(path).child(DBVersion.VERSION)
+            val csvTemp = httpClient.get(versionTemp.getDownloadUrl()).body<String>().split(",")
+            val version = csvTemp[0]
+            val versionList = queries.getVersion(index.toLong(), version.toLong()).executeAsList()
+            if (versionList.isEmpty()) {
+                Firebase.storage.reference.child(path).listAll().items.forEach {
+                    if (it.name.startsWith(path)) {
+                        val underscoreIndex = it.name.lastIndexOf("_") + 1
+                        val extensionIndex = it.name.indexOf(".csv")
+                        val version = it.name.substring(underscoreIndex, extensionIndex)
+                        val csvStr = httpClient.get(it.getDownloadUrl()).body<String>()
+                        when (index) {
+                            0 -> {
+                                initCardInfo(isReset, csvStr, flowCollector) { result ->
+                                    queries.insertDBVersion(
+                                        version.toLong(), index.toLong(), result
+                                    )
+                                }
+                            }
+
+                            1 -> {
+                                initCardType(csvStr, flowCollector) { result ->
+                                    queries.insertDBVersion(
+                                        version.toLong(), index.toLong(), result
+                                    )
+                                }
+                            }
+
+                            2 -> {
+                                initCardCombination(csvStr, flowCollector) { result: Boolean ->
+                                    queries.insertDBVersion(
+                                        version.toLong(), index.toLong(), result
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Logger.log("time : ${Clock.System.now().toEpochMilliseconds() - time}")
     }
 }

@@ -7,6 +7,7 @@ import com.jhlee.kmm_rongame.card.data.toCard
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.core.domain.Resource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -30,7 +31,5 @@ class DBBookDataSource(db: AppDatabase) : BookDataSource {
         } catch (e: Exception) {
             emit(Resource.Error("${e.message}"))
         }
-
-
     }
 }

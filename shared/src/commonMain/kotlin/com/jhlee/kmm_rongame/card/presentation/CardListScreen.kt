@@ -16,11 +16,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.core.presentation.getString
-import com.jhlee.kmm_rongame.core.util.Logger
 
 @Composable
-fun CardListScreen(cardViewModel: HomeViewModel) {
-    val cardStateValue by cardViewModel.state.collectAsState()
+fun CardListScreen(homeViewModel: HomeViewModel) {
+    val cardStateValue by homeViewModel.state.collectAsState()
 
     Column {
         Text(
@@ -38,8 +37,8 @@ fun CardListScreen(cardViewModel: HomeViewModel) {
                 Row(horizontalArrangement = Arrangement.Center) {
                     CardListItemScreen(card = card,
                         height = 200f,
-                        onItemDetailInfoClick = { cardViewModel.toggleCardInfoDialog(card) }) {
-                        cardViewModel.toggleCardInfoDialog(card)
+                        onItemDetailInfoClick = { homeViewModel.toggleCardInfoDialog(card) }) {
+                        homeViewModel.toggleCardInfoDialog(card)
                     }
                 }
             }

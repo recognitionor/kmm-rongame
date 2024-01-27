@@ -123,4 +123,14 @@
 
     <string name="search_book">카드 이름 검색</string>
 
+    <string name="collector_comment_1">안녕 내 이름은 소크라테스야 카드 수집가 입니다.</string>
+    <string name="collector_comment_2">아래 목록에 있는 카드를 나에게 팔으렴</string>
+    <string name="collector_comment_3">귀한 카드 안 귀한 카드는 따지지 않는다.</string>
+    <string name="collector_comment_4">그날 내가 갖고 싶은 카드가 귀한 카드지.</string>
+    <string name="collector_comment_5">카드의 금액 역시 내 마음이다.</string>
+    <string name="collector_comment_6">돈이라면 얼마 든지 있어.</string>
+    <string name="collector_comment_7">고양이 은행 보다 많을까?</string>
+    <string name="collector_comment_8">내가 가진 카드를 모두 판다면 그럴지도...</string>
+    <string name="collector_comment_9">나쁜말 쓰는 사람은 가만 안둬!!</string>
+
 </resources>

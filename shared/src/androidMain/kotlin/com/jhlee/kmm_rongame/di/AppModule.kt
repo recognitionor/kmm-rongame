@@ -16,6 +16,8 @@ import com.jhlee.kmm_rongame.cardgame.data.DBCardGameDataSource
 import com.jhlee.kmm_rongame.cardgame.domain.CardGameDataSource
 import com.jhlee.kmm_rongame.coin.data.RemoteCoinDataSource
 import com.jhlee.kmm_rongame.coin.domain.CoinDataSource
+import com.jhlee.kmm_rongame.collector.data.DBCardCollectorDataSource
+import com.jhlee.kmm_rongame.collector.domain.CardCollectorDataSource
 import com.jhlee.kmm_rongame.core.data.DatabaseDriverFactory
 import com.jhlee.kmm_rongame.core.data.KtorClientFactory
 import com.jhlee.kmm_rongame.main.data.MainDataSourceImpl
@@ -33,7 +35,7 @@ actual class AppModule(
         DBTestDataSource(
             db = AppDatabase(
                 driver = DatabaseDriverFactory(context).create(),
-            ),
+            ), KtorClientFactory.build()
         )
     }
 
@@ -100,4 +102,12 @@ actual class AppModule(
             )
         )
     }
+    actual val dbCollectorDataSource: CardCollectorDataSource by lazy {
+        DBCardCollectorDataSource(
+            db = AppDatabase(
+                driver = DatabaseDriverFactory(context).create(),
+            )
+        )
+    }
+
 }

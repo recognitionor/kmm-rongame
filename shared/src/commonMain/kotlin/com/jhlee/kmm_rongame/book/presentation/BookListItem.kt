@@ -50,7 +50,7 @@ fun BookListItem(book: Card, index: Int) {
                     }
                 }
                 if (isOpen) {
-                    BookListItemInfoView(Modifier.weight(1f), book, index)
+                    BookListItemInfoView(Modifier.weight(1f), book)
                 } else {
                     Text(
                         text = "?", modifier = Modifier.weight(1f), style = TextStyle(
@@ -60,7 +60,7 @@ fun BookListItem(book: Card, index: Int) {
                 }
             } else {
                 if (isOpen) {
-                    BookListItemInfoView(Modifier.weight(1f), book, index)
+                    BookListItemInfoView(Modifier.weight(1f), book)
                 } else {
 
                     Text(
@@ -85,11 +85,12 @@ fun BookListItem(book: Card, index: Int) {
 }
 
 @Composable
-fun BookListItemInfoView(modifier: Modifier, book: Card, index: Int) {
+fun BookListItemInfoView(modifier: Modifier, book: Card) {
     Column(modifier = modifier.padding(12.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "${index + 1}.",
+
+                text = "${book.cardId + 1}.",
                 style = TextStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold)
             )
             Spacer(modifier = Modifier.width(5.dp))

@@ -22,6 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,9 +64,9 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
 
     val cardImg = rememberBitmapFromBytes(card.image)
 
-
     Box(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+            .padding(start = 16.dp, end = 16.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally, // 수평 방향 가운데 정렬
@@ -163,7 +167,9 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
             } else {
                 Box(
                     modifier = Modifier.fillMaxWidth().border(
-                        width = 2.dp, color = LightColorScheme.error, shape = RoundedCornerShape(12.dp)
+                        width = 2.dp,
+                        color = LightColorScheme.error,
+                        shape = RoundedCornerShape(12.dp)
                     ).padding(20.dp)
                 ) {
                     Text(
@@ -199,7 +205,9 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                         )
                         Column(
                             modifier = Modifier.fillMaxSize().border(
-                                width = 2.dp, color = LightColorScheme.primary, shape = RoundedCornerShape(12.dp)
+                                width = 2.dp,
+                                color = LightColorScheme.primary,
+                                shape = RoundedCornerShape(12.dp)
                             ).padding(12.dp)
                         ) {
                             cardTypeToMap(card.type, true).forEach { type ->
@@ -218,7 +226,9 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
                         )
                         Column(
                             modifier = Modifier.fillMaxSize().border(
-                                width = 2.dp, color = LightColorScheme.error, shape = RoundedCornerShape(12.dp)
+                                width = 2.dp,
+                                color = LightColorScheme.error,
+                                shape = RoundedCornerShape(12.dp)
                             ).padding(12.dp)
                         ) {
                             cardTypeToMap(card.type, false).forEach { type ->

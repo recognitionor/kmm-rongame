@@ -59,10 +59,11 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
 
     when (cardStateValue.homeScreenMode) {
         HomeState.HOME_SCREEN_DEFAULT -> {
-            Box(modifier = Modifier.fillMaxSize().padding(15.dp)) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(top = 15.dp, start = 15.dp, end = 15.dp)
+            ) {
                 Column(
                     modifier = Modifier.fillMaxHeight()
-                        .padding(start = 16.dp, end = 16.dp)
                 ) {
 
                     if (cardStateValue.isShowCardInfoDialog) {
@@ -128,7 +129,8 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                                         width = 4.dp,
                                         color = Color.Gray,
                                         shape = RoundedCornerShape(8.dp)
-                                    ).clip(RoundedCornerShape(8.dp)).then(ClickableDefaults.getDefaultClickable {
+                                    ).clip(RoundedCornerShape(8.dp))
+                                    .then(ClickableDefaults.getDefaultClickable {
                                         cardViewModel.selectScreen(HomeState.HOME_SCREEN_COMBINATION)
                                     })
                             }, colors = CardDefaults.cardColors(Color.White)) {
@@ -154,7 +156,7 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                         }
 
                     }
-                    CardListScreen(cardViewModel = cardViewModel)
+                    CardListScreen(homeViewModel = cardViewModel)
                 }
             }
         }

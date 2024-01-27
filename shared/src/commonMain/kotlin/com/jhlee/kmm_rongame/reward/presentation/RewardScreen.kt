@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.reward.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.backKeyListener
@@ -55,10 +57,10 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
     }
 
     if (state.rewardScreenSelected == RewardViewModel.REWARD_DEFAULT_SCREEN) {
-
-
         mainViewModel.setWholeScreen(false)
-        Box(modifier = Modifier.fillMaxSize().padding(50.dp)) {
+        Box(
+            modifier = Modifier.fillMaxSize().padding(start = 50.dp, end = 50.dp, top = 50.dp)
+        ) {
             Column {
                 CalendarScreen(rewardViewModel)
                 Button(

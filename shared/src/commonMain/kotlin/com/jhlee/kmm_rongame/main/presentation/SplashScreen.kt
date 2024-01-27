@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,14 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
+import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(state: MainState) {
     Box(
         modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
@@ -40,6 +43,12 @@ fun SplashScreen() {
             }
             Spacer(modifier = Modifier.height(34.dp))
             CircularProgressIndicator(modifier = Modifier.weight(1f))
+            Text(
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+                text = state.progress,
+                color = LightColorScheme.primary
+            )
             Spacer(modifier = Modifier.height(14.dp))
             Text(
                 text = getString(SharedRes.strings.app_name),

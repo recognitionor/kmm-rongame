@@ -67,7 +67,6 @@ class RewardViewModel(private val attendDataSource: AttendDataSource) : ViewMode
                     }
                 }
             }
-
         }.launchIn(viewModelScope)
     }
 

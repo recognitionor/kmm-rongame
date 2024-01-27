@@ -36,7 +36,7 @@ fun CardCombinationInfoScreen(
     cardCombinationInfo: List<CardCombinationInfo>,
     buyCombinationInfo: (CardCombinationInfo) -> Unit,
 ) {
-    Column(modifier = Modifier.padding(bottom = 100.dp)) {
+    Column {
         Text(
             text = "<카드 결합 족보>",
             textAlign = TextAlign.Center,
