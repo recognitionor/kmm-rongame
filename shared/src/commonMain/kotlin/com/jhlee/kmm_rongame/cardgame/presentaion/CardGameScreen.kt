@@ -40,8 +40,8 @@ import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.presentation.CardDetailInfoScreen
-import com.jhlee.kmm_rongame.card.presentation.CardListItemScreen
 import com.jhlee.kmm_rongame.card.presentation.CardListSmallItemScreen
+import com.jhlee.kmm_rongame.cardselector.presentaion.CardSelectDialog
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
@@ -434,42 +434,13 @@ fun CardGameScreen(
                     detectTapGestures { }
                 }, contentAlignment = Alignment.Center
         ) {
-            Column(modifier = Modifier.padding(24.dp)) {
-                Spacer(modifier = Modifier.weight(1f))
-                Column(modifier = Modifier.background(Color.White).padding(24.dp)) {
-                    Text(text = "카드를 선택 해주세요")
-                    val filteredList = state.myCardEntry.filter { card ->
-                        val isCardInSelectedList =
-                            state.mySelectedCardEntry.any { it?.id == card.id }
-                        !isCardInSelectedList
-                    }
-                    LazyRow(modifier = Modifier.fillMaxWidth()) {
-                        items(filteredList.size) { index ->
-                            CardListItemScreen(
-                                filteredList[index],
-                                height = 160f,
-                                onItemDetailInfoClick = {
-                                    cardDetailView = it
-                                }) {
-                                viewModel.selectMyCard(selectCardSlot, it)
-                                showDialog = false
-                            }
-                        }
-                    }
-                    Row {
-                        Spacer(modifier = Modifier.weight(1f))
-                        Button(onClick = {
-                            selectCardSlot = 0
-                            showDialog = false
-                        }) {
-                            Text(text = "취소")
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-
-                }
-                Spacer(modifier = Modifier.weight(1f))
+            val filteredList = state.myCardEntry.filter { card ->
+                val isCardInSelectedList = state.mySelectedCardEntry.any { it?.id == card.id }
+                !isCardInSelectedList
             }
+            CardSelectDialog(filteredList, 1, { list ->
+                viewModel.selectMyCard(selectCardSlot, list[0])
+            }, { showDialog = false })
         }
     }
     cardDetailView?.let {

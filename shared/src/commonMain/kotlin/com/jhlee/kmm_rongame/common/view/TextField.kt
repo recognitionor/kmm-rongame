@@ -26,8 +26,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.core.presentation.getString
+import com.jhlee.kmm_rongame.core.util.Logger
 
 @Composable
 fun CustomStyledTextField(
@@ -72,11 +74,11 @@ fun CustomTextField(
         onValueChange = {
             onValueChange(it)
         },
-        label = { Text(label, color = textColor) },
+        label = { Text(label, color = textColor, fontSize = 12.sp) },
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         singleLine = true,
-        textStyle = TextStyle(color = textColor),
+        textStyle = TextStyle(color = textColor, fontSize = 12.sp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             // 수정된 부분
             cursorColor = textColor,

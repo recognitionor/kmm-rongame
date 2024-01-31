@@ -32,8 +32,7 @@ actual class AppModule {
         DBTestDataSource(
             db = AppDatabase(
                 driver = DatabaseDriverFactory().create()
-            ),
-            build = KtorClientFactory.build()
+            ), KtorClientFactory.build()
         )
     }
     actual val remoteCoinDataSource: CoinDataSource by lazy {

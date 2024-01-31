@@ -8,6 +8,7 @@ data class CardCollectorState(
     val isLoading: Boolean = false,
     val commentIndex: Int = 0,
     val error: String = "",
+    val selectedCardCollectorWantedItem: CardCollectorWantedItem? = null,
     val cardCollectorWantedItemList: List<CardCollectorWantedItem> = emptyList(),
     val selectList: List<Card> = emptyList(),
     val screenMode: Int = DEFAULT_SCREEN

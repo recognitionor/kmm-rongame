@@ -10,5 +10,6 @@ fun CardCollectorEntity.toCardCollectorWantedItem(): CardCollectorWantedItem =
         reward.toInt(),
         grade?.toInt() ?: 0,
         upgrade?.toInt() ?: 0,
+        power?.toInt() ?: 0,
         count.toInt()
     )

@@ -20,13 +20,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.book.presentation.BookState
+import com.jhlee.kmm_rongame.constants.CardFilterConst
 
 @Composable
-fun CustomDropDownMenu(selectCallback: (sortIndex: Int) -> Unit) {
+fun CustomDropDownMenu(sortFilterList: List<String>, selectCallback: (sortIndex: Int) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    val items = BookState.SORT_LIST
-    var selectedIndex by remember { mutableStateOf(0) }
+    var selectedIndex by remember { mutableStateOf(CardFilterConst.POWER) }
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
@@ -34,7 +35,7 @@ fun CustomDropDownMenu(selectCallback: (sortIndex: Int) -> Unit) {
             modifier = Modifier.fillMaxWidth().clickable { expanded = true },
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = items[selectedIndex])
+            Text(text = sortFilterList[selectedIndex], fontSize = 12.sp)
             Spacer(modifier = Modifier.weight(1f))
             if (expanded) {
                 Icon(
@@ -48,9 +49,9 @@ fun CustomDropDownMenu(selectCallback: (sortIndex: Int) -> Unit) {
 
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            items.forEachIndexed { index, s ->
+            sortFilterList.forEachIndexed { index, s ->
                 DropdownMenuItem(text = {
-                    Text(text = items[index])
+                    Text(text = sortFilterList[index])
                 }, onClick = {
                     expanded = false
                     selectedIndex = index

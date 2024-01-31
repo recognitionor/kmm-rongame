@@ -46,6 +46,7 @@ import com.jhlee.kmm_rongame.core.data.speakTextToSpeech
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 
 @Composable

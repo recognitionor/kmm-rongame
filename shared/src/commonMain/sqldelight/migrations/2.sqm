@@ -17,6 +17,7 @@ CREATE TABLE CardCollectorEntity (
     isDone INTEGER AS Boolean DEFAULT 0,
     reward INTEGER NOT NULL,
     grade INTEGER,
+    power INTEGER,
     upgrade INTEGER,
     count INTEGER NOT NULL DEFAULT 0
 );

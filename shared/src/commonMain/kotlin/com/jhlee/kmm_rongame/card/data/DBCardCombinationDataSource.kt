@@ -48,6 +48,7 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
     }
 
     override fun combinationCard(list: List<Card?>): Flow<Resource<Card>> = flow {
+        Logger.log("combinationCard")
         emit(Resource.Loading())
         supervisorScope {
             try {
@@ -65,8 +66,12 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                 }
                 // 일반 강화 로직
                 if (combineResult.isEmpty()) {
+                    Logger.log("일반 강화 로직")
+
                     val isCard1CanUpgrade = CardUtils.isUpgradeCard(card1)
                     val isCard2CanUpgrade = CardUtils.isUpgradeCard(card2)
+                    Logger.log("card1 : ${card1.name} - $isCard1CanUpgrade")
+                    Logger.log("card2 : ${card2.name} - $isCard2CanUpgrade")
                     if (isCard1CanUpgrade != isCard2CanUpgrade) {
                         val upgradeCard: Card
                         val removeCard: Card
@@ -97,6 +102,7 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                     }
                 } else {
                     // 결합 로직
+                    Logger.log("결합 로직")
                     val cardId = CardUtils.selectRandomCard(combineResult)
                     val cardTemp = queries.getCardInfo(cardId.toLong()).executeAsOne()
                     val potential = CardUtils.getCardRandomPotential()
@@ -119,6 +125,7 @@ class DBCardCombinationDataSource(db: AppDatabase) : CardCombinationDataSource {
                     return@supervisorScope
                 }
             } catch (e: Exception) {
+                Logger.log("card combine error : ${e.message}")
                 emit(Resource.Error("조합에 문제가 있습니다."))
                 return@supervisorScope
             }

@@ -129,6 +129,7 @@ class MainDataSourceImpl(
     private suspend fun initCardInfo(
         isReset: Boolean = false,
         csvString: String,
+        totalSize: Int,
         flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
         isResult: (Boolean) -> Unit,
 
@@ -141,13 +142,14 @@ class MainDataSourceImpl(
                 cardInfo = queries.getCardInfo(it.id.toLong()).executeAsOne()
             } catch (_: Exception) {
             }
-
+            val time = Clock.System.now().epochSeconds
             val image: String? = if (isReset || cardInfo?.image == null || !ImageStorage.existImage(
                     cardInfo.image ?: ""
                 )
             ) {
                 val imgArray = httpClient.get(it.image).body<ByteArray>()
-                ImageStorage.saveImage(imgArray)
+                ImageStorage.saveImageAsync(imgArray)
+
             } else {
                 cardInfo.image
             }
@@ -168,7 +170,7 @@ class MainDataSourceImpl(
             flowCollector.emit(
                 Resource.Loading(
                     Triple(
-                        DBVersion.CARD_DB_TYPE, list.size, index + 1
+                        DBVersion.CARD_DB_TYPE, totalSize, index + 1
                     )
                 )
             )
@@ -178,6 +180,7 @@ class MainDataSourceImpl(
 
     private suspend fun initCardCombination(
         csvString: String,
+        totalSize: Int,
         flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
         isResult: (Boolean) -> Unit
     ) {
@@ -209,9 +212,7 @@ class MainDataSourceImpl(
                 flowCollector.emit(
                     Resource.Loading(
                         Triple(
-                            DBVersion.CARDCOMBINE_DB_TYPE,
-                            list.size,
-                            index + 1
+                            DBVersion.CARDCOMBINE_DB_TYPE, totalSize, index + 1
                         )
                     )
                 )
@@ -222,6 +223,7 @@ class MainDataSourceImpl(
 
     private suspend fun initCardType(
         csvString: String,
+        totalSize: Int,
         flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
         isResult: (Boolean) -> Unit
     ) {
@@ -242,9 +244,7 @@ class MainDataSourceImpl(
             flowCollector.emit(
                 Resource.Loading(
                     Triple(
-                        DBVersion.CARDTYPE_DB_TYPE,
-                        list.size,
-                        index + 1
+                        DBVersion.CARDTYPE_DB_TYPE, totalSize, index + 1
                     )
                 )
             )
@@ -281,37 +281,40 @@ class MainDataSourceImpl(
             val versionTemp = Firebase.storage.reference.child(path).child(DBVersion.VERSION)
             val csvTemp = httpClient.get(versionTemp.getDownloadUrl()).body<String>().split(",")
             val version = csvTemp[0]
-            val versionList = queries.getVersion(index.toLong(), version.toLong()).executeAsList()
-            if (versionList.isEmpty()) {
-                Firebase.storage.reference.child(path).listAll().items.forEach {
-                    if (it.name.startsWith(path)) {
-                        val underscoreIndex = it.name.lastIndexOf("_") + 1
-                        val extensionIndex = it.name.indexOf(".csv")
-                        val version = it.name.substring(underscoreIndex, extensionIndex)
-                        val csvStr = httpClient.get(it.getDownloadUrl()).body<String>()
-                        when (index) {
-                            0 -> {
-                                initCardInfo(isReset, csvStr, flowCollector) { result ->
-                                    queries.insertDBVersion(
-                                        version.toLong(), index.toLong(), result
-                                    )
-                                }
-                            }
+            val totalSize = csvTemp[1].toInt()
+            for (i in 0..version.toInt()) {
+                val versionList =
+                    queries.getVersion(index.toLong(), version.toLong()).executeAsList()
 
-                            1 -> {
-                                initCardType(csvStr, flowCollector) { result ->
-                                    queries.insertDBVersion(
-                                        version.toLong(), index.toLong(), result
-                                    )
-                                }
+                if (versionList.isEmpty() || index == 1) {
+                    val filePath = "${path}_$version.csv"
+                    val url =
+                        Firebase.storage.reference.child(path).child(filePath).getDownloadUrl()
+                    val csvStr = httpClient.get(url).body<String>()
+                    when (index) {
+                        0 -> {
+                            initCardInfo(isReset, csvStr, totalSize, flowCollector) { result ->
+                                queries.insertDBVersion(
+                                    version.toLong(), index.toLong(), result
+                                )
                             }
+                        }
 
-                            2 -> {
-                                initCardCombination(csvStr, flowCollector) { result: Boolean ->
-                                    queries.insertDBVersion(
-                                        version.toLong(), index.toLong(), result
-                                    )
-                                }
+                        1 -> {
+                            initCardType(csvStr, totalSize, flowCollector) { result ->
+                                queries.insertDBVersion(
+                                    version.toLong(), index.toLong(), result
+                                )
+                            }
+                        }
+
+                        2 -> {
+                            initCardCombination(
+                                csvStr, totalSize, flowCollector
+                            ) { result: Boolean ->
+                                queries.insertDBVersion(
+                                    version.toLong(), index.toLong(), result
+                                )
                             }
                         }
                     }

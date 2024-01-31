@@ -53,9 +53,11 @@ class CardCollectorViewModel(private val dbCollectorDataSource: CardCollectorDat
         }.launchIn(viewModelScope)
     }
 
-    fun selectScreen(screenMode: Int) {
+    fun selectScreen(screenMode: Int, cardCollectorWantedItem: CardCollectorWantedItem? = null) {
         _state.update {
-            it.copy(screenMode = screenMode)
+            it.copy(
+                screenMode = screenMode, selectedCardCollectorWantedItem = cardCollectorWantedItem
+            )
         }
     }
 

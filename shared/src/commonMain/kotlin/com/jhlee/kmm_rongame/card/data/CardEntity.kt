@@ -68,8 +68,8 @@ suspend fun MyCardList.toCard(
 suspend fun GetMyCard.toCard(): Card {
     val pairs = type?.split("|") ?: emptyList()
     val tempSet: HashSet<CardType> = hashSetOf()
-    for (pair in pairs) {
-        CardInfoManager.getCardTypeFromId(pair.toInt())?.let {
+    type?.split("|")?.forEach { typeName ->
+        CardInfoManager.CARD_TYPE_MAP[typeName]?.let {
             tempSet.add(it)
         }
     }

@@ -25,15 +25,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.card.domain.Card
+import com.jhlee.kmm_rongame.constants.CardFilterConst
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
+import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 
 @Composable
 fun CardListSmallItemScreen(
     card: Card? = null,
     modifier: Modifier = Modifier,
-    visibleInfoType: Int = -1,
+    visibleInfoType: Int = CardFilterConst.POWER,
     height: Float,
     selected: Boolean = false,
     isEnabled: Boolean = true,
@@ -46,9 +48,39 @@ fun CardListSmallItemScreen(
     if (card != null) {
         val color: Color = GradeConst.TYPE_MAP[card.grade - 1]!!.color
         val nameStr = card.name
-        val powerStr = card.power.toString()
+        val visibleInfo = when (visibleInfoType) {
+            CardFilterConst.ID -> {
+                card.cardId + 1
+            }
+
+            CardFilterConst.POWER -> {
+                card.power
+            }
+
+            CardFilterConst.POTENTIAL -> {
+                card.potential
+            }
+
+            CardFilterConst.GRADE -> {
+                card.grade
+            }
+
+            CardFilterConst.UPGRADE -> {
+                card.upgrade
+            }
+
+            else -> {
+                card.cardId + 1
+            }
+        }
+
+
         val cardImg = rememberBitmapFromBytes(card.image)
-        androidx.compose.material3.Card(colors = CardDefaults.cardColors(Color.White),
+        androidx.compose.material3.Card(colors = CardDefaults.cardColors(
+            if (!selected) Color.White else LightColorScheme.primary.copy(
+                alpha = 0.3f
+            )
+        ),
             modifier = modifier.run {
                 size(width = cardWidth.dp, height = height.dp).padding(4.dp)
                     .border(width = 2.dp, color = color, shape = RoundedCornerShape(8.dp))
@@ -74,7 +106,7 @@ fun CardListSmallItemScreen(
                         )
                         Text(
                             textAlign = TextAlign.End,
-                            text = powerStr,
+                            text = visibleInfo.toString(),
                             modifier = Modifier.weight(1f),
                             style = TextStyle(
                                 fontSize = 20.sp, fontWeight = FontWeight.Bold

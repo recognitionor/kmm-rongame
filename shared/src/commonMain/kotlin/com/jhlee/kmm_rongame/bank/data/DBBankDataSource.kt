@@ -5,6 +5,7 @@ import com.jhlee.kmm_rongame.bank.domain.Bank
 import com.jhlee.kmm_rongame.bank.domain.BankDataSource
 import com.jhlee.kmm_rongame.bank.domain.BankUtils
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Clock
@@ -30,7 +31,9 @@ class DBBankDataSource(db: AppDatabase) : BankDataSource {
     override fun getBank(bankId: Long): Flow<Resource<Bank>> = flow {
         try {
             val result = queries.getBank(bankId).executeAsOne()
+            Logger.log("getBank : $result")
             val historyList = queries.getBankHistory(bankId).executeAsList()
+            Logger.log("historyList : $historyList")
             emit(Resource.Success(result.toBank(historyList.map { it.toBankHistory() })))
         } catch (e: Exception) {
             emit(Resource.Error(e.message.toString()))

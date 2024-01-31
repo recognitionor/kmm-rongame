@@ -69,7 +69,7 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                     name = cardInfoTemp.name,
                     nameEng = cardInfoTemp.nameEng,
                     description = cardInfoTemp.description,
-                    image = ImageStorage.getImage(cardInfoTemp?.image ?: ""),
+                    image = ImageStorage.getImage(cardInfoTemp.image ?: ""),
                     grade = cardInfoTemp.grade?.toInt() ?: 0,
                     type = cardTypeSet,
                     power = CardUtils.getCardRandomPower(cardGrade),

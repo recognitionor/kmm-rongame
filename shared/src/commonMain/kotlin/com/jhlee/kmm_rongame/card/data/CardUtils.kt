@@ -11,10 +11,6 @@ class CardUtils {
 
     companion object {
 
-        fun getStrongType() {
-            CardTypeConst
-        }
-
 
         fun isUpgradeCard(card: Card): Boolean {
             var result = false
@@ -59,11 +55,11 @@ class CardUtils {
                 6 -> offset = 25
                 7 -> offset = 30
             }
-            return Random(Clock.System.now().epochSeconds).nextInt(cardGrade, offset)
+            return Random(Clock.System.now().nanosecondsOfSecond).nextInt(cardGrade, offset)
         }
 
         fun getCardRandomPotential(): Int {
-            return when (Random(Clock.System.now().epochSeconds).nextInt(1, 100)) {
+            return when (Random(Clock.System.now().nanosecondsOfSecond).nextInt(1, 100)) {
                 in 1..10 -> 1
                 in 11..30 -> 2
                 in 31..40 -> 3

@@ -94,7 +94,7 @@ fun BookScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                         modifier = Modifier.weight(1f).fillMaxHeight(),
                         contentAlignment = Alignment.Center
                     ) {
-                        CustomDropDownMenu {
+                        CustomDropDownMenu(BookState.SORT_LIST) {
                             viewModel.searchSortBookList(sortIndex = it)
                         }
                     }

@@ -8,5 +8,6 @@ data class CardCollectorWantedItem(
     val reward: Int,
     val grade: Int,
     val upgrade: Int,
+    val power: Int,
     val count: Int,
 )

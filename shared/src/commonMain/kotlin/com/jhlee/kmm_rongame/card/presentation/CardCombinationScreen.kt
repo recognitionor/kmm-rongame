@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.card.data.CardCombinationInfo
+import com.jhlee.kmm_rongame.cardselector.presentaion.CardSelectDialog
 import com.jhlee.kmm_rongame.common.view.createDialog
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
@@ -71,7 +72,13 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         backKeyListener = {
-            dismiss.invoke()
+            if (!showCardSelectDialog) {
+                showCardSelectDialog = false
+                mainViewModel.setWholeScreen(false)
+            } else {
+                dismiss.invoke()
+            }
+
         }
     }
     DisposableEffect(Unit) {
@@ -122,7 +129,9 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                 Image(
                     bitmap = it,
                     contentDescription = null,
-                    modifier = Modifier.clickable { dismiss.invoke() }.width(30.dp).height(30.dp)
+                    modifier = Modifier.clickable(!showCardSelectDialog) {
+                        dismiss.invoke()
+                    }.width(30.dp).height(30.dp)
                         .padding(5.dp)
                 )
             }
@@ -169,7 +178,8 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                         }
                     } else {
                         Column(modifier = Modifier.alpha(offsetAppear.value)) {
-                            CardListSmallItemScreen(state.combineCard,
+                            CardListSmallItemScreen(
+                                state.combineCard,
                                 height = 160f,
                                 onItemDetailInfoClick = {}) {
 
@@ -201,6 +211,10 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                 }
 
                 CardCombinationInfoScreen(state.cardCombinationInfo) {
+                    if (showCardSelectDialog) {
+                        return@CardCombinationInfoScreen
+                    }
+
                     if ((mainViewModel.state.value.userInfo?.money
                             ?: 0) >= RuleConst.COMBINATION_INFO_COST
                     ) {
@@ -217,46 +231,12 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
             }
         }
         if (showCardSelectDialog) {
-            Box(
-                modifier = Modifier.fillMaxSize().background(Color.Gray.copy(alpha = 0.8F))
-                    .pointerInput(Unit) {
-                        detectTapGestures { }
-                    }, contentAlignment = Alignment.Center
-            ) {
-                Column(modifier = Modifier.padding(24.dp)) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    Column(modifier = Modifier.background(Color.White).padding(24.dp)) {
-                        Text(text = "카드를 선택 해주세요")
-                        val filteredList = state.myCardList.filter { card ->
-                            val isCardInSelectedList =
-                                state.mySelectedCardEntry.any { it?.id == card.id }
-                            !isCardInSelectedList
-                        }
-
-                        LazyRow(modifier = Modifier.fillMaxWidth()) {
-                            items(filteredList.size) { index ->
-                                CardListItemScreen(filteredList[(filteredList.size - 1) - index],
-                                    height = 160f,
-                                    onItemDetailInfoClick = {
-
-                                    }) {
-                                    viewModel.selectMyCard(selectCardSlot, it)
-                                    showCardSelectDialog = false
-                                }
-                            }
-                        }
-                        Row {
-                            Spacer(modifier = Modifier.weight(1f))
-                            Button(onClick = {
-                                showCardSelectDialog = false
-                            }) {
-                                Text(text = "취소")
-                            }
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-
-                    }
-                }
+            mainViewModel.setWholeScreen(true)
+            CardSelectDialog(state.myCardList.filter { !state.mySelectedCardEntry.contains(it) }, 1, selectListener = { list ->
+                viewModel.selectMyCard(selectCardSlot, list[0])
+            }) {
+                showCardSelectDialog = false
+                mainViewModel.setWholeScreen(false)
             }
         }
         if (buyCardCombinationInfo != null) {
@@ -302,7 +282,9 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                             } else {
                                 buyCardCombinationInfo = null
                             }
-                            viewModel.openCombine(buyCardCombinationInfo?.resultCard?.cardId ?: 0)
+                            viewModel.openCombine(
+                                buyCardCombinationInfo?.resultCard?.cardId ?: 0
+                            )
                             mainViewModel.updateUserMoney(-RuleConst.COMBINATION_INFO_COST)
                         }) {
                             Text("확인")

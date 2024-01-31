@@ -3,6 +3,7 @@ package com.jhlee.kmm_rongame.core.data
 import android.content.Context
 import com.jhlee.kmm_rongame.core.util.Logger
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
@@ -14,6 +15,19 @@ actual class ImageStorage {
 
         fun setContext(context: Context) {
             this.context = context
+        }
+
+        actual suspend fun saveImageAsync(bytes: ByteArray): String {
+            return withContext(Dispatchers.IO) {
+                val fileName = UUID.randomUUID().toString()
+                async {
+                    context?.openFileOutput(fileName, Context.MODE_PRIVATE).use { outputStream ->
+                        outputStream?.write(bytes)
+                    }
+                }
+
+                fileName
+            }
         }
 
         actual suspend fun saveImage(bytes: ByteArray): String {

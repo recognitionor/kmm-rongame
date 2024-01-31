@@ -76,7 +76,7 @@ fun CardCollectorScreen(mainViewModel: MainViewModel, appModule: AppModule, dism
         mainViewModel.setWholeScreen(true)
         backKeyListener = {
             if (state.screenMode == CardCollectorState.CARD_SELECT_SCREEN) {
-                viewModel.selectScreen(CardCollectorState.DEFAULT_SCREEN)
+                viewModel.selectScreen(CardCollectorState.DEFAULT_SCREEN, null)
             } else {
                 dismiss.invoke()
             }
@@ -233,15 +233,21 @@ fun CardCollectorScreen(mainViewModel: MainViewModel, appModule: AppModule, dism
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                     Text(
+                                        text = "필요 파워 : ${cardCollectorWantedItem.power}",
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Text(
                                         text = "보상금 : ${cardCollectorWantedItem.reward}",
                                         modifier = Modifier.fillMaxWidth()
                                     )
+
                                     Spacer(modifier = Modifier.height(10.dp))
                                     Button(
                                         onClick = {
                                             viewModel.getCardSelectList(cardCollectorWantedItem)
                                             viewModel.selectScreen(
-                                                CardCollectorState.CARD_SELECT_SCREEN
+                                                CardCollectorState.CARD_SELECT_SCREEN,
+                                                cardCollectorWantedItem
                                             )
                                         }, modifier = Modifier.fillMaxWidth()
                                     ) {
@@ -256,9 +262,9 @@ fun CardCollectorScreen(mainViewModel: MainViewModel, appModule: AppModule, dism
             }
         }
     }
-    if (state.screenMode == CardCollectorState.CARD_SELECT_SCREEN) {
-        CardCollectorSelectDialog(viewModel) {
-            viewModel.selectScreen(CardCollectorState.DEFAULT_SCREEN)
+    if (state.selectedCardCollectorWantedItem != null) {
+        CardCollectorSelectDialog(viewModel, state.selectedCardCollectorWantedItem!!) {
+            viewModel.selectScreen(CardCollectorState.DEFAULT_SCREEN, null)
         }
     }
 }

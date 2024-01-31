@@ -44,12 +44,15 @@ class DBCardCollectorDataSource(db: AppDatabase) : CardCollectorDataSource {
                         val countRandomValue = Random(randomOffset + 1).nextInt(1, 5)
                         val upgradeRandomValue = Random(randomOffset + 2).nextInt(1, 5)
                         val rewardRandomValue = Random(randomOffset + 3).nextInt(2, 10)
+                        val powerRandomValue =
+                            Random(randomOffset + 4).nextInt(1, (randomCard?.grade ?: 1) * 5)
                         val reward = countRandomValue * gradeValue * 50 * rewardRandomValue
                         queries.insertCardCollectorEntity(
                             randomCard?.cardId?.toLong(),
                             countRandomValue.toLong(),
                             gradeValue.toLong(),
                             reward.toLong(),
+                            powerRandomValue.toLong(),
                             upgradeRandomValue.toLong()
                         )
                     }
@@ -76,12 +79,10 @@ class DBCardCollectorDataSource(db: AppDatabase) : CardCollectorDataSource {
     override fun updateCollectorWanted(id: Long): Flow<Resource<Unit>> = flow { }
     override fun getSelectList(cardCollectorWantedItem: CardCollectorWantedItem): Flow<Resource<List<Card>>> =
         flow {
-            Logger.log("getSelectList : $cardCollectorWantedItem")
             emit(Resource.Loading())
             val result: MutableList<Card> = mutableListOf()
             queries.myCardList().executeAsList().forEach {
                 val card = it.toCard(queries.getCardInfo(it.cardId!!.toLong()).executeAsOne())
-                Logger.log("card : ${card.name} - ${card.id} - ${card.grade}-${card.count}-${card.upgrade}")
                 var isFilter = false
                 if (cardCollectorWantedItem.card != null) {
                     if (card.cardId != cardCollectorWantedItem.card?.cardId) {
@@ -89,11 +90,15 @@ class DBCardCollectorDataSource(db: AppDatabase) : CardCollectorDataSource {
                         return@forEach
                     }
                 }
-                if (cardCollectorWantedItem.grade != card.grade) {
+                if (cardCollectorWantedItem.grade > card.grade) {
                     isFilter = true
                     return@forEach
                 }
-                if (cardCollectorWantedItem.upgrade != card.upgrade) {
+                if (cardCollectorWantedItem.upgrade > card.upgrade) {
+                    isFilter = true
+                    return@forEach
+                }
+                if (cardCollectorWantedItem.power > card.power) {
                     isFilter = true
                     return@forEach
                 }

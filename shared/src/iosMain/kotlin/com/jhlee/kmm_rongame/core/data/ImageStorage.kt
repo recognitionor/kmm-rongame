@@ -33,6 +33,25 @@ actual class ImageStorage {
             directory = NSDocumentDirectory, domainMask = NSUserDomainMask, expandTilde = true
         ).first() as NSString
 
+        actual suspend fun saveImageAsync(bytes: ByteArray): String {
+            return withContext(Dispatchers.Default) {
+                val fileName = NSUUID.UUID().UUIDString
+                val fullPath = documentDirectory.stringByAppendingPathComponent(fileName)
+
+                val data = bytes.usePinned {
+                    NSData.create(
+                        bytes = it.addressOf(0), length = bytes.size.toULong()
+                    )
+                }
+
+
+                data.writeToFile(
+                    path = fullPath, atomically = true
+                )
+                fullPath
+            }
+        }
+
         actual suspend fun saveImage(bytes: ByteArray): String {
             return withContext(Dispatchers.Default) {
                 val fileName = NSUUID.UUID().UUIDString
@@ -40,15 +59,13 @@ actual class ImageStorage {
 
                 val data = bytes.usePinned {
                     NSData.create(
-                        bytes = it.addressOf(0),
-                        length = bytes.size.toULong()
+                        bytes = it.addressOf(0), length = bytes.size.toULong()
                     )
                 }
 
 
                 data.writeToFile(
-                    path = fullPath,
-                    atomically = true
+                    path = fullPath, atomically = true
                 )
                 fullPath
             }
