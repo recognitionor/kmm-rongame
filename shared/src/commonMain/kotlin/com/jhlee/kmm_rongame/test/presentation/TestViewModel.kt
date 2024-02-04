@@ -24,7 +24,6 @@ class TestViewModel(private val appModule: AppModule) : ViewModel() {
     }
 
     private fun getQuiz() {
-        Logger.log("getQuiz")
         appModule.dbQuizDataSource.getQuizListsFromDB().onEach {  }.launchIn(viewModelScope)
         appModule.dbQuizDataSource.getQuizListsFromRemote().onEach {  }.launchIn(viewModelScope)
     }

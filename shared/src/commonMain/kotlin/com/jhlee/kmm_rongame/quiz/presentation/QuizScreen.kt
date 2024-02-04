@@ -26,6 +26,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
@@ -36,6 +39,7 @@ import com.jhlee.kmm_rongame.common.view.StarRatingBar
 import com.jhlee.kmm_rongame.common.view.createDialog
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.quiz.domain.Quiz
 import com.jhlee.kmm_rongame.ui.theme.QuizBorder
@@ -152,9 +156,11 @@ fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
                             )
                         }
                     }
-
+                    val question = quiz?.question?.replace("\\n", "\n")
                     Text(
-                        fontSize = 18.sp, text = quiz?.question ?: "", modifier = Modifier.border(
+                        fontSize = 18.sp,
+                        text = question ?: "",
+                        modifier = Modifier.border(
                             width = 2.dp, color = QuizBorder, shape = RoundedCornerShape(10.dp)
                         ).padding(8.dp).fillMaxWidth()
                             .then(Modifier.heightIn(max = 200.dp, min = 100.dp)) // 최대 높이 설정

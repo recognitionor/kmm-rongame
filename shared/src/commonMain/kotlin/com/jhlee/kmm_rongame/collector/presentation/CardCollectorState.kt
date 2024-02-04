@@ -16,5 +16,6 @@ data class CardCollectorState(
     companion object {
         const val DEFAULT_SCREEN = 0
         const val CARD_SELECT_SCREEN = 1
+        const val CARD_WASTE_SELECT_SCREEN = 2
     }
 }

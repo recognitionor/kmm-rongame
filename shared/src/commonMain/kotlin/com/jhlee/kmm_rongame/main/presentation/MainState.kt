@@ -23,6 +23,7 @@ data class MainState(
         const val BANK_VIEW_MODE_WITHDRAW_DIALOG = 4
         const val CARD_START_DIALOG = 5
         const val CARD_NOT_START_DIALOG = 6
+        const val INFO_DIALOG = 7
 
         const val NAVIGATION_TAB_HOME = 0
         const val NAVIGATION_TAB_GAME = 1

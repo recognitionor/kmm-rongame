@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.bank.domain.BankUtils
+import com.jhlee.kmm_rongame.common.view.ClickableDefaults
 import com.jhlee.kmm_rongame.common.view.NumberInputField
 import com.jhlee.kmm_rongame.common.view.StoryDialog
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
@@ -115,11 +116,14 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
 
                 Row {
                     getCommonImageResourceBitMap(SharedRes.images.img_bank_cat)?.let {
-                        Image(bitmap = it,
+                        Image(
+                            bitmap = it,
                             contentDescription = null,
-                            modifier = Modifier.size(150.dp).clickable {
-                                viewModel.addCommentIndex()
-                            })
+                            modifier = Modifier.size(150.dp)
+                                .then(ClickableDefaults.getDefaultClickable(pressedAlpha = 0f) {
+                                    viewModel.addCommentIndex()
+                                })
+                        )
                     }
                     Column(
                         Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally
@@ -148,25 +152,26 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
                             (bankState.commentList[bankState.commentIndex % bankState.commentList.size])
                         }
 
-                    Box(modifier = Modifier.clickable {
+                    Box(modifier = Modifier.then(ClickableDefaults.getDefaultClickable(pressedAlpha = 0f) {
                         viewModel.addCommentIndex()
-                    }) { StoryDialog(content = comment) }
+                    })) { StoryDialog(content = comment) }
                 }
 
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Row {
-                    Button(modifier = Modifier.weight(1f),
-                        enabled = (mainState.userInfo?.money ?: 0) >= 100,
-                        onClick = {
-                            mainViewModel.showDialog(MainState.BANK_VIEW_MODE_DEPOSIT_DIALOG,
-                                createDepositDialog(
-                                    "내가 가진 돈 :", "맡기실 돈을 입력 해주세요", mainState.userInfo?.money ?: 0
-                                ) {
-                                    viewModel.processDeposit(it)
-                                    mainViewModel.dismissDialog()
-                                })
-                        }) {
+                    Button(modifier = Modifier.weight(1f)
+                        .then(ClickableDefaults.getDefaultClickable {
+
+                        }), enabled = (mainState.userInfo?.money ?: 0) >= 100, onClick = {
+                        mainViewModel.showDialog(MainState.BANK_VIEW_MODE_DEPOSIT_DIALOG,
+                            createDepositDialog(
+                                "내가 가진 돈 :", "맡기실 돈을 입력 해주세요", mainState.userInfo?.money ?: 0
+                            ) {
+                                viewModel.processDeposit(it)
+                                mainViewModel.dismissDialog()
+                            })
+                    }) {
                         Text(text = "입금")
                     }
                 }

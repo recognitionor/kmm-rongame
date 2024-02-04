@@ -5,7 +5,7 @@ import com.jhlee.kmm_rongame.bank.domain.Bank
 import com.jhlee.kmm_rongame.bank.domain.BankDataSource
 import com.jhlee.kmm_rongame.bank.domain.BankUtils
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
+import com.jhlee.kmm_rongame.utils.Utils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.Clock
@@ -22,7 +22,7 @@ class DBBankDataSource(db: AppDatabase) : BankDataSource {
                 emptyList(),
                 Random(Clock.System.now().toEpochMilliseconds()).nextInt(1, 100).toLong()
             )
-            queries.insertBank(bank.id.toLong(), bank.name, bank.interestRate)
+            queries.insertBank(bank.id.toLong(), bank.name, 1, bank.interestRate)
             emit(Resource.Success(bank))
         }
         return flow
@@ -31,10 +31,15 @@ class DBBankDataSource(db: AppDatabase) : BankDataSource {
     override fun getBank(bankId: Long): Flow<Resource<Bank>> = flow {
         try {
             val result = queries.getBank(bankId).executeAsOne()
-            Logger.log("getBank : $result")
+            val date = Utils.getCurrentDateInFormat().toLong()
+            if ((result.date ?: 0) < date) {
+                val newInterest =
+                    Random(Clock.System.now().toEpochMilliseconds()).nextInt(1, 100).toLong()
+                queries.insertBank(1, result.name, date, newInterest)
+            }
             val historyList = queries.getBankHistory(bankId).executeAsList()
-            Logger.log("historyList : $historyList")
-            emit(Resource.Success(result.toBank(historyList.map { it.toBankHistory() })))
+            val newResult = queries.getBank(bankId).executeAsOne()
+            emit(Resource.Success(newResult.toBank(historyList.map { it.toBankHistory() })))
         } catch (e: Exception) {
             emit(Resource.Error(e.message.toString()))
         }

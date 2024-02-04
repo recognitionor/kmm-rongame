@@ -38,12 +38,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.backKeyListener
+import com.jhlee.kmm_rongame.cardselector.presentaion.CardSelectDialog
 import com.jhlee.kmm_rongame.common.view.ClickableDefaults
 import com.jhlee.kmm_rongame.common.view.StoryDialog
+import com.jhlee.kmm_rongame.common.view.createDialog
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
+import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
@@ -126,6 +130,15 @@ fun CardCollectorScreen(mainViewModel: MainViewModel, appModule: AppModule, dism
                     }
                     val comment = commentList.value[state.commentIndex % commentList.value.size]
                     StoryDialog(content = comment)
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.getCardSelectList()
+                        viewModel.selectScreen(CardCollectorState.CARD_WASTE_SELECT_SCREEN)
+                    }, modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "카드1장에 10원으로 팔기")
                 }
 
                 LazyColumn(
@@ -263,8 +276,28 @@ fun CardCollectorScreen(mainViewModel: MainViewModel, appModule: AppModule, dism
         }
     }
     if (state.selectedCardCollectorWantedItem != null) {
-        CardCollectorSelectDialog(viewModel, state.selectedCardCollectorWantedItem!!) {
-            viewModel.selectScreen(CardCollectorState.DEFAULT_SCREEN, null)
+        if (state.selectList.isEmpty()) {
+            if (!state.isLoading) {
+                mainViewModel.showDialog(
+                    MainState.INFO_DIALOG,
+                    createDialog = createDialog("", "팔수 있는 카드가 없어", "ic_collector", {
+                        mainViewModel.dismissDialog()
+                        viewModel.selectScreen(CardCollectorState.DEFAULT_SCREEN, null)
+                    })
+                )
+            }
+        } else {
+            CardCollectorSelectDialog(viewModel, state.selectedCardCollectorWantedItem!!) {
+                viewModel.selectScreen(CardCollectorState.DEFAULT_SCREEN, null)
+            }
         }
+    }
+
+    if (state.screenMode == CardCollectorState.CARD_WASTE_SELECT_SCREEN && state.selectList.isNotEmpty()) {
+        CardSelectDialog(state.selectList, 20, isForceMaxSelect = false, {
+            viewModel.wasteCard(it)
+        }, {
+            viewModel.selectScreen(CardCollectorState.DEFAULT_SCREEN)
+        })
     }
 }

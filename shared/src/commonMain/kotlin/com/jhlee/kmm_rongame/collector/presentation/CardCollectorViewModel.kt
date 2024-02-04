@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.collector.presentation
 
+import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.collector.domain.CardCollectorDataSource
 import com.jhlee.kmm_rongame.collector.domain.CardCollectorWantedItem
 import com.jhlee.kmm_rongame.core.domain.Resource
@@ -28,10 +29,21 @@ class CardCollectorViewModel(private val dbCollectorDataSource: CardCollectorDat
         getCardCollectorWantedList()
     }
 
-    fun getCardSelectList(wantedItem: CardCollectorWantedItem) {
+    fun wasteCard(cardList: List<Card>) {
+        dbCollectorDataSource.wasteCard(cardList).launchIn(viewModelScope)
+    }
+
+    fun sellWantedCard(cardList: List<Card>, item: CardCollectorWantedItem) {
+        dbCollectorDataSource.sellWantedCard(cardList, item).onEach { _ ->
+            getCardCollectorWantedList()
+        }.launchIn(viewModelScope)
+    }
+
+    fun getCardSelectList(wantedItem: CardCollectorWantedItem? = null) {
         dbCollectorDataSource.getSelectList(wantedItem).onEach { result ->
             when (result) {
                 is Resource.Success -> {
+                    Logger.log("success : ${result.data}")
                     _state.update {
                         it.copy(isLoading = false, selectList = result.data ?: emptyList())
                     }
@@ -62,11 +74,9 @@ class CardCollectorViewModel(private val dbCollectorDataSource: CardCollectorDat
     }
 
     fun getCardCollectorWantedList() {
-        Logger.log("getCardCollectorWantedList()")
         dbCollectorDataSource.getCollectorWantedList().onEach { result ->
             when (result) {
                 is Resource.Loading -> {
-                    Logger.log("Loading")
                     _state.update {
                         it.copy(
                             isLoading = true
@@ -84,7 +94,6 @@ class CardCollectorViewModel(private val dbCollectorDataSource: CardCollectorDat
                 }
 
                 is Resource.Error -> {
-                    Logger.log("Error")
                 }
             }
         }.launchIn(viewModelScope)

@@ -1,11 +1,13 @@
 package com.jhlee.kmm_rongame.collector.data
 
+import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.collector.domain.CardCollectorWantedItem
 import migrations.CardCollectorEntity
 
-fun CardCollectorEntity.toCardCollectorWantedItem(): CardCollectorWantedItem =
+fun CardCollectorEntity.toCardCollectorWantedItem(card: Card): CardCollectorWantedItem =
     CardCollectorWantedItem(
-        null,
+        id = id.toInt(),
+        card = card,
         isDone == true,
         reward.toInt(),
         grade?.toInt() ?: 0,
@@ -13,3 +15,4 @@ fun CardCollectorEntity.toCardCollectorWantedItem(): CardCollectorWantedItem =
         power?.toInt() ?: 0,
         count.toInt()
     )
+

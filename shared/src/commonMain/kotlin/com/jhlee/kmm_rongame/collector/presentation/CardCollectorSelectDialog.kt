@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import com.jhlee.kmm_rongame.cardselector.presentaion.CardSelectDialog
 import com.jhlee.kmm_rongame.collector.domain.CardCollectorWantedItem
+import com.jhlee.kmm_rongame.core.util.Logger
 
 @Composable
 fun CardCollectorSelectDialog(
@@ -34,7 +35,9 @@ fun CardCollectorSelectDialog(
             if (state.isLoading) {
                 CircularProgressIndicator()
             } else {
-                CardSelectDialog(state.selectList, item.count, {}, dismiss)
+                CardSelectDialog(state.selectList, item.count, true, {
+                    viewModel.sellWantedCard(it, item)
+                }, dismiss)
             }
         }
     }

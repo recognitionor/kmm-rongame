@@ -44,7 +44,6 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
                 }
 
                 is Resource.Loading -> {
-                    Logger.log("Loading : ${result.data}")
                     val loadMsg = when (result.data?.first) {
                         DBVersion.CARD_DB_TYPE -> {
                             "Card정보 초기화"

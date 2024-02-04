@@ -109,7 +109,6 @@ class BookViewModel(private val bookDataSource: BookDataSource) : ViewModel() {
 
                 is Resource.Error -> {
                     _state.update { it.copy(isLoading = false) }
-                    Logger.log("error ${result.data}")
                 }
             }
         }.launchIn(viewModelScope)

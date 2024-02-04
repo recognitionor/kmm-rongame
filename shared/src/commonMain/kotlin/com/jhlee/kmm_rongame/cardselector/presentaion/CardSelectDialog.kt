@@ -45,7 +45,12 @@ import dev.icerock.moko.mvvm.compose.viewModelFactory
 
 @Composable
 fun CardSelectDialog(
-    list: List<Card>, selectMax: Int, selectListener: (List<Card>) -> Unit, dismiss: () -> Unit
+    // selectMax 값이 0 이하면 하나만 선택 하는 다이얼로그
+    list: List<Card>,
+    selectMax: Int = -1,
+    isForceMaxSelect: Boolean = true,
+    selectListener: (List<Card>) -> Unit,
+    dismiss: () -> Unit
 ) {
     val viewModel = getViewModel(key = CardSelectViewModel.VIEWMODEL_KEY,
         factory = viewModelFactory { CardSelectViewModel(list) })
@@ -84,7 +89,7 @@ fun CardSelectDialog(
                 }
 
                 Column(modifier = Modifier.padding(6.dp)) {
-                    if (selectMax > 1) {
+                    if (selectMax > 0) {
                         Text(
                             text = "${state.selectedCardList.size}/$selectMax",
                             modifier = Modifier.fillMaxWidth(),
@@ -116,7 +121,7 @@ fun CardSelectDialog(
                             }
                         }
                     } else {
-                        if (selectMax > 1) {
+                        if (selectMax > 0) {
                             Text(
                                 text = "선택한 카드가 없습니다.",
                                 modifier = Modifier.fillMaxWidth(),
@@ -144,7 +149,7 @@ fun CardSelectDialog(
 
                             ) { selectedCard ->
                                 if (selectedCard != null) {
-                                    if (selectMax > 1) {
+                                    if (selectMax > 0) {
                                         if (state.selectedCardList.size < selectMax) {
                                             viewModel.selectItem(selectedCard)
                                         }
@@ -164,13 +169,13 @@ fun CardSelectDialog(
                             Text(text = getString(SharedRes.strings.cancel))
                         }
                         Spacer(modifier = Modifier.width(6.dp))
-                        if (selectMax > 1) {
-                            Button(enabled = state.selectedCardList.size >= selectMax,
-                                modifier = Modifier.weight(1f),
-                                onClick = {
-                                    selectListener.invoke(state.selectedCardList)
-                                    dismiss.invoke()
-                                }) {
+                        if (selectMax > 0) {
+                            val btnEnable =
+                                if (isForceMaxSelect) state.selectedCardList.size >= selectMax else state.selectedCardList.isNotEmpty()
+                            Button(enabled = btnEnable, modifier = Modifier.weight(1f), onClick = {
+                                selectListener.invoke(state.selectedCardList)
+                                dismiss.invoke()
+                            }) {
                                 Text(text = getString(SharedRes.strings.confirm))
                             }
                         }
@@ -185,8 +190,4 @@ fun CardSelectDialog(
             }
         }
     }
-}
-
-@Composable
-fun SelectorItem() {
 }

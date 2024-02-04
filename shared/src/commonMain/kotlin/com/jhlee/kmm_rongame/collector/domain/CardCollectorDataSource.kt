@@ -9,5 +9,12 @@ interface CardCollectorDataSource {
     fun getCollectorWantedList(): Flow<Resource<List<CardCollectorWantedItem>>>
     fun updateCollectorWanted(id: Long): Flow<Resource<Unit>>
 
-    fun getSelectList(cardCollectorWantedItem: CardCollectorWantedItem): Flow<Resource<List<Card>>>
+    fun getSelectList(cardCollectorWantedItem: CardCollectorWantedItem?): Flow<Resource<List<Card>>>
+
+    fun sellWantedCard(
+        cardList: List<Card>,
+        item: CardCollectorWantedItem
+    ): Flow<Resource<List<CardCollectorWantedItem>>>
+
+    fun wasteCard(cardList: List<Card>): Flow<Resource<Unit>>
 }

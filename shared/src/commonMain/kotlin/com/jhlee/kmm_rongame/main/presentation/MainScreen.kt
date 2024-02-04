@@ -36,7 +36,6 @@ fun MainScreen(appModule: AppModule) {
 
     LaunchedEffect(Unit) {
         backKeyListener = {
-            Logger.log("state : ${state.selectedTab}")
             when (state.selectedTab) {
                 MainState.NAVIGATION_TAB_HOME -> {
                     backKeyListener = null

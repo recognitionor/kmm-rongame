@@ -21,7 +21,7 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
     val state = _state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), _state.value)
 
     init {
-        getQuizListFromFireBase()
+        getQuizListLocal()
     }
 
     fun clearQuizInfo() {
@@ -62,6 +62,7 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
             }
         }
     }
+
     fun nextStage() {
         if (_state.value.quizList.size - 1 <= _state.value.quizIndex) {
             val quizCount = _state.value.quizList.size
@@ -89,7 +90,6 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
     }
 
     private fun quizStart() {
-        Logger.log("quizStart")
         val quiz = _state.value.quizList[_state.value.quizIndex]
         _state.update {
             it.copy(
@@ -104,7 +104,6 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
             var progressTime = 0L
             while (quizTime > progressTime) {
                 if (_state.value.quizStatus != QuizState.QUIZ_STATUS_ING) {
-                    Logger.log("break")
                     break
                 }
 
@@ -131,11 +130,10 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
         }
     }
 
-    private fun getQuizListFromFireBase() {
-        dataSource.getQuizListsFromRemote().onEach { result ->
+    fun getQuizListLocal() {
+        dataSource.getQuizListsFromDB().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    Logger.log("success : ${result.data?.size}")
                     if ((result.data?.size ?: 0) > 0) {
                         _state.update {
                             it.copy(
@@ -146,6 +144,32 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
                         quizStart()
                     } else {
                         getQuizListFromFireBase()
+                    }
+                }
+                is Resource.Loading -> {
+                    _state.update {
+                        it.copy(quizStatus = QuizState.QUIZ_STATUS_LOADING)
+                    }
+                }
+                is Resource.Error -> {
+                    getQuizListFromFireBase()
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun getQuizListFromFireBase() {
+        dataSource.getQuizListsFromRemote().onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    if ((result.data?.size ?: 0) > 0) {
+                        _state.update {
+                            it.copy(
+                                quizStatus = QuizState.QUIZ_STATUS_ING,
+                                quizList = result.data ?: emptyList()
+                            )
+                        }
+                        quizStart()
                     }
                 }
 

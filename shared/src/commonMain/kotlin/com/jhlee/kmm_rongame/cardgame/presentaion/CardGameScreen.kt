@@ -438,7 +438,7 @@ fun CardGameScreen(
                 val isCardInSelectedList = state.mySelectedCardEntry.any { it?.id == card.id }
                 !isCardInSelectedList
             }
-            CardSelectDialog(filteredList, 1, { list ->
+            CardSelectDialog(filteredList, 1, true, { list ->
                 viewModel.selectMyCard(selectCardSlot, list[0])
             }, { showDialog = false })
         }

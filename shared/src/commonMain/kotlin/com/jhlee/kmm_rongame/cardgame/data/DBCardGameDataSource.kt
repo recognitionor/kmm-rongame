@@ -68,7 +68,6 @@ class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
             }
             emit(Resource.Success(resultList))
         } catch (e: Exception) {
-            Logger.log("enemy $e")
             emit(Resource.Error(e.message ?: "getEnemyList"))
         }
     }
@@ -82,7 +81,6 @@ class DBCardGameDataSource(db: AppDatabase) : CardGameDataSource {
                     it.toCard(cardInfo)
                 }
             }.await()
-            Logger.log("Success")
             emit(Resource.Success(cardList))
         }
     }

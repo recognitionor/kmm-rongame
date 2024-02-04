@@ -19,5 +19,7 @@ class RuleConst {
         const val COMBINATION_INFO_COST = 500
 
         const val COLLECTOR_WANTED_COUNT = 10
+
+        const val COLLECTOR_WASTE_PRICE = 10
     }
 }

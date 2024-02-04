@@ -54,6 +54,7 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
     val state: MainState by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
+        viewModel.getUserInfo()
         backKeyListener = null
     }
 

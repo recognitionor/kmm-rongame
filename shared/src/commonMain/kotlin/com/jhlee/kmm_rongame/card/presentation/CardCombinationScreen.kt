@@ -232,7 +232,7 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
         }
         if (showCardSelectDialog) {
             mainViewModel.setWholeScreen(true)
-            CardSelectDialog(state.myCardList.filter { !state.mySelectedCardEntry.contains(it) }, 1, selectListener = { list ->
+            CardSelectDialog(state.myCardList.filter { !state.mySelectedCardEntry.contains(it) },  selectListener = { list ->
                 viewModel.selectMyCard(selectCardSlot, list[0])
             }) {
                 showCardSelectDialog = false

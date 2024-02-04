@@ -35,7 +35,6 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
             val version = versionCsv[0].toInt()
             val versionList = queries.getVersion(DBVersion.QUIZ_DB_TYPE.toLong(), version.toLong())
                 .executeAsList()
-            Logger.log("versionList : $versionList")
             Firebase.storage.reference.child(DBVersion.QUIZ_FB_PATH).listAll().items.forEach {
                 if (it.name.startsWith(DBVersion.QUIZ_FB_PATH)) {
                     var result = true
@@ -46,7 +45,6 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                         versionList.any { anyItem -> anyItem.version == version.toLong() }
                     if (!containVersion) {
                         try {
-                            Logger.log("version : $version")
                             val list = async {
                                 val csvString = httpClient.get(it.getDownloadUrl()).body<String>()
                                 QuizDto.parseJson(csvString).map { quiz ->
@@ -96,8 +94,8 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                     queries.getQuizList().executeAsList().map {
                         it.toQuiz()
                     }
-                }
-                emit(Resource.Success(quizList.await()))
+                }.await()
+                emit(Resource.Success(quizList))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message.toString()))
             }

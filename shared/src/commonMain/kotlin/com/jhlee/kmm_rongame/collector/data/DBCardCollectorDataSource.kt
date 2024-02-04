@@ -21,7 +21,6 @@ class DBCardCollectorDataSource(db: AppDatabase) : CardCollectorDataSource {
     }
 
     override fun getCollectorWantedList(): Flow<Resource<List<CardCollectorWantedItem>>> = flow {
-        Logger.log("getCollectorWantedList")
         emit(Resource.Loading())
         supervisorScope {
             try {
@@ -31,16 +30,12 @@ class DBCardCollectorDataSource(db: AppDatabase) : CardCollectorDataSource {
                 if (emptyCount > 0) {
                     repeat(emptyCount) {
                         val randomOffset = Clock.System.now().toEpochMilliseconds()
-                        val isGrade: Boolean = (randomOffset.toInt() % 2) == 1
                         var randomCard: Card? = null
                         var gradeValue: Int? = null
-                        if (isGrade) {
-                            gradeValue = Random(randomOffset).nextInt(1, 7)
-                        } else {
-                            randomCard = queries.getCardInfoRandom(Int.MAX_VALUE.toLong())
-                                .executeAsOneOrNull()?.toCard()
-                            gradeValue = randomCard?.grade ?: 1
-                        }
+                        randomCard =
+                            queries.getCardInfoRandom(Int.MAX_VALUE.toLong()).executeAsOneOrNull()
+                                ?.toCard()
+                        gradeValue = randomCard?.grade ?: 1
                         val countRandomValue = Random(randomOffset + 1).nextInt(1, 5)
                         val upgradeRandomValue = Random(randomOffset + 2).nextInt(1, 5)
                         val rewardRandomValue = Random(randomOffset + 3).nextInt(2, 10)
@@ -58,11 +53,12 @@ class DBCardCollectorDataSource(db: AppDatabase) : CardCollectorDataSource {
                     }
                 }
                 val result = queries.getCardCollectList().executeAsList().map {
+                    val card = queries.getCardInfo(it.cardId ?: 0).executeAsOne().toCard()
                     if (it.cardId == null) {
-                        it.toCardCollectorWantedItem()
+                        it.toCardCollectorWantedItem(card)
                     } else {
                         it.cardId.let { id ->
-                            it.toCardCollectorWantedItem()
+                            it.toCardCollectorWantedItem(card)
                                 .copy(card = queries.getCardInfo(id).executeAsOne().toCard())
                         }
                     }
@@ -70,47 +66,71 @@ class DBCardCollectorDataSource(db: AppDatabase) : CardCollectorDataSource {
                 emit(Resource.Success(result))
 
             } catch (e: Exception) {
-                Logger.log("error : $e")
                 emit(Resource.Error(e.message ?: "error"))
             }
         }
     }
 
     override fun updateCollectorWanted(id: Long): Flow<Resource<Unit>> = flow { }
-    override fun getSelectList(cardCollectorWantedItem: CardCollectorWantedItem): Flow<Resource<List<Card>>> =
+    override fun getSelectList(cardCollectorWantedItem: CardCollectorWantedItem?): Flow<Resource<List<Card>>> =
         flow {
             emit(Resource.Loading())
             val result: MutableList<Card> = mutableListOf()
-            queries.myCardList().executeAsList().forEach {
-                val card = it.toCard(queries.getCardInfo(it.cardId!!.toLong()).executeAsOne())
-                var isFilter = false
-                if (cardCollectorWantedItem.card != null) {
-                    if (card.cardId != cardCollectorWantedItem.card?.cardId) {
+            if (cardCollectorWantedItem != null) {
+                queries.myCardList().executeAsList().forEach {
+                    val card = it.toCard(queries.getCardInfo(it.cardId!!.toLong()).executeAsOne())
+
+                    var isFilter = false
+                    if (cardCollectorWantedItem.card != null) {
+                        if (card.cardId != cardCollectorWantedItem.card?.cardId) {
+                            isFilter = true
+                            return@forEach
+                        }
+                    }
+
+                    if (cardCollectorWantedItem.upgrade > card.upgrade) {
                         isFilter = true
                         return@forEach
                     }
+                    if (cardCollectorWantedItem.power > card.power) {
+                        isFilter = true
+                        return@forEach
+                    }
+                    if (!isFilter) {
+                        result.add(card)
+                    }
                 }
-                if (cardCollectorWantedItem.grade > card.grade) {
-                    isFilter = true
-                    return@forEach
-                }
-                if (cardCollectorWantedItem.upgrade > card.upgrade) {
-                    isFilter = true
-                    return@forEach
-                }
-                if (cardCollectorWantedItem.power > card.power) {
-                    isFilter = true
-                    return@forEach
-                }
-                if (!isFilter) {
-                    result.add(card)
-                }
-            }
-            if (result.size >= cardCollectorWantedItem.count) {
-                emit(Resource.Error("팔수 있는 카드를 갖고 있지 않은것 같은데?"))
             } else {
-                emit(Resource.Success(result))
+                result.addAll(queries.myCardList().executeAsList().map {
+                    it.toCard(queries.getCardInfo(it.cardId!!.toLong()).executeAsOne())
+                })
             }
 
+            if (result.size >= (cardCollectorWantedItem?.count ?: 0)) {
+                emit(Resource.Success(result))
+            } else {
+                emit(Resource.Error("팔수 있는 카드를 갖고 있지 않은것 같은데?"))
+            }
         }
+
+    override fun sellWantedCard(
+        cardList: List<Card>, item: CardCollectorWantedItem
+    ): Flow<Resource<List<CardCollectorWantedItem>>> = flow {
+        emit(Resource.Loading())
+        cardList.forEach {
+            queries.removeCard(it.id.toLong())
+            queries.plusUserMoney(item.reward.toLong())
+        }
+        queries.deleteCardCollectorEntity(item.id.toLong())
+        emit(Resource.Success(emptyList()))
+    }
+
+    override fun wasteCard(cardList: List<Card>): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        cardList.forEach {
+            queries.removeCard(it.id.toLong())
+            queries.plusUserMoney(RuleConst.COLLECTOR_WASTE_PRICE.toLong())
+        }
+        emit(Resource.Success(Unit))
+    }
 }
