@@ -17,11 +17,15 @@ pluginManagement {
         kotlin("multiplatform").version(kotlinVersion)
         kotlin("android").version(kotlinVersion)
 
+        id("com.android.base").version(agpVersion)
         id("com.android.application").version(agpVersion)
         id("com.android.library").version(agpVersion)
-
         id("org.jetbrains.compose").version(composeVersion)
     }
+}
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version("0.4.0")
 }
 
 dependencyResolutionManagement {

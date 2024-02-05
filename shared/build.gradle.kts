@@ -1,3 +1,8 @@
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+
+import dev.icerock.gradle.MRVisibility
+
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -8,9 +13,12 @@ plugins {
     id("dev.icerock.mobile.multiplatform-resources")
     kotlin("plugin.serialization") version "1.5.10"
 }
+val mokoResource = "0.24.0-alpha-2"
 
-@OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class) kotlin {
-    targetHierarchy.default()
+@OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
+kotlin {
+//    targetHierarchy.default()
+//    targetHierarchy.default {  }
 
     android {
         compilations.all {
@@ -24,7 +32,7 @@ plugins {
     iosSimulatorArm64()
 
     cocoapods {
-        ios.deploymentTarget = "11.0"
+        ios.deploymentTarget = "16.0"
 
         summary = "Some description for the Shared Module"
         homepage = "Link to the Shared Module homepage"
@@ -32,7 +40,7 @@ plugins {
         podfile = project.file("../iosApp/Podfile")
         framework {
             baseName = "shared"
-            export("dev.icerock.moko:resources:0.23.0")
+            export("dev.icerock.moko:resources:$mokoResource")
             export("dev.icerock.moko:graphics:0.9.0")
             export("dev.gitlive:firebase-storage:1.10.0")
         }
@@ -64,7 +72,8 @@ plugins {
                 implementation("app.cash.sqldelight:runtime:2.0.0")
                 implementation("app.cash.sqldelight:coroutines-extensions:2.0.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-                api("dev.icerock.moko:resources:0.23.0")
+                api("dev.icerock.moko:resources:$mokoResource")
+                api("dev.icerock.moko:resources-compose:$mokoResource")
 
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization:$ktorVersion")
@@ -102,11 +111,10 @@ plugins {
                 implementation("dev.gitlive:firebase-storage:1.10.0")
             }
         }
-        val androidUnitTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
-        val iosMain by getting {
+        val iosMain by creating {
             dependencies {
                 implementation("app.cash.sqldelight:native-driver:2.0.0")
                 implementation("io.ktor:ktor-client-darwin:$ktorVersion")
@@ -115,15 +123,6 @@ plugins {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
-        }
-        val iosX64Test by getting
-        val iosArm64Test by getting
-        val iosSimulatorArm64Test by getting
-        val iosTest by getting {
-            dependsOn(commonTest)
-            iosX64Test.dependsOn(this)
-            iosArm64Test.dependsOn(this)
-            iosSimulatorArm64Test.dependsOn(this)
         }
     }
 }
@@ -143,8 +142,8 @@ android {
 
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.jhlee.kmm_rongame"
-    multiplatformResourcesClassName = "SharedRes"
+    resourcesPackage.set("com.jhlee.kmm_rongame") // required
+    resourcesClassName.set("SharedRes") // optional, default MR
 }
 sqldelight {
     databases {

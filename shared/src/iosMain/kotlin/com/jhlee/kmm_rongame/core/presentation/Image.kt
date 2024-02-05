@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalForeignApi::class)
+
 package com.jhlee.kmm_rongame.core.presentation
 
 import androidx.compose.runtime.Composable
@@ -5,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asComposeImageBitmap
 import dev.icerock.moko.resources.ImageResource
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readBytes
 import org.jetbrains.skia.Bitmap
 import org.jetbrains.skia.Image

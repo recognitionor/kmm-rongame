@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalForeignApi::class)
+
 package com.jhlee.kmm_rongame
 
 
@@ -9,6 +11,7 @@ import cocoapods.FirebaseStorage.FIRStorageTaskStatusPause
 import cocoapods.FirebaseStorage.FIRStorageTaskStatusProgress
 import cocoapods.FirebaseStorage.FIRStorageTaskStatusResume
 import cocoapods.FirebaseStorage.FIRStorageTaskStatusSuccess
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
