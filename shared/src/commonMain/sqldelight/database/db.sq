@@ -1,11 +1,3 @@
-import kotlin.Boolean;
-
-getTestList:
-SELECT *
-FROM testEntity
-ORDER BY id ASC;
-
-
 insertAttend:
 INSERT OR REPLACE
 INTO AttendEntity(

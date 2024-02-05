@@ -1,6 +1,6 @@
 import kotlin.Boolean;
 
-CREATE TABLE testEntity (
+CREATE TABLE IF NOT EXISTS testEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     test TEXT NOT NULL
@@ -9,14 +9,14 @@ CREATE TABLE testEntity (
 
 --AttendEntity
 --출석 정보--
-CREATE TABLE AttendEntity (
+CREATE TABLE IF NOT EXISTS AttendEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     date INTEGER NOT NULL UNIQUE
 );
 
 --CommonEntity
 --공통 정보--
-CREATE TABLE CommonEntity (
+CREATE TABLE IF NOT EXISTS CommonEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     token TEXT NOT NULL,
     expires INTEGER
@@ -24,7 +24,7 @@ CREATE TABLE CommonEntity (
 
 --UserInfoEntity
 --유저 정보--
-CREATE TABLE UserInfoEntity (
+CREATE TABLE IF NOT EXISTS UserInfoEntity (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     money INTEGER,
