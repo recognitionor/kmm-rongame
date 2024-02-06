@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalForeignApi::class)
+@file:OptIn(ExperimentalForeignApi::class)
 
 package com.jhlee.kmm_rongame
 
@@ -26,6 +26,7 @@ import platform.Foundation.NSURL
 actual val Firebase.storage get() =
     FirebaseStorage(FIRStorage.storage())
 
+@OptIn(ExperimentalForeignApi::class)
 actual fun Firebase.storage(app: FirebaseApp): FirebaseStorage = FirebaseStorage(
     FIRStorage.storageForApp(app.ios as objcnames.classes.FIRApp)
 )
