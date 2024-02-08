@@ -20,7 +20,7 @@ class DBBankDataSource(db: AppDatabase) : BankDataSource {
                 "고양이은행",
                 0,
                 emptyList(),
-                Random(Clock.System.now().toEpochMilliseconds()).nextInt(1, 100).toLong()
+                Random(Clock.System.now().toEpochMilliseconds()).nextInt(1, 40).toLong()
             )
             queries.insertBank(bank.id.toLong(), bank.name, 1, bank.interestRate)
             emit(Resource.Success(bank))

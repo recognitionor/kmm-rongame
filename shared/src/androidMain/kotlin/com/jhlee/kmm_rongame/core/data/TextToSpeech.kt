@@ -5,7 +5,9 @@ import android.speech.tts.TextToSpeech
 var androidTextToSpeech: TextToSpeech? = null  // Android specific TextToSpeech
 var unspokenText: String? = null // used to speak text in chunks
 actual fun speakTextToSpeech(text: String) {
-    androidTextToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "freds_markers")
+    if (!isTextToSpeechSpeaking()) {
+        androidTextToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "freds_markers")
+    }
 }
 
 actual fun isTextToSpeechSpeaking(): Boolean {

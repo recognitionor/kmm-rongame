@@ -51,14 +51,19 @@ class TextToSpeechManager : NSObject(), AVSpeechSynthesizerDelegateProtocol {
         return isSpeaking
     }
 }
+
 // Implementation #1 - uses `TextToSpeechManager` natively in Kotlin
 var textToSpeechManager: TextToSpeechManager = TextToSpeechManager()
 actual fun speakTextToSpeech(text: String) {  // gives runtime error: [catalog] Unable to list voice folder
-    textToSpeechManager.speak(text) // Cant use this from Kotlin due to unresolved Build Error
+    if (!isTextToSpeechSpeaking()) {
+        textToSpeechManager.speak(text) // Cant use this from Kotlin due to unresolved Build Error
+    }
 }
+
 actual fun stopTextToSpeech() {
     textToSpeechManager.stopSpeaking()
 }
+
 actual fun isTextToSpeechSpeaking(): Boolean {
     return textToSpeechManager.isSpeaking
 }

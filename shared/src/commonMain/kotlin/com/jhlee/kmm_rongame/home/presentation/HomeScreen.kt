@@ -36,6 +36,7 @@ import com.jhlee.kmm_rongame.card.presentation.CardListScreen
 import com.jhlee.kmm_rongame.card.presentation.CardScreen
 import com.jhlee.kmm_rongame.card.presentation.HomeState
 import com.jhlee.kmm_rongame.card.presentation.HomeViewModel
+import com.jhlee.kmm_rongame.cardselector.presentaion.CardSelectSearchBar
 import com.jhlee.kmm_rongame.common.view.ClickableDefaults
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.di.AppModule
@@ -86,10 +87,9 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         Column(
-                            modifier = Modifier.then(
-                                ClickableDefaults.getDefaultClickable(
-                                    pressedAlpha = 0f
-                                ) { cardViewModel.selectScreen(HomeState.HOME_SCREEN_SETTING) })
+                            modifier = Modifier.then(ClickableDefaults.getDefaultClickable(
+                                pressedAlpha = 0f
+                            ) { cardViewModel.selectScreen(HomeState.HOME_SCREEN_SETTING) })
                                 .width(80.dp).padding(20.dp)
                         ) {
                             getCommonImageResourceBitMap(SharedRes.images.ic_setting)?.let {
@@ -156,6 +156,14 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                             )
                         }
 
+                    }
+                    CardSelectSearchBar(cardStateValue.searchKeyword,
+                        cardStateValue.sortFilter,
+                        cardStateValue.isReverseFilter,
+                        {
+                            cardViewModel.toggleReverseFilter()
+                        }) { keyword: String, index: Int ->
+                        cardViewModel.searchSortCardList(keyword, index)
                     }
                     CardListScreen(homeViewModel = cardViewModel)
                 }

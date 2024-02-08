@@ -2,6 +2,7 @@ package com.jhlee.kmm_rongame.card.presentation
 
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.card.domain.CardDataSource
+import com.jhlee.kmm_rongame.constants.CardFilterConst
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class HomeViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
     companion object {
@@ -26,7 +28,6 @@ class HomeViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
     }
 
 
-
     fun getMyCardList() {
         cardDataSource.getMyCardList().onEach { result ->
             when (result) {
@@ -35,14 +36,11 @@ class HomeViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
 
                 is Resource.Success -> {
                     _state.update {
-                        Logger.log("myList ${result.data?.map { 
-                            "${it.name}-${it.count}" 
-                        }}")
                         it.copy(
-                            cardList = result.data ?: emptyList(),
+                            originCardList = result.data ?: emptyList(),
                         )
                     }
-
+                    searchSortCardList()
                 }
 
                 is Resource.Loading -> {
@@ -119,6 +117,68 @@ class HomeViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
     fun selectScreen(homeScreen: Int) {
         _state.update {
             it.copy(homeScreenMode = homeScreen)
+        }
+    }
+
+    fun toggleReverseFilter() {
+        _state.update { it.copy(isReverseFilter = !state.value.isReverseFilter) }
+        searchSortCardList()
+    }
+
+    fun searchSortCardList(
+        keyword: String = state.value.searchKeyword, sortIndex: Int = state.value.sortFilter
+    ) {
+        _state.update { it.copy(isLoading = true, sortFilter = sortIndex, searchKeyword = keyword) }
+        viewModelScope.launch {
+            val sortedList = _state.value.originCardList.filter {
+                if (keyword.isEmpty()) {
+                    true
+                } else {
+                    it.name.contains(
+                        keyword, ignoreCase = true
+                    ) || it.nameEng.contains(keyword, ignoreCase = true)
+                }
+
+            }.sortedWith(compareBy<Card> {
+                when (state.value.sortFilter) {
+                    CardFilterConst.ID -> {
+                        it.cardId
+                    }
+
+                    CardFilterConst.POWER -> {
+                        -it.power
+                    }
+
+                    CardFilterConst.POTENTIAL -> {
+                        -it.potential
+                    }
+
+                    CardFilterConst.GRADE -> {
+                        -it.grade
+                    }
+
+                    CardFilterConst.UPGRADE -> {
+                        -it.upgrade
+                    }
+
+                    else -> {
+                        -it.cardId
+                    }
+                }
+            }.thenBy {
+                it.cardId
+            })
+
+
+            if (state.value.isReverseFilter) {
+                _state.update {
+                    it.copy(cardList = sortedList.reversed(), isLoading = false)
+                }
+            } else {
+                _state.update {
+                    it.copy(cardList = sortedList, isLoading = false)
+                }
+            }
         }
     }
 }

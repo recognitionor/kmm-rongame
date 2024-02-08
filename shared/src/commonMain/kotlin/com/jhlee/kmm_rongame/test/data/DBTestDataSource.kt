@@ -20,33 +20,14 @@ class DBTestDataSource(
     private val queries = db.dbQueries
 
     fun parseCSV(json: String) {
-        val modifiedString = json.replace("\"", "\\\"").lines()
-        val first = modifiedString[0]
-        val second = modifiedString[1]
-        Logger.log("first : $first")
-        Logger.log("second : $second")
-
-        val dataLines = modifiedString.drop(2)
-        Logger.log("dataLineSize : ${dataLines.size}")
-        val tempList = mutableListOf<CardInfoDto>()
-        dataLines.forEach {
-            val items = it.split(",\\s*(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)".toRegex())
-            try {
-                Logger.log("items : $items")
-            } catch (ignored: Exception) {
-            }
-        }
     }
 
     override fun getTestList(): Flow<List<Test>> = flow {
-        Logger.log("getTestList : ")
         Firebase.storage.reference.child("card").listAll().items.forEach {
             val csvString = httpClient.get(it.getDownloadUrl()).body<String>()
             parseCSV(csvString)
-            Logger.log("new : ${it.name}")
         }
         Firebase.storage.reference.listAll().items.forEach {
-            Logger.log("it : ${it.name}")
 
         }
     }

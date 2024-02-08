@@ -36,6 +36,7 @@ fun CardListScreen(homeViewModel: HomeViewModel) {
                 val card = cardStateValue.cardList[cardStateValue.cardList.size - index - 1]
                 Row(horizontalArrangement = Arrangement.Center) {
                     CardListItemScreen(card = card,
+                        visibleInfoType = cardStateValue.sortFilter,
                         height = 200f,
                         onItemDetailInfoClick = { homeViewModel.toggleCardInfoDialog(card) }) {
                         homeViewModel.toggleCardInfoDialog(card)

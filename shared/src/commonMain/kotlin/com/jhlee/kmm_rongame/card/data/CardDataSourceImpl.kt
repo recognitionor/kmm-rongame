@@ -43,7 +43,6 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
 
 
     override fun gatchaBasicCard(): Flow<Resource<Card>> {
-        Logger.log("gatchaBasicCard")
         val cardGrade = 1
         return flow {
             try {

@@ -89,7 +89,9 @@ fun CustomTextField(
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(onDone = {
-            // Handle Done action if needed
+            this.defaultKeyboardAction(ImeAction.Done)
+            isFocused = false
+
         }),
         visualTransformation = visualTransformation,
         modifier = Modifier.fillMaxWidth().height(56.dp).onFocusChanged {

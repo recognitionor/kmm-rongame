@@ -9,10 +9,14 @@ data class HomeState(
     val updateUserInfo: Boolean = false,
     val gatchaCard: Card? = null,
     val detailCardInfo: Card? = null,
+    val originCardList: List<Card> = emptyList(),
     val cardList: List<Card> = emptyList(),
     val error: String = "",
     val cardRandomProgress: Int = 0,
-    val homeScreenMode: Int = 0
+    val homeScreenMode: Int = 0,
+    val searchKeyword: String = "",
+    val sortFilter: Int = 0,
+    val isReverseFilter: Boolean = false
 ) {
     companion object {
         const val HOME_SCREEN_DEFAULT = 0

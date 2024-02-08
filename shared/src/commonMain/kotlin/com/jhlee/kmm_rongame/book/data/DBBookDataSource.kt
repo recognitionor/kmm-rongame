@@ -25,7 +25,13 @@ class DBBookDataSource(db: AppDatabase) : BookDataSource {
                         tempType.add(cardType)
                     }
                 }
-                it.toCard().copy(type = tempType)
+                val tempCount = if (it.count.toInt() == 0) {
+                    queries.getCardCount(it.id).executeAsOne()
+                } else {
+                    it.count
+                }
+
+                it.toCard().copy(type = tempType, count = tempCount.toInt())
             }
             emit(Resource.Success(resultList))
         } catch (e: Exception) {

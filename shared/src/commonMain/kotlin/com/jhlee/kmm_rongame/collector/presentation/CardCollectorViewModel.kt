@@ -43,7 +43,6 @@ class CardCollectorViewModel(private val dbCollectorDataSource: CardCollectorDat
         dbCollectorDataSource.getSelectList(wantedItem).onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    Logger.log("success : ${result.data}")
                     _state.update {
                         it.copy(isLoading = false, selectList = result.data ?: emptyList())
                     }

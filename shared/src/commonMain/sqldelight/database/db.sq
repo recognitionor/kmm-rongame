@@ -153,6 +153,12 @@ FROM MyCardEntity
 LEFT JOIN CardInfoEntity ON MyCardEntity.cardId = CardInfoEntity.id
 WHERE MyCardEntity.id = ?;
 
+getCardCount:
+SELECT COUNT(*)
+FROM MyCardEntity
+WHERE MyCardEntity.cardId = ?;
+
+
 insertCardEntity:
 INSERT INTO MyCardEntity(
     cardId,

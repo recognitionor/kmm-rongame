@@ -50,7 +50,7 @@ fun CardListSmallItemScreen(
         val nameStr = card.name
         val visibleInfo = when (visibleInfoType) {
             CardFilterConst.ID -> {
-                card.cardId + 1
+                "${card.cardId + 1}"
             }
 
             CardFilterConst.POWER -> {
@@ -58,19 +58,19 @@ fun CardListSmallItemScreen(
             }
 
             CardFilterConst.POTENTIAL -> {
-                card.potential
+                "${card.potential}"
             }
 
             CardFilterConst.GRADE -> {
-                card.grade
+                "${card.grade}"
             }
 
             CardFilterConst.UPGRADE -> {
-                card.upgrade
+                "$card.upgrade"
             }
 
             else -> {
-                card.cardId + 1
+                "${card.cardId + 1}"
             }
         }
 
@@ -80,17 +80,16 @@ fun CardListSmallItemScreen(
             if (!selected) Color.White else LightColorScheme.primary.copy(
                 alpha = 0.3f
             )
-        ),
-            modifier = modifier.run {
-                size(width = cardWidth.dp, height = height.dp).padding(4.dp)
-                    .border(width = 2.dp, color = color, shape = RoundedCornerShape(8.dp))
-            }.clickable {
-                if (onItemClick != null) {
-                    if (isEnabled) {
-                        onItemClick(card)
-                    }
+        ), modifier = modifier.run {
+            size(width = cardWidth.dp, height = height.dp).padding(4.dp)
+                .border(width = 2.dp, color = color, shape = RoundedCornerShape(8.dp))
+        }.clickable {
+            if (onItemClick != null) {
+                if (isEnabled) {
+                    onItemClick(card)
                 }
-            }) {
+            }
+        }) {
             Box(
                 modifier = Modifier.padding(10.dp)
             ) {

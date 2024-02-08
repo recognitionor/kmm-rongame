@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.common.view.StarRatingBar
+import com.jhlee.kmm_rongame.constants.CardFilterConst
 import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
@@ -53,6 +54,32 @@ fun CardListItemScreen(
     var upgrade = card.upgrade
     val powerStr = card.power.toString()
     var textColor = color
+    val visibleInfo = when (visibleInfoType) {
+        CardFilterConst.ID -> {
+            "${card.cardId + 1}"
+        }
+
+        CardFilterConst.POWER -> {
+            card.power
+        }
+
+        CardFilterConst.POTENTIAL -> {
+            "${card.potential}"
+        }
+
+        CardFilterConst.GRADE -> {
+            "${card.grade}"
+        }
+
+        CardFilterConst.UPGRADE -> {
+            "${card.upgrade}"
+        }
+
+        else -> {
+            "NO.${card.cardId + 1}"
+        }
+    }
+
     androidx.compose.material3.Card(colors = CardDefaults.cardColors(Color.White),
         modifier = Modifier.run {
             size(width = cardWidth.dp, height = height.dp).padding(4.dp)
@@ -74,9 +101,12 @@ fun CardListItemScreen(
                     }
                     Spacer(modifier = Modifier.weight(0.1f))
                     Text(
-                        text = powerStr, modifier = Modifier.weight(1f), style = TextStyle(
+                        text = visibleInfo.toString(),
+                        modifier = Modifier.weight(1f),
+                        style = TextStyle(
                             fontSize = 20.sp, fontWeight = FontWeight.Bold
-                        ), textAlign = TextAlign.End
+                        ),
+                        textAlign = TextAlign.End
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                 }

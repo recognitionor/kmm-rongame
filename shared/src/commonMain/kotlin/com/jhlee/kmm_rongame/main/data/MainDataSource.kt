@@ -164,7 +164,6 @@ class MainDataSourceImpl(
                     it.type
                 )
             } catch (e: Exception) {
-                Logger.log("error $e")
                 result = false
             }
             flowCollector.emit(
@@ -321,6 +320,5 @@ class MainDataSourceImpl(
                 }
             }
         }
-        Logger.log("time : ${Clock.System.now().toEpochMilliseconds() - time}")
     }
 }
