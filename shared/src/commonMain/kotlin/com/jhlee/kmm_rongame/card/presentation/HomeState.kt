@@ -15,7 +15,7 @@ data class HomeState(
     val cardRandomProgress: Int = 0,
     val homeScreenMode: Int = 0,
     val searchKeyword: String = "",
-    val sortFilter: Int = 0,
+    val sortFilter: Int = 3,
     val isReverseFilter: Boolean = false
 ) {
     companion object {

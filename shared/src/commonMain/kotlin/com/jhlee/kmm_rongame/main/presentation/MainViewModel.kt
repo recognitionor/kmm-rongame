@@ -53,6 +53,11 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
                             "Card 조합 정보 초기화"
                         }
 
+
+                        DBVersion.QUIZ_DB_TYPE -> {
+                            "퀴즈 정보 초기화"
+                        }
+
                         else -> {
                             "기타 정보 초기화"
                         }

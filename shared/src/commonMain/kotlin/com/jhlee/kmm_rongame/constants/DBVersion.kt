@@ -14,6 +14,6 @@ object DBVersion {
     const val VERSION = "version.csv"
 
     val DB_CARD_FILE_LIST = arrayListOf(
-        CARD_FB_PATH, CARDTYPE_FB_PATH, CARDCOMBINE_FB_PATH
+        CARD_FB_PATH, CARDTYPE_FB_PATH, CARDCOMBINE_FB_PATH, QUIZ_FB_PATH
     )
 }

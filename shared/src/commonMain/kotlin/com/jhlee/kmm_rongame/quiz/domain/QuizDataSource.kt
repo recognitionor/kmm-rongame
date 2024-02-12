@@ -7,4 +7,6 @@ interface QuizDataSource {
     fun getQuizListsFromRemote(): Flow<Resource<List<Quiz>>>
     fun getQuizListsFromDB(): Flow<Resource<List<Quiz>>>
     fun insertQuizListToDB(list: List<Quiz>): Flow<Resource<Unit>>
+
+    fun updateQuiz(quiz: Quiz): Flow<Resource<Unit>>
 }

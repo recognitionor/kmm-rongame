@@ -61,7 +61,7 @@ fun MainScreen(appModule: AppModule) {
     }
     val isTestMode = false
     val navigationBarHeight = if (isAndroid()) 80.dp else 110.dp
-//    viewModel.updateUserMoney(1000000)
+//    viewModel.updateUserMoney(100000)
     if (isTestMode) {
         TestScreen(appModule)
     } else {

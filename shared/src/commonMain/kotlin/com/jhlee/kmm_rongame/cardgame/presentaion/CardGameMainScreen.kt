@@ -85,7 +85,7 @@ fun CardGameMainScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                                         mainViewModel.showDialog(
                                             MainState.QUIZ_INFO_DIALOG, createDialog("Start(시작) ",
                                                 "$costMoney 원이 듭니다.",
-                                                "img_cloud_dragon",
+                                                "img_game_cat",
                                                 {
                                                     mainViewModel.updateUserMoney(-(costMoney))
                                                     viewModel.getCardGame(index)
@@ -99,7 +99,7 @@ fun CardGameMainScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                                         mainViewModel.showDialog(
                                             MainState.CARD_NOT_START_DIALOG, createDialog("아직 안되요",
                                                 "돈이 부족 해요 \uD83D\uDE25",
-                                                "img_cloud_dragon",
+                                                "img_game_cat",
                                                 positiveButtonCallback = {
                                                     mainViewModel.dismissDialog()
                                                 })
@@ -109,7 +109,7 @@ fun CardGameMainScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                                     mainViewModel.showDialog(
                                         MainState.CARD_NOT_START_DIALOG, createDialog("아직 안되요",
                                             "${(index)}을 통과 하세요",
-                                            "img_cloud_dragon",
+                                            "img_game_cat",
                                             positiveButtonCallback = {
                                                 mainViewModel.dismissDialog()
                                             })

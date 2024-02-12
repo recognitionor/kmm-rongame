@@ -72,7 +72,7 @@ fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
         QuizState.QUIZ_STATUS_ALL_FINISH -> {
             createDialog(getString(SharedRes.strings.quiz_result_title),
                 "총 ${quizState.quizTotalCount} 문제 중 ${quizState.quizTotalAnswer} 를 맞춰 ${quizState.quizTotalPoint}점을 획득합니다.",
-                "img_smart_dragon",
+                "img_smart_cat",
                 positiveButtonCallback = {
                     callback.invoke(quizState.quizTotalPoint)
                 }).invoke()
@@ -81,7 +81,7 @@ fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
         QuizState.QUIZ_STATUS_DONE_FAIL -> {
             createDialog(getString(SharedRes.strings.quiz_fail_message),
                 quiz?.description ?: "다음엔 꼭 맞추어야 한다!!",
-                "img_smart_dragon",
+                "img_smart_cat",
                 positiveButtonCallback = {
                     quizViewModel.nextStage()
                 }).invoke()
@@ -90,7 +90,7 @@ fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
         QuizState.QUIZ_STATUS_DONE_SUCCESS -> {
             createDialog(getString(SharedRes.strings.quiz_success_message_title),
                 "${quiz?.reward}${getString(SharedRes.strings.quiz_success_message_content)}",
-                "img_smart_dragon",
+                "img_smart_cat",
                 {
                     quizViewModel.nextStage()
                 }).invoke()

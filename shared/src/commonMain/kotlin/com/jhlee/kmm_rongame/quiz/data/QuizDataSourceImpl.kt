@@ -4,7 +4,6 @@ import com.jhlee.kmm_rongame.AppDatabase
 import com.jhlee.kmm_rongame.Firebase
 import com.jhlee.kmm_rongame.constants.DBVersion
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.quiz.domain.Quiz
 import com.jhlee.kmm_rongame.quiz.domain.QuizDataSource
 import com.jhlee.kmm_rongame.storage
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.supervisorScope
-import kotlinx.datetime.Clock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -73,7 +71,6 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
                             result = false
                             emit(Resource.Error(e.message.toString()))
                         }
-
                         queries.insertDBVersion(
                             version.toLong(), DBVersion.QUIZ_DB_TYPE.toLong(), result
                         )
@@ -131,4 +128,10 @@ class QuizDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
             emit(Resource.Success(Unit))
         }
     }.flowOn(Dispatchers.Default)
+
+    override fun updateQuiz(quiz: Quiz): Flow<Resource<Unit>> = flow {
+        queries.updateQuizAnswer(
+            selected = quiz.selected.toLong(), durationTime = quiz.durationTime, quiz.id.toLong()
+        )
+    }
 }

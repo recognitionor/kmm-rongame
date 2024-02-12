@@ -10,6 +10,10 @@ import com.jhlee.kmm_rongame.card.data.CardInfoManager
 import com.jhlee.kmm_rongame.card.data.CardTypeDto
 import com.jhlee.kmm_rongame.card.domain.CardType
 import com.jhlee.kmm_rongame.constants.DBVersion
+import com.jhlee.kmm_rongame.constants.DBVersion.CARDCOMBINE_DB_TYPE
+import com.jhlee.kmm_rongame.constants.DBVersion.CARDTYPE_DB_TYPE
+import com.jhlee.kmm_rongame.constants.DBVersion.CARD_DB_TYPE
+import com.jhlee.kmm_rongame.constants.DBVersion.QUIZ_DB_TYPE
 import com.jhlee.kmm_rongame.core.data.HttpConst
 import com.jhlee.kmm_rongame.core.data.HttpConst.FLATICON_URL
 import com.jhlee.kmm_rongame.core.data.ImageStorage
@@ -18,6 +22,7 @@ import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.FlaticonAuth
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
+import com.jhlee.kmm_rongame.quiz.data.QuizDto
 import com.jhlee.kmm_rongame.storage
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -30,9 +35,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.supervisorScope
 import kotlinx.datetime.Clock
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import migrations.CardInfoEntity
 
 class MainDataSourceImpl(
@@ -104,9 +110,9 @@ class MainDataSourceImpl(
         queries.updateUser(userInfo.money.toLong())
         val userInfoList =
             queries.getUserInfo().asFlow().mapToList(currentCoroutineContext()).firstOrNull()
-        val userInfo = userInfoList?.firstOrNull()
-        if (userInfo != null) {
-            emit(Resource.Success(userInfo.toUser()))
+        val firstUserInfo = userInfoList?.firstOrNull()
+        if (firstUserInfo != null) {
+            emit(Resource.Success(firstUserInfo.toUser()))
         } else {
             emit(Resource.Error("No user found"))
         }
@@ -169,7 +175,7 @@ class MainDataSourceImpl(
             flowCollector.emit(
                 Resource.Loading(
                     Triple(
-                        DBVersion.CARD_DB_TYPE, totalSize, index + 1
+                        CARD_DB_TYPE, totalSize, index + 1
                     )
                 )
             )
@@ -211,7 +217,7 @@ class MainDataSourceImpl(
                 flowCollector.emit(
                     Resource.Loading(
                         Triple(
-                            DBVersion.CARDCOMBINE_DB_TYPE, totalSize, index + 1
+                            CARDCOMBINE_DB_TYPE, totalSize, index + 1
                         )
                     )
                 )
@@ -243,7 +249,7 @@ class MainDataSourceImpl(
             flowCollector.emit(
                 Resource.Loading(
                     Triple(
-                        DBVersion.CARDTYPE_DB_TYPE, totalSize, index + 1
+                        CARDTYPE_DB_TYPE, totalSize, index + 1
                     )
                 )
             )
@@ -264,12 +270,49 @@ class MainDataSourceImpl(
             try {
                 initVersion(isReset, this@flow)
             } catch (e: Exception) {
+                Logger.log("error : ${e.message}")
                 emit(Resource.Error("data load fail ${e.message}"))
                 return@supervisorScope
             }
 
             emit(Resource.Success(Triple(0, 0, 0)))
         }
+    }
+
+    private suspend fun initQuiz(
+        csvStr: String,
+        totalSize: Int,
+        flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
+        isResult: (Boolean) -> Unit
+    ) {
+        var result = true
+        try {
+            QuizDto.parseJson(csvStr).forEachIndexed { index, quiz ->
+                queries.updateQuizContent(
+                    answer = quiz.answer.toLong(),
+                    category = quiz.category,
+                    choiceList = Json.encodeToString(quiz.choiceList),
+                    description = quiz.description,
+                    imageUrl = quiz.imageUrl,
+                    level = quiz.level.toLong(),
+                    time = quiz.time,
+                    question = quiz.question,
+                    chance = quiz.chance.toLong(),
+                    reward = quiz.reward.toLong(),
+                    id = quiz.id.toLong()
+                )
+                flowCollector.emit(
+                    Resource.Loading(
+                        Triple(
+                            CARDTYPE_DB_TYPE, totalSize, index + 1
+                        )
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            result = false
+        }
+        isResult(result)
     }
 
     private suspend fun initVersion(
@@ -284,14 +327,14 @@ class MainDataSourceImpl(
             for (i in 0..version.toInt()) {
                 val versionList =
                     queries.getVersion(index.toLong(), version.toLong()).executeAsList()
-
                 if (versionList.isEmpty() || index == 1) {
                     val filePath = "${path}_$version.csv"
                     val url =
                         Firebase.storage.reference.child(path).child(filePath).getDownloadUrl()
+
                     val csvStr = httpClient.get(url).body<String>()
                     when (index) {
-                        0 -> {
+                        CARD_DB_TYPE -> {
                             initCardInfo(isReset, csvStr, totalSize, flowCollector) { result ->
                                 queries.insertDBVersion(
                                     version.toLong(), index.toLong(), result
@@ -299,7 +342,7 @@ class MainDataSourceImpl(
                             }
                         }
 
-                        1 -> {
+                        CARDTYPE_DB_TYPE -> {
                             initCardType(csvStr, totalSize, flowCollector) { result ->
                                 queries.insertDBVersion(
                                     version.toLong(), index.toLong(), result
@@ -307,12 +350,20 @@ class MainDataSourceImpl(
                             }
                         }
 
-                        2 -> {
+                        CARDCOMBINE_DB_TYPE -> {
                             initCardCombination(
                                 csvStr, totalSize, flowCollector
                             ) { result: Boolean ->
                                 queries.insertDBVersion(
                                     version.toLong(), index.toLong(), result
+                                )
+                            }
+                        }
+
+                        QUIZ_DB_TYPE -> {
+                            initQuiz(csvStr, totalSize, flowCollector) {
+                                queries.insertDBVersion(
+                                    version.toLong(), index.toLong(), it
                                 )
                             }
                         }

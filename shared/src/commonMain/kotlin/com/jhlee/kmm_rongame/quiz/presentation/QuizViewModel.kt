@@ -31,6 +31,9 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
     }
 
     fun summitAnswer(index: Int, quiz: Quiz) {
+        dataSource.updateQuiz(quiz.copy(durationTime = _state.value.quizTime, selected = index + 1))
+            .launchIn(viewModelScope)
+
         _state.update {
             it.copy(quizList = it.quizList.toMutableList().apply {
                 this[_state.value.quizIndex] =
@@ -146,11 +149,13 @@ class QuizViewModel(private val dataSource: QuizDataSource) : ViewModel() {
                         getQuizListFromFireBase()
                     }
                 }
+
                 is Resource.Loading -> {
                     _state.update {
                         it.copy(quizStatus = QuizState.QUIZ_STATUS_LOADING)
                     }
                 }
+
                 is Resource.Error -> {
                     getQuizListFromFireBase()
                 }

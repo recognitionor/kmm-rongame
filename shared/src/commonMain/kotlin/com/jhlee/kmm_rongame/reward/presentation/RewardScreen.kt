@@ -75,7 +75,7 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                 }
                 Button(modifier = Modifier.fillMaxWidth(), onClick = {
                     mainViewModel.showDialog(MainState.QUIZ_INFO_DIALOG,
-                        createDialog(title, message, "img_smart_dragon", {
+                        createDialog(title, message, "img_smart_cat", {
                             mainViewModel.dismissDialog()
                             mainViewModel.updateUserMoney(-RuleConst.QUIZ_COST) {
                                 if (it) {
@@ -83,7 +83,7 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                                 } else {
                                     mainViewModel.showDialog(
                                         MainState.NOT_ENOUGH_MONEY_DIALOG,
-                                        createDialog("돈이 모자랍니다.", "", "img_smart_dragon", {
+                                        createDialog("돈이 모자랍니다.", "", "img_smart_cat", {
                                             mainViewModel.dismissDialog()
                                         })
                                     )

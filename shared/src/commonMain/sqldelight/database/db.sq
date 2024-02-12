@@ -177,6 +177,25 @@ removeCard:
 DELETE FROM MyCardEntity
 WHERE id = ?;
 
+updateQuizAnswer:
+UPDATE QuizEntity
+SET selected = ?, durationTime = ?, status = 1
+WHERE id =?;
+
+updateQuizContent:
+UPDATE QuizEntity
+SET answer = ?,
+    category = ?,
+    chance = ?,
+    choiceList = ?,
+    description = ?,
+    imageUrl = ?,
+    level = ?,
+    time = ?,
+    question = ?,
+    reward =?
+WHERE id =?;
+
 insertQuizEntity:
 INSERT  OR REPLACE INTO QuizEntity(
     id,
@@ -195,10 +214,28 @@ INSERT  OR REPLACE INTO QuizEntity(
     status
 ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);
 
+getQuizListAll:
+  SELECT *
+  FROM QuizEntity;
+
 getQuizList:
-SELECT *
-FROM QuizEntity
-ORDER BY RANDOM()
+WITH TrueQuizzes AS (
+  SELECT *
+  FROM QuizEntity
+  WHERE status = 1
+  ORDER BY RANDOM()
+  LIMIT 3
+),
+FalseQuizzes AS (
+  SELECT *
+  FROM QuizEntity
+  WHERE status = 0
+  ORDER BY RANDOM()
+  LIMIT 3
+)
+SELECT * FROM FalseQuizzes
+UNION ALL
+SELECT * FROM TrueQuizzes
 LIMIT 3;
 
 
