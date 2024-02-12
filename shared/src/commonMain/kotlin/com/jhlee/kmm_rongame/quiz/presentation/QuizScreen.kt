@@ -148,7 +148,7 @@ fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
                                 Text(text = quizState.quizChanceCount.toString(), fontSize = 16.sp)
                             }
                         }
-                        getCommonImageResourceBitMap(SharedRes.images.img_smart_dragon)?.let {
+                        getCommonImageResourceBitMap(SharedRes.images.img_smart_cat)?.let {
                             Image(
                                 modifier = Modifier.weight(0.3f),
                                 bitmap = it,
