@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 
 class AndroidPlatform : Platform {
     override val name: String = "Android ${android.os.Build.VERSION.SDK_INT}"
-    override val version: String = "1.0.4"
+    override val version: String = "1.4.0"
 }
 
 actual fun getPlatform(): Platform = AndroidPlatform()
