@@ -275,6 +275,9 @@ class MainDataSourceImpl(
         emit(Resource.Loading())
         supervisorScope {
             try {
+                if (isReset) {
+                    queries.clearDB()
+                }
                 initVersion(isReset, this@flow)
             } catch (e: Exception) {
                 Logger.log("error : ${e.message}")

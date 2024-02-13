@@ -351,6 +351,5 @@ getVersion:
         FROM DBVersionEntity
         WHERE type = ? AND version = ? AND isDone = 1;
 
-getVersionList:
-    SELECT *
-        FROM DBVersionEntity;
+clearDB:
+    DELETE FROM DBVersionEntity WHERE TRUE;
