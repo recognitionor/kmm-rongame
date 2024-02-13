@@ -140,6 +140,7 @@ class MainDataSourceImpl(
         isResult: (Boolean) -> Unit,
 
         ) {
+        Logger.log("initCardInfo")
         var result = true
         val list = CardInfoDto.parseJson(csvString)
         list.forEachIndexed { index, it ->
@@ -160,6 +161,7 @@ class MainDataSourceImpl(
                 cardInfo.image
             }
             try {
+                Logger.log("insertCardInfoEntity : ${it.name}")
                 queries.insertCardInfoEntity(
                     it.id.toLong(),
                     it.name,
@@ -189,6 +191,7 @@ class MainDataSourceImpl(
         flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
         isResult: (Boolean) -> Unit
     ) {
+        Logger.log("initCardCombination")
         val list = CardCombinationDto.parseJson(csvString)
         var result = true
         list.forEach { dto ->
@@ -206,12 +209,14 @@ class MainDataSourceImpl(
                     val card = queries.getCardInfoFromName(name).executeAsOne()
                     val isExist =
                         queries.existCardPadigree(card.id, item1Id, item2Id).executeAsOne()
+                    Logger.log("existCardPadigree : ${card.name}-$item1Id-$item2Id----$isExist")
                     if (!isExist) {
                         queries.insertCardPadigree(
                             card.id, item1Id, item2Id, percent.toLong(), 0
                         )
                     }
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    Logger.log("error : $e")
                     result = false
                 }
                 flowCollector.emit(
@@ -232,11 +237,13 @@ class MainDataSourceImpl(
         flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
         isResult: (Boolean) -> Unit
     ) {
+        Logger.log("initCardType")
         val list = CardTypeDto.parseJson(csvString)
         var result = true
         list.forEachIndexed { index, it ->
             try {
                 val strongStr = it.strongList.ifEmpty { "" }
+                Logger.log("insertCardTypeEntity : ${it.name}")
                 queries.insertCardTypeEntity(it.id.toLong(), it.name, strongStr)
                 CardTypeDto.parseStrongList(it.strongList)
                 CardInfoManager.CARD_TYPE_ID_MAP[it.id] = it.name
@@ -320,15 +327,18 @@ class MainDataSourceImpl(
     ) {
         val time = Clock.System.now().toEpochMilliseconds()
         DBVersion.DB_CARD_FILE_LIST.forEachIndexed { index, path ->
+            Logger.log("initVersion path : $path")
             val versionTemp = Firebase.storage.reference.child(path).child(DBVersion.VERSION)
             val csvTemp = httpClient.get(versionTemp.getDownloadUrl()).body<String>().split(",")
             val version = csvTemp[0]
             val totalSize = csvTemp[1].toInt()
+            Logger.log("initVersion version : $version")
+            Logger.log("initVersion totalSize : $totalSize")
             for (i in 0..version.toInt()) {
-                val versionList =
-                    queries.getVersion(index.toLong(), version.toLong()).executeAsList()
-                if (versionList.isEmpty() || index == 1) {
-                    val filePath = "${path}_$version.csv"
+                val versionList = queries.getVersion(index.toLong(), i.toLong()).executeAsList()
+                Logger.log("versionList $i --- $versionList")
+                if (versionList.isEmpty()) {
+                    val filePath = "${path}_$i.csv"
                     val url =
                         Firebase.storage.reference.child(path).child(filePath).getDownloadUrl()
 
@@ -336,6 +346,7 @@ class MainDataSourceImpl(
                     when (index) {
                         CARD_DB_TYPE -> {
                             initCardInfo(isReset, csvStr, totalSize, flowCollector) { result ->
+                                Logger.log("initCardInfo-done : $version")
                                 queries.insertDBVersion(
                                     version.toLong(), index.toLong(), result
                                 )
@@ -344,9 +355,12 @@ class MainDataSourceImpl(
 
                         CARDTYPE_DB_TYPE -> {
                             initCardType(csvStr, totalSize, flowCollector) { result ->
-                                queries.insertDBVersion(
-                                    version.toLong(), index.toLong(), result
-                                )
+                                Logger.log("initCardType-done : $version")
+                                if (versionList.isEmpty()) {
+                                    queries.insertDBVersion(
+                                        version.toLong(), index.toLong(), result
+                                    )
+                                }
                             }
                         }
 
@@ -354,6 +368,7 @@ class MainDataSourceImpl(
                             initCardCombination(
                                 csvStr, totalSize, flowCollector
                             ) { result: Boolean ->
+                                Logger.log("initCardCombination-done : $version - ${index.toLong()} - $result")
                                 queries.insertDBVersion(
                                     version.toLong(), index.toLong(), result
                                 )
@@ -371,5 +386,20 @@ class MainDataSourceImpl(
                 }
             }
         }
+        // CardType Map Init
+        queries.getCardTypeList().executeAsList().forEach {
+            CardInfoManager.CARD_TYPE_ID_MAP[it.id.toInt()] = it.name
+            CardInfoManager.CARD_TYPE_MAP[it.name] = CardType(
+                it.id.toInt(), it.name, CardTypeDto.parseStrongList(it.strongList), hashMapOf()
+            )
+        }
+        CardInfoManager.CARD_TYPE_MAP.forEach { entry ->
+            entry.value.strongList.forEach { strong ->
+                CardInfoManager.CARD_TYPE_MAP[strong.key]?.let {
+                    it.weakList[entry.key] = strong.value
+                }
+            }
+        }
+
     }
 }

@@ -6,6 +6,9 @@ object DBVersion {
     const val CARDCOMBINE_DB_TYPE = 2
     const val QUIZ_DB_TYPE = 3
 
+//    const val CARD_FB_PATH = "card_test"
+//    const val CARDTYPE_FB_PATH = "card_type_test"
+//    const val CARDCOMBINE_FB_PATH = "card_combine_test"
     const val CARD_FB_PATH = "card"
     const val CARDTYPE_FB_PATH = "card_type"
     const val CARDCOMBINE_FB_PATH = "card_combine"
