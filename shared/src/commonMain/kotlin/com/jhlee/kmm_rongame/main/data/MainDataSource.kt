@@ -276,7 +276,11 @@ class MainDataSourceImpl(
         supervisorScope {
             try {
                 if (isReset) {
-                    queries.clearDB()
+                    try {
+                        Logger.log("DB Clear")
+                        queries.clearDB()
+                    } catch (_: Exception) {
+                    }
                 }
                 initVersion(isReset, this@flow)
             } catch (e: Exception) {
@@ -349,19 +353,19 @@ class MainDataSourceImpl(
                     when (index) {
                         CARD_DB_TYPE -> {
                             initCardInfo(isReset, csvStr, totalSize, flowCollector) { result ->
-                                Logger.log("initCardInfo-done : $version")
+                                Logger.log("initCardInfo-done : ${i.toLong()}")
                                 queries.insertDBVersion(
-                                    version.toLong(), index.toLong(), result
+                                    i.toLong(), index.toLong(), result
                                 )
                             }
                         }
 
                         CARDTYPE_DB_TYPE -> {
                             initCardType(csvStr, totalSize, flowCollector) { result ->
-                                Logger.log("initCardType-done : $version")
+                                Logger.log("initCardType-done : ${i.toLong()}")
                                 if (versionList.isEmpty()) {
                                     queries.insertDBVersion(
-                                        version.toLong(), index.toLong(), result
+                                        i.toLong(), index.toLong(), result
                                     )
                                 }
                             }
@@ -371,9 +375,9 @@ class MainDataSourceImpl(
                             initCardCombination(
                                 csvStr, totalSize, flowCollector
                             ) { result: Boolean ->
-                                Logger.log("initCardCombination-done : $version - ${index.toLong()} - $result")
+                                Logger.log("initCardCombination-done : $${i.toLong()} - ${index.toLong()} - $result")
                                 queries.insertDBVersion(
-                                    version.toLong(), index.toLong(), result
+                                    i.toLong(), index.toLong(), result
                                 )
                             }
                         }
@@ -381,7 +385,7 @@ class MainDataSourceImpl(
                         QUIZ_DB_TYPE -> {
                             initQuiz(csvStr, totalSize, flowCollector) {
                                 queries.insertDBVersion(
-                                    version.toLong(), index.toLong(), it
+                                    i.toLong(), index.toLong(), it
                                 )
                             }
                         }
