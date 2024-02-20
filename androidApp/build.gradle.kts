@@ -1,8 +1,6 @@
 plugins {
     id("com.android.application")
     kotlin("android")
-    id("org.jetbrains.compose")
-    id("com.google.gms.google-services")
 }
 
 android {
@@ -42,13 +40,5 @@ android {
 
 dependencies {
     implementation(project(":shared"))
-    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("androidx.compose.ui:ui:1.4.3")
-    implementation("androidx.compose.ui:ui-tooling:1.4.3")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.4.3")
-    implementation("androidx.compose.foundation:foundation:1.4.3")
-    implementation("androidx.compose.material:material:1.4.3")
-    implementation("androidx.activity:activity-compose:1.7.1")
-    implementation("androidx.appcompat:appcompat-resources:1.6.1")
+    implementation("androidx.activity:activity-compose:1.8.2")
 }

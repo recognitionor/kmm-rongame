@@ -1,22 +1,10 @@
-buildscript {
-    dependencies {
-        classpath("com.squareup.sqldelight:gradle-plugin:1.5.5")
-        classpath("dev.icerock.moko:resources-generator:0.24.0-alpha-2")
-    }
-}
-
 plugins {
-    kotlin("jvm") apply false
-    kotlin("multiplatform").apply(false)
-    kotlin("android") apply false
+//    kotlin("jvm") apply false
+    kotlin("android") version "1.9.20" apply false
+    kotlin("multiplatform") version "1.9.20" apply false
+    kotlin("plugin.serialization") version "1.9.20" apply false
+    id("com.android.application") version "8.1.3" apply false
+    id("com.android.library") version "8.1.3" apply false
+    id("org.jetbrains.compose") version "1.5.10" apply false
 
-    id("com.android.application").apply(false)
-    id("com.android.library").apply(false)
-    id("org.jetbrains.compose").apply(false)
-    id("com.google.gms.google-services").version("4.3.15").apply(false)
-
-}
-
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
 }
