@@ -11,7 +11,7 @@ data class CardSelectState(
     val sortedCardList: List<Card> = emptyList(),
     val selectedCardList: List<Card> = emptyList(),
     val search: String = "",
-    val sortFilter: Int = CardFilterConst.POWER,
+    val sortFilter: Int = CardFilterConst.RECENT,
     val isReverseFilter: Boolean = false
 ) {
     companion object {

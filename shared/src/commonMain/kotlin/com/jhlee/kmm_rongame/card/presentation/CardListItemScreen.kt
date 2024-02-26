@@ -75,6 +75,10 @@ fun CardListItemScreen(
             "${card.upgrade}"
         }
 
+        CardFilterConst.RECENT -> {
+            "${card.power}"
+        }
+
         else -> {
             "NO.${card.cardId + 1}"
         }

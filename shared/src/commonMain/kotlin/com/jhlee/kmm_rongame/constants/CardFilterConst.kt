@@ -7,6 +7,7 @@ object CardFilterConst {
     const val UPGRADE = 2
     const val POWER = 3
     const val POTENTIAL = 4
+    const val RECENT = 5
 
     val CARD_FILTER_MAP: Map<Int, String> = mapOf(
         ID to ("번호"),
@@ -14,6 +15,7 @@ object CardFilterConst {
         UPGRADE to ("업그레이드"),
         POWER to ("현재능력"),
         POTENTIAL to ("잠재능력"),
+        RECENT to ("최근획득"),
     )
 
 

@@ -35,7 +35,7 @@ import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 fun CardListSmallItemScreen(
     card: Card? = null,
     modifier: Modifier = Modifier,
-    visibleInfoType: Int = CardFilterConst.POWER,
+    visibleInfoType: Int = CardFilterConst.RECENT,
     height: Float,
     selected: Boolean = false,
     isEnabled: Boolean = true,
@@ -66,7 +66,10 @@ fun CardListSmallItemScreen(
             }
 
             CardFilterConst.UPGRADE -> {
-                "$card.upgrade"
+                "${card.upgrade}"
+            }
+            CardFilterConst.RECENT -> {
+                "${card.power}"
             }
 
             else -> {

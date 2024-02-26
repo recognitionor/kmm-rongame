@@ -160,6 +160,9 @@ class HomeViewModel(private val cardDataSource: CardDataSource) : ViewModel() {
                     CardFilterConst.UPGRADE -> {
                         -it.upgrade
                     }
+                    CardFilterConst.RECENT -> {
+                        it.id
+                    }
 
                     else -> {
                         -it.cardId

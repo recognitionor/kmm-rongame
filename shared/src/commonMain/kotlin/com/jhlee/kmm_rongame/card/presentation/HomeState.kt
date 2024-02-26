@@ -1,6 +1,7 @@
 package com.jhlee.kmm_rongame.card.presentation
 
 import com.jhlee.kmm_rongame.card.domain.Card
+import com.jhlee.kmm_rongame.constants.CardFilterConst
 
 data class HomeState(
     val isLoading: Boolean = false,
@@ -15,7 +16,7 @@ data class HomeState(
     val cardRandomProgress: Int = 0,
     val homeScreenMode: Int = 0,
     val searchKeyword: String = "",
-    val sortFilter: Int = 3,
+    val sortFilter: Int = CardFilterConst.RECENT,
     val isReverseFilter: Boolean = false
 ) {
     companion object {

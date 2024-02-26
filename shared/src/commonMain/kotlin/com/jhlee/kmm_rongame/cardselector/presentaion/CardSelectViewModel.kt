@@ -81,6 +81,10 @@ class CardSelectViewModel(private val list: List<Card>) : ViewModel() {
                         -it.upgrade
                     }
 
+                    CardFilterConst.RECENT -> {
+                        -it.id
+                    }
+
                     else -> {
                         -it.cardId
                     }
