@@ -29,6 +29,7 @@ data class MainState(
         const val NAVIGATION_TAB_GAME = 1
         const val NAVIGATION_TAB_BOOK = 2
         const val NAVIGATION_TAB_REWARD = 3
+        const val NAVIGATION_TAB_TEST = 4
 
     }
 }

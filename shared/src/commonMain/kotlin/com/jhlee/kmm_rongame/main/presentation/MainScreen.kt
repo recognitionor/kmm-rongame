@@ -1,5 +1,6 @@
 package com.jhlee.kmm_rongame.main.presentation
 
+import PandoraScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.book.presentation.BookScreen
 import com.jhlee.kmm_rongame.cardgame.presentaion.CardGameMainScreen
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.home.presentation.HomeScreen
 import com.jhlee.kmm_rongame.isAndroid
@@ -50,6 +50,9 @@ fun MainScreen(appModule: AppModule) {
                 }
 
                 MainState.NAVIGATION_TAB_REWARD -> {
+                    viewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
+                }
+                MainState.NAVIGATION_TAB_TEST -> {
                     viewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
                 }
             }
@@ -100,6 +103,8 @@ fun MainScreen(appModule: AppModule) {
 
                             MainState.NAVIGATION_TAB_BOOK -> BookScreen(viewModel, appModule)
                             MainState.NAVIGATION_TAB_REWARD -> RewardScreen(viewModel, appModule)
+                            MainState.NAVIGATION_TAB_TEST ->  PandoraScreen(viewModel, appModule)
+
                         }
                     }
                 }

@@ -39,12 +39,14 @@ import com.jhlee.kmm_rongame.card.presentation.HomeViewModel
 import com.jhlee.kmm_rongame.cardselector.presentaion.CardSelectSearchBar
 import com.jhlee.kmm_rongame.common.view.ClickableDefaults
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 import com.jhlee.kmm_rongame.setting.SettingScreen
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
+import kotlin.math.sqrt
 
 @Composable
 
@@ -58,7 +60,8 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
         viewModel.getUserInfo()
         backKeyListener = null
     }
-
+    val rowSize = kotlin.math.ceil(sqrt(7.toDouble()))
+    Logger.log("rowSize : $rowSize")
     when (cardStateValue.homeScreenMode) {
         HomeState.HOME_SCREEN_DEFAULT -> {
             Box(

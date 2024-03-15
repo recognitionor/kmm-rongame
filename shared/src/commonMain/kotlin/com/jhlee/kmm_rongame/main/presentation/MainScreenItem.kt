@@ -2,6 +2,7 @@ package com.jhlee.kmm_rongame.main.presentation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Gamepad
 import androidx.compose.material.icons.filled.Games
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Money
@@ -15,6 +16,7 @@ class MainScreenItem(val name: String, val icon: ImageVector) {
             add(MainScreenItem("놀이", Icons.Default.Games))
             add(MainScreenItem("도감", Icons.Default.Book))
             add(MainScreenItem("획득", Icons.Default.Money))
+            add(MainScreenItem("판", Icons.Default.Gamepad))
         }
     }
 }

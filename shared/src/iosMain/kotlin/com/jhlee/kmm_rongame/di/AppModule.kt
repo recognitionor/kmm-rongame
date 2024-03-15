@@ -21,6 +21,8 @@ import com.jhlee.kmm_rongame.core.data.DatabaseDriverFactory
 import com.jhlee.kmm_rongame.core.data.KtorClientFactory
 import com.jhlee.kmm_rongame.main.data.MainDataSourceImpl
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
+import com.jhlee.kmm_rongame.pandora.data.DBPandoraDataSource
+import com.jhlee.kmm_rongame.pandora.domain.PandoraDataSource
 import com.jhlee.kmm_rongame.quiz.data.QuizDataSourceImpl
 import com.jhlee.kmm_rongame.quiz.domain.QuizDataSource
 import com.jhlee.kmm_rongame.test.data.DBTestDataSource
@@ -98,6 +100,13 @@ actual class AppModule {
     }
     actual val dbCollectorDataSource: CardCollectorDataSource by lazy {
         DBCardCollectorDataSource(
+            db = AppDatabase(
+                driver = DatabaseDriverFactory().create()
+            )
+        )
+    }
+    actual val dbPandoraDataSource: PandoraDataSource by lazy {
+        DBPandoraDataSource(
             db = AppDatabase(
                 driver = DatabaseDriverFactory().create()
             )
