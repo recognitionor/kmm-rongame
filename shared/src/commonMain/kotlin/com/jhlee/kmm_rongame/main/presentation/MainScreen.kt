@@ -22,6 +22,7 @@ import com.jhlee.kmm_rongame.cardgame.presentaion.CardGameMainScreen
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.home.presentation.HomeScreen
 import com.jhlee.kmm_rongame.isAndroid
+import com.jhlee.kmm_rongame.pandora.presentation.PandoraListScreen
 import com.jhlee.kmm_rongame.reward.presentation.RewardScreen
 import com.jhlee.kmm_rongame.test.presentation.TestScreen
 import dev.icerock.moko.mvvm.compose.getViewModel
@@ -50,9 +51,6 @@ fun MainScreen(appModule: AppModule) {
                 }
 
                 MainState.NAVIGATION_TAB_REWARD -> {
-                    viewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
-                }
-                MainState.NAVIGATION_TAB_TEST -> {
                     viewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
                 }
             }
@@ -97,13 +95,15 @@ fun MainScreen(appModule: AppModule) {
                         // 여기에서 선택된 아이템에 따라 다른 컴포저블을 표시합니다.
                         when (state.selectedTab) {
                             MainState.NAVIGATION_TAB_HOME -> HomeScreen(viewModel, appModule)
-                            MainState.NAVIGATION_TAB_GAME -> CardGameMainScreen(
-                                viewModel, appModule
-                            )
-
+                            MainState.NAVIGATION_TAB_GAME -> PandoraListScreen(viewModel, appModule)
+//                                PandoraScreen(viewModel, appModule)
+//                                CardGameMainScreen(
+//                                viewModel, appModule
+//                                )
+//
+//
                             MainState.NAVIGATION_TAB_BOOK -> BookScreen(viewModel, appModule)
                             MainState.NAVIGATION_TAB_REWARD -> RewardScreen(viewModel, appModule)
-                            MainState.NAVIGATION_TAB_TEST ->  PandoraScreen(viewModel, appModule)
 
                         }
                     }

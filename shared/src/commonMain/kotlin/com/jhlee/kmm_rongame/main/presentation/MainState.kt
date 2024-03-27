@@ -24,12 +24,12 @@ data class MainState(
         const val CARD_START_DIALOG = 5
         const val CARD_NOT_START_DIALOG = 6
         const val INFO_DIALOG = 7
+        const val PANDORA_GAME_OVER = 8
 
         const val NAVIGATION_TAB_HOME = 0
         const val NAVIGATION_TAB_GAME = 1
         const val NAVIGATION_TAB_BOOK = 2
         const val NAVIGATION_TAB_REWARD = 3
-        const val NAVIGATION_TAB_TEST = 4
 
     }
 }
