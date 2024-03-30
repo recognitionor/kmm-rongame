@@ -104,7 +104,8 @@ fun PandoraScreen(
         PandoraState.STATE_GAME_OVER -> {
             mainViewModel.showDialog(
                 MainState.PANDORA_GAME_OVER,
-                createDialog(title = "끝!",
+                createDialog(
+                    title = "끝!",
                     message = "더 이상 움직일수 있는 카드가 없어요",
                     positiveButtonCallback = {
                         dismiss.invoke()
@@ -130,7 +131,7 @@ fun PandoraScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Box(modifier = Modifier.weight(1f)) {
+        Box(modifier = Modifier.weight(0.7f)) {
             if (state.pandoraState == PandoraState.STATE_GAME_WIN_PICK) {
                 Column {
                     Button({
@@ -159,7 +160,7 @@ fun PandoraScreen(
                 }
             } else {
                 state.goalCard?.let {
-                    PandoraTargetScreen(it)
+                    PandoraTargetScreen(it, state)
                 }
             }
         }
@@ -336,13 +337,7 @@ fun PandoraScreen(
             }
         }
 
-
-//        Button(onClick = {
-//            viewModel.updateCardListSize(state.cardList.toMutableList())
-//        }) {
-//            Text("button")
-//        }
-        Box(modifier = Modifier.weight(1f)) {
+        Box(modifier = Modifier.weight(1.4f)) {
             state.detailCard?.let {
                 PandoraDetailScreen(it)
             }

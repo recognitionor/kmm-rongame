@@ -60,8 +60,6 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
         viewModel.getUserInfo()
         backKeyListener = null
     }
-    val rowSize = kotlin.math.ceil(sqrt(7.toDouble()))
-    Logger.log("rowSize : $rowSize")
     when (cardStateValue.homeScreenMode) {
         HomeState.HOME_SCREEN_DEFAULT -> {
             Box(

@@ -84,12 +84,13 @@ class PandoraViewModel(
                 if (index < state.value.cardList.size) list[index] else null
             }
         }
-        tempList.forEach {
-            Logger.log("test : ${it?.name}-${it?.upgrade}/${it?.potential}")
-        }
         _state.update {
             it.copy(
-                cardList = tempList, cardListSize = listSize, colSize = colSize, rowSize = rowSize
+                cardList = tempList,
+                cardListSize = listSize,
+                colSize = colSize,
+                rowSize = rowSize,
+                upgradeCount = it.upgradeCount.plus(1)
             )
         }
     }
@@ -121,15 +122,17 @@ class PandoraViewModel(
                     when (result) {
                         is Resource.Success -> {
                             val tempList = state.value.cardList.toMutableList()
-                            Logger.log("state.value.cardList : ${state.value.cardList.size}")
-                            Logger.log("tempList : ${tempList.size}")
-                            Logger.log("result.data : ${result.data?.name} - ${result.data?.upgrade}")
                             tempList[index] = result.data
                             tempList[startIndex] = null
                             if ((result.data?.upgrade ?: 0) >= (result.data?.potential ?: 0)) {
                                 updateCardListSize(tempList)
                             } else {
-                                _state.update { it.copy(cardList = tempList) }
+                                _state.update {
+                                    it.copy(
+                                        cardList = tempList,
+                                        upgradeCount = it.upgradeCount.plus(1)
+                                    )
+                                }
                             }
                             changeSelectMode()
                             checkWin(tempList) { checkWinResult ->
@@ -208,15 +211,16 @@ class PandoraViewModel(
         pandoraDataSource.gatchaBasicCard().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    Logger.log("success : ${result.data}")
                     val tempList = _state.value.cardList.toMutableList()
                     tempList[index] = result.data
+
                     _state.update {
                         it.copy(
                             detailCard = result.data,
                             cardList = tempList,
                             cardGatchaLoading = -1,
-                            cardGatchaIndex = -1
+                            cardGatchaIndex = -1,
+                            openCardCount = it.openCardCount.plus(1)
                         )
                     }
                     checkWin(tempList) {

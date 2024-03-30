@@ -103,17 +103,31 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
                         val cardId = CardUtils.selectRandomCard(combineResult)
                         val cardTemp = queries.getCardInfo(cardId.toLong()).executeAsOne()
                         val potential = CardUtils.getCardRandomPotential()
-
+                        val cardTypeSet: HashSet<CardType> = hashSetOf()
+                        cardTemp.type.split("|").forEach { typeName ->
+                            CardInfoManager.CARD_TYPE_MAP[typeName]?.let {
+                                cardTypeSet.add(it)
+                            }
+                        }
                         val powerTemp = CardUtils.getCardRandomPower(cardTemp.grade?.toInt() ?: 0)
+
                         val card = Card.getCardFromCardInfo(
                             cardTemp, power = powerTemp, potential = potential
                         )
+
                         val power = if (card1.grade < card.grade || card2.grade < card.grade) {
                             card1.power + card2.power
                         } else {
                             powerTemp
                         }
-                        emit(Resource.Success(card.copy(power = power)))
+                        val count = queries.getCardCount(card.cardId.toLong()).executeAsOne()
+                        emit(
+                            Resource.Success(
+                                card.copy(
+                                    power = power, type = cardTypeSet, count = count.toInt()
+                                )
+                            )
+                        )
                         return@supervisorScope
                     }
                 }
@@ -134,7 +148,7 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
                 val offsetTime: Long = 50
                 while (count > 0) {
                     emit(Resource.Loading())
-                    kotlinx.coroutines.delay(offsetTime)
+                    delay(offsetTime)
                     count = count.minus(offsetTime.toInt())
                 }
                 val random =
@@ -158,7 +172,7 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
                         cardTypeSet.add(it)
                     }
                 }
-
+                val cardCount = queries.getCardCount(cardInfoTemp.id).executeAsOne()
                 val card = Card(
                     cardId = cardInfoTemp.id.toInt(),
                     name = cardInfoTemp.name,
@@ -167,6 +181,7 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
                     image = ImageStorage.getImage(cardInfoTemp.image ?: ""),
                     grade = cardInfoTemp.grade?.toInt() ?: 0,
                     type = cardTypeSet,
+                    count = cardCount.toInt(),
                     power = CardUtils.getCardRandomPower(cardGrade),
                     potential = CardUtils.getCardRandomPotential()
                 )
@@ -265,13 +280,6 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
                 return@forEach
             }
         }
-        Logger.log("test1 : ${queries.getUserInfo().executeAsOne().cardStage}")
-
-        if (isResult) {
-//            queries.nextCardStage()
-        }
-        Logger.log("test2 : ${queries.getUserInfo().executeAsOne().cardStage}")
-
         emit(Resource.Success(isResult))
     }
 

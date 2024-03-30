@@ -72,120 +72,119 @@ fun CardSelectDialog(
         }
     }
 
-
     Box(modifier = Modifier.fillMaxSize().background(Color.Gray).padding(30.dp)) {
         Column(
             modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp)).border(
                 width = 2.dp, color = LightColorScheme.primary, shape = RoundedCornerShape(12.dp)
             ).background(Color.White), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (state.screenState == CardSelectState.CARD_SELECT_DEFAULT_SCREEN) {
-                // 상단에 검색과 필터 뷰 영역
-                CardSelectSearchBar(state.search,
-                    state.sortFilter,
-                    state.isReverseFilter,
-                    { viewModel.toggleReverseFilter() }) { searchKeyword: String, index: Int ->
-                    viewModel.searchSortList(searchKeyword, index)
+            // 상단에 검색과 필터 뷰 영역
+            CardSelectSearchBar(state.search,
+                state.sortFilter,
+                state.isReverseFilter,
+                { viewModel.toggleReverseFilter() }) { searchKeyword: String, index: Int ->
+                viewModel.searchSortList(searchKeyword, index)
+            }
+
+            Column(modifier = Modifier.padding(6.dp)) {
+                if (selectMax > 0) {
+                    Text(
+                        text = "${state.selectedCardList.size}/$selectMax",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(
+                            fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black
+                        )
+                    )
                 }
 
-                Column(modifier = Modifier.padding(6.dp)) {
-                    if (selectMax > 0) {
-                        Text(
-                            text = "${state.selectedCardList.size}/$selectMax",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            style = TextStyle(
-                                fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black
-                            )
-                        )
-                    }
-
-                    if (state.selectedCardList.isNotEmpty()) {
-                        LazyHorizontalGrid(
-                            rows = GridCells.Fixed(1), modifier = Modifier.weight(1.2f)
-                        ) {
-                            items(state.selectedCardList.size) {
-                                val card = state.selectedCardList[it]
-                                CardListSmallItemScreen(card,
-                                    height = 160f,
-                                    visibleInfoType = state.sortFilter,
-                                    onItemDetailInfoClick = {
-                                        viewModel.selectScreen(
-                                            CardSelectState.CARD_SELECT_DETAIL_SCREEN, card
-                                        )
-                                    }) { selectedCard ->
-                                    if (selectedCard != null) {
-                                        viewModel.selectItem(selectedCard)
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        if (selectMax > 0) {
-                            Text(
-                                text = "선택한 카드가 없습니다.",
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center,
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold, fontSize = 12.sp
-                                )
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(3.dp))
-                    LazyVerticalGrid(modifier = Modifier.weight(3f), columns = GridCells.Fixed(2)) {
-                        items(state.sortedCardList.size) {
-                            val card = state.sortedCardList[it]
+                if (state.selectedCardList.isNotEmpty()) {
+                    LazyHorizontalGrid(
+                        rows = GridCells.Fixed(1), modifier = Modifier.weight(1.2f)
+                    ) {
+                        items(state.selectedCardList.size) {
+                            val card = state.selectedCardList[it]
                             CardListSmallItemScreen(card,
-                                height = 200f,
+                                height = 160f,
                                 visibleInfoType = state.sortFilter,
-                                selected = state.selectedCardList.contains(card),
                                 onItemDetailInfoClick = {
                                     viewModel.selectScreen(
                                         CardSelectState.CARD_SELECT_DETAIL_SCREEN, card
                                     )
-                                }
-
-                            ) { selectedCard ->
+                                }) { selectedCard ->
                                 if (selectedCard != null) {
-                                    if (selectMax > 0) {
-                                        if (state.selectedCardList.size < selectMax) {
-                                            viewModel.selectItem(selectedCard)
-                                        }
-                                    } else {
-                                        selectListener.invoke(arrayListOf(selectedCard))
-                                        dismiss.invoke()
-                                    }
+                                    viewModel.selectItem(selectedCard)
                                 }
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(3.dp))
-                    Row(modifier = Modifier.fillMaxWidth().padding(6.dp)) {
-                        Button(modifier = Modifier.weight(1f), onClick = {
-                            dismiss.invoke()
-                        }) {
-                            Text(text = getString(SharedRes.strings.cancel))
-                        }
-                        Spacer(modifier = Modifier.width(6.dp))
-                        if (selectMax > 0) {
-                            val btnEnable =
-                                if (isForceMaxSelect) state.selectedCardList.size >= selectMax else state.selectedCardList.isNotEmpty()
-                            Button(enabled = btnEnable, modifier = Modifier.weight(1f), onClick = {
-                                selectListener.invoke(state.selectedCardList)
-                                dismiss.invoke()
-                            }) {
-                                Text(text = getString(SharedRes.strings.confirm))
+                } else {
+                    if (selectMax > 0) {
+                        Text(
+                            text = "선택한 카드가 없습니다.",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold, fontSize = 12.sp
+                            )
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(3.dp))
+                LazyVerticalGrid(modifier = Modifier.weight(3f), columns = GridCells.Fixed(2)) {
+                    items(state.sortedCardList.size) {
+                        val card = state.sortedCardList[it]
+                        CardListSmallItemScreen(card,
+                            height = 200f,
+                            visibleInfoType = state.sortFilter,
+                            selected = state.selectedCardList.contains(card),
+                            onItemDetailInfoClick = {
+                                viewModel.selectScreen(
+                                    CardSelectState.CARD_SELECT_DETAIL_SCREEN, card
+                                )
+                            }
+
+                        ) { selectedCard ->
+                            if (selectedCard != null) {
+                                if (selectMax > 0) {
+                                    if (state.selectedCardList.size < selectMax) {
+                                        viewModel.selectItem(selectedCard)
+                                    }
+                                } else {
+                                    selectListener.invoke(arrayListOf(selectedCard))
+                                    dismiss.invoke()
+                                }
                             }
                         }
                     }
                 }
-            } else {
-                state.detailCardInfo?.let {
-                    CardDetailInfoScreen(card = it) {
-                        viewModel.selectScreen(CardSelectState.CARD_SELECT_DEFAULT_SCREEN)
+                Spacer(modifier = Modifier.height(3.dp))
+                Row(modifier = Modifier.fillMaxWidth().padding(6.dp)) {
+                    Button(modifier = Modifier.weight(1f), onClick = {
+                        dismiss.invoke()
+                    }) {
+                        Text(text = getString(SharedRes.strings.cancel))
                     }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    if (selectMax > 0) {
+                        val btnEnable =
+                            if (isForceMaxSelect) state.selectedCardList.size >= selectMax else state.selectedCardList.isNotEmpty()
+                        Button(enabled = btnEnable, modifier = Modifier.weight(1f), onClick = {
+                            selectListener.invoke(state.selectedCardList)
+                            dismiss.invoke()
+                        }) {
+                            Text(text = getString(SharedRes.strings.confirm))
+                        }
+                    }
+                }
+            }
+        }
+        if (state.screenState == CardSelectState.CARD_SELECT_DETAIL_SCREEN) {
+            state.detailCardInfo?.let {
+                Box(modifier = Modifier.fillMaxSize().background(Color.White))
+                CardDetailInfoScreen(card = it) {
+                    viewModel.selectScreen(CardSelectState.CARD_SELECT_DEFAULT_SCREEN)
                 }
             }
         }

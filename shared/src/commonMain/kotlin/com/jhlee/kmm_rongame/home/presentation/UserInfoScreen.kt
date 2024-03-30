@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.bank.domain.BankUtils
 import com.jhlee.kmm_rongame.core.presentation.getString
 import com.jhlee.kmm_rongame.main.domain.UserInfo
 
@@ -23,8 +24,9 @@ fun UserInfoScreen(userInfo: UserInfo) {
         }
         Row {
             Text(text = getString(SharedRes.strings.user_info_money_title))
-            Text(text = getString(SharedRes.strings.money_unit, arrayListOf(userInfo.money)))
+            Text(
+                text = "${BankUtils.formatNumber(userInfo.money)}원"
+            )
         }
     }
-
 }

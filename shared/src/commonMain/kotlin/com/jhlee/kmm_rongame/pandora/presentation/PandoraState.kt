@@ -15,7 +15,9 @@ data class PandoraState(
     val cardListSize: Int = 0,
     val rowSize: Int = 0,
     val colSize: Int = 0,
-    val goalCard: Card? = null
+    val goalCard: Card? = null,
+    val openCardCount: Int = 0,
+    val upgradeCount: Int = 0,
 ) {
     companion object {
         const val STATE_DEFAULT = 0

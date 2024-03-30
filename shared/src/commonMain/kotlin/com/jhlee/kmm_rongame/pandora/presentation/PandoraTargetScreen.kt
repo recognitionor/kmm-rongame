@@ -26,10 +26,11 @@ import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
 
 @Composable
-fun PandoraTargetScreen(targetCard: Card) {
+fun PandoraTargetScreen(targetCard: Card, state: PandoraState) {
     val cardImg = rememberBitmapFromBytes(targetCard.image)
+
     Column(
-        modifier = Modifier.fillMaxWidth().height(150.dp).padding(2.dp) // 두 테두리 사이의 간격
+        modifier = Modifier.fillMaxWidth().padding(2.dp) // 두 테두리 사이의 간격
             .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
     ) {
         Spacer(modifier = Modifier.height(4.dp))
@@ -71,6 +72,27 @@ fun PandoraTargetScreen(targetCard: Card) {
                 )
             }
 
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "카드 획득: ${state.openCardCount}", style = TextStyle(
+                        fontSize = 14.sp, fontWeight = FontWeight.Bold
+                    )
+                )
+                Text(
+                    text = "강화&조합: ${state.upgradeCount}", style = TextStyle(
+                        fontSize = 14.sp, fontWeight = FontWeight.Bold
+                    )
+                )
+                Text(
+                    text = "상자 칸수: ${state.cardListSize}", style = TextStyle(
+                        fontSize = 14.sp, fontWeight = FontWeight.Bold
+                    )
+                )
+            }
         }
         Spacer(modifier = Modifier.weight(1f))
     }

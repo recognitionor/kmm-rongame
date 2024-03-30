@@ -44,8 +44,10 @@ import com.jhlee.kmm_rongame.bank.domain.BankUtils
 import com.jhlee.kmm_rongame.common.view.ClickableDefaults
 import com.jhlee.kmm_rongame.common.view.NumberInputField
 import com.jhlee.kmm_rongame.common.view.StoryDialog
+import com.jhlee.kmm_rongame.constants.RuleConst.Companion.MAX_DEPOSIT
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.getString
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
@@ -53,6 +55,7 @@ import com.jhlee.kmm_rongame.ui.theme.LightColorScheme
 import com.jhlee.kmm_rongame.utils.Utils
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
+import kotlin.math.min
 
 @Composable
 fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -> Unit) {
@@ -69,7 +72,8 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
             getString(SharedRes.strings.bank_comment_2),
             getString(SharedRes.strings.bank_comment_3),
             getString(SharedRes.strings.bank_comment_4),
-            getString(SharedRes.strings.bank_comment_5)
+            getString(SharedRes.strings.bank_comment_5),
+            getString(SharedRes.strings.bank_comment_6)
         )
     }
     LaunchedEffect(Unit) {
@@ -114,6 +118,12 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
             ) {
                 Spacer(modifier = Modifier.height(60.dp))
 
+                Button(onClick = {
+                    mainViewModel.updateUserMoney((mainState.userInfo?.money ?: 0) + 900000)
+                }) {
+                    Text(text = "test")
+                }
+
                 Row {
                     getCommonImageResourceBitMap(SharedRes.images.img_bank_cat)?.let {
                         Image(
@@ -134,9 +144,21 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
                             )
                         )
 
-                        Text(text = "${getString(SharedRes.strings.user_info_money_title)}  ${mainState.userInfo?.money ?: 0}")
+                        Text(
+                            text = "${getString(SharedRes.strings.user_info_money_title)}  ${
+                                BankUtils.formatNumber(
+                                    mainState.userInfo?.money ?: 0
+                                )
+                            }"
+                        )
 
-                        Text(text = "${getString(SharedRes.strings.bank_account_balance)} : ${bankState.bank?.account ?: 0}")
+                        Text(
+                            text = "${getString(SharedRes.strings.bank_account_balance)} : ${
+                                BankUtils.formatNumber(
+                                    bankState.bank?.account ?: 0
+                                )
+                            }"
+                        )
 
                         Text(
                             text = "${getString(SharedRes.strings.bank_interest_rate)} ${bankState.bank?.interestRate ?: 0}%"
@@ -163,15 +185,18 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
                     Button(modifier = Modifier.weight(1f)
                         .then(ClickableDefaults.getDefaultClickable {
 
-                        }), enabled = (mainState.userInfo?.money ?: 0) >= 100, onClick = {
-                        mainViewModel.showDialog(MainState.BANK_VIEW_MODE_DEPOSIT_DIALOG,
-                            createDepositDialog(
-                                "내가 가진 돈 :", "맡기실 돈을 입력 해주세요", mainState.userInfo?.money ?: 0
-                            ) {
-                                viewModel.processDeposit(it)
-                                mainViewModel.dismissDialog()
-                            })
-                    }) {
+                        }),
+                        enabled = ((mainState.userInfo?.money
+                            ?: 0) >= 100) && (bankState.bank?.history?.size ?: 0) < 5,
+                        onClick = {
+                            mainViewModel.showDialog(MainState.BANK_VIEW_MODE_DEPOSIT_DIALOG,
+                                createDepositDialog(
+                                    "내가 가진 돈 :", "맡기실 돈을 입력 해주세요", mainState.userInfo?.money ?: 0
+                                ) {
+                                    viewModel.processDeposit(it)
+                                    mainViewModel.dismissDialog()
+                                })
+                        }) {
                         Text(text = "입금")
                     }
                 }
@@ -186,7 +211,7 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
 
                                         if (item.amount > 0) {
                                             Text(
-                                                text = "저축한 금액 : ${item.amount}",
+                                                text = "저축한 금액 : ${BankUtils.formatNumber(item.amount)}",
                                                 color = Color.Blue,
                                                 style = TextStyle(
                                                     fontSize = 16.sp, fontWeight = FontWeight.Bold
@@ -200,7 +225,7 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
                                                 color = Color.Black
                                             )
                                             Text(
-                                                text = "기대 이자 ${(item.amount.toLong() * (item.interestRate / 100.toFloat())).toInt()}",
+                                                text = "기대 이자 ${BankUtils.formatNumber((item.amount.toLong() * (item.interestRate / 100.toFloat())).toInt())}",
                                                 style = TextStyle(
                                                     fontSize = 12.sp, fontWeight = FontWeight.Bold
                                                 ),
@@ -208,7 +233,7 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
                                             )
                                         } else {
                                             Text(
-                                                text = "찾은간 금액 : ${item.amount}",
+                                                text = "찾은간 금액 : ${BankUtils.formatNumber(item.amount)}",
                                                 color = LightColorScheme.error,
                                                 style = TextStyle(
                                                     fontSize = 16.sp, fontWeight = FontWeight.Bold
@@ -278,7 +303,7 @@ fun createDepositDialog(
             ) {
                 var inputData by remember { mutableStateOf(100) }
                 Text(
-                    text = "$title $totalMyMoney 원", style = TextStyle(
+                    text = "$title ${BankUtils.formatNumber(totalMyMoney)} 원", style = TextStyle(
                         fontSize = 24.sp, fontWeight = FontWeight.Bold
                     )
                 )
@@ -287,14 +312,14 @@ fun createDepositDialog(
                     Column {
                         Text(text = content)
                         Text(
-                            text = "최소 100원만 받아 준다", style = TextStyle(
+                            text = "최소 100원, 최대 $MAX_DEPOSIT 까지만 받아 준다", style = TextStyle(
                                 fontSize = 12.sp, fontWeight = FontWeight.Light
                             ), color = Color.LightGray
                         )
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
-                    NumberInputField(totalMyMoney, {
+                    NumberInputField(min(MAX_DEPOSIT, totalMyMoney), {
                         inputData = it
                     }, modifier = Modifier.padding(5.dp))
                     Text(text = "원")

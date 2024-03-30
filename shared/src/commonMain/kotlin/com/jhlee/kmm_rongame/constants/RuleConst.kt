@@ -21,5 +21,7 @@ class RuleConst {
         const val COLLECTOR_WANTED_COUNT = 10
 
         const val COLLECTOR_WASTE_PRICE = 10
+
+        const val MAX_DEPOSIT = 10000
     }
 }

@@ -23,6 +23,8 @@ val Blue400 = Color(0xFF4572E8)
 
 val LightGray400 = Color(0xFFb8b6b3)
 
+val LighterGray = Color(0xFFEEECE9)
+
 val DarkGray400 = Color(0xFF3e4047)
 
 val Gray400 = Color(0xFF595C61)
@@ -88,3 +90,5 @@ val OnSurfaceVariantDark = Color(0xffc2c9bd)
 val OutlineDark = Color(0xff72796f)
 
 val QuizBorder = Color(0xFF750080)
+
+val Orange = Color(0xFFFAAE41)
