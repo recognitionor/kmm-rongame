@@ -51,6 +51,7 @@ import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
+import kotlin.math.min
 
 @Composable
 fun CardCollectorScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -> Unit) {
@@ -91,7 +92,6 @@ fun CardCollectorScreen(mainViewModel: MainViewModel, appModule: AppModule, dism
     DisposableEffect(Unit) {
         onDispose {
             mainViewModel.setWholeScreen(true)
-            backKeyListener = null
             mainViewModel.dismissDialog()
             mainViewModel.setWholeScreen(false)
         }
@@ -212,7 +212,10 @@ fun CardCollectorScreen(mainViewModel: MainViewModel, appModule: AppModule, dism
                                             Text(
                                                 text = "${
                                                     cardCollectorWantedItem.card?.description?.substring(
-                                                        0, 25
+                                                        0, min(
+                                                            25,
+                                                            cardCollectorWantedItem.card?.description?.length ?: 25
+                                                        )
                                                     )
                                                 }...\n이 설명의 카드 뭘까?",
                                                 Modifier.weight(1f),
@@ -280,7 +283,7 @@ fun CardCollectorScreen(mainViewModel: MainViewModel, appModule: AppModule, dism
             if (!state.isLoading) {
                 mainViewModel.showDialog(
                     MainState.INFO_DIALOG,
-                    createDialog = createDialog("", "팔수 있는 카드가 없어", "ic_collector", {
+                    createDialog = createDialog("", "팔수 있는 카드가 없어", "ic_collector", false, {
                         mainViewModel.dismissDialog()
                         viewModel.selectScreen(CardCollectorState.DEFAULT_SCREEN, null)
                     })

@@ -56,6 +56,9 @@ fun BookScreen(mainViewModel: MainViewModel, appModule: AppModule) {
 
     when (state.screenState) {
         BookState.BOOK_SCREEN_DEFAULT -> {
+            backKeyListener = {
+                mainViewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
+            }
             Column(
                 modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,

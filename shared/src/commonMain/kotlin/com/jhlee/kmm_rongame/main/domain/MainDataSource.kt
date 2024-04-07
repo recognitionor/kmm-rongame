@@ -14,4 +14,6 @@ interface MainDataSource {
 
     fun initCardWholeData(isReset: Boolean = false): Flow<Resource<Triple<Int, Int, Int>>>
 
+    fun updateMoney(): Flow<Resource<UserInfo>>
+
 }

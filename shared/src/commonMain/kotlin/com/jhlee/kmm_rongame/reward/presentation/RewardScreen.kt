@@ -57,6 +57,9 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
     }
 
     if (state.rewardScreenSelected == RewardViewModel.REWARD_DEFAULT_SCREEN) {
+        backKeyListener = {
+            mainViewModel.selectedTab(MainState.NAVIGATION_TAB_HOME)
+        }
         mainViewModel.setWholeScreen(false)
         Box(
             modifier = Modifier.fillMaxSize().padding(start = 50.dp, end = 50.dp, top = 50.dp)
@@ -75,7 +78,7 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                 }
                 Button(modifier = Modifier.fillMaxWidth(), onClick = {
                     mainViewModel.showDialog(MainState.QUIZ_INFO_DIALOG,
-                        createDialog(title, message, "img_smart_cat", {
+                        createDialog(title, message, "img_smart_cat", false, {
                             mainViewModel.dismissDialog()
                             mainViewModel.updateUserMoney(-RuleConst.QUIZ_COST) {
                                 if (it) {
@@ -83,7 +86,7 @@ fun RewardScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                                 } else {
                                     mainViewModel.showDialog(
                                         MainState.NOT_ENOUGH_MONEY_DIALOG,
-                                        createDialog("돈이 모자랍니다.", "", "img_smart_cat", {
+                                        createDialog("돈이 모자랍니다.", "", "img_smart_cat", false, {
                                             mainViewModel.dismissDialog()
                                         })
                                     )

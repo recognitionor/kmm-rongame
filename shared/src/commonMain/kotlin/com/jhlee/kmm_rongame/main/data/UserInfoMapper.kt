@@ -8,6 +8,7 @@ suspend fun UserInfoEntity.toUser(): UserInfo {
         id = id,
         name = name,
         money = money?.toInt() ?: 0,
-        cardStage = cardStage?.toInt() ?: 0
+        cardStage = cardStage?.toInt() ?: 0,
+        pandoraStage = pandoraStage?.toInt() ?: 0
     )
 }

@@ -66,12 +66,6 @@ fun CardSelectDialog(
         }
     }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            backKeyListener = null
-        }
-    }
-
     Box(modifier = Modifier.fillMaxSize().background(Color.Gray).padding(30.dp)) {
         Column(
             modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp)).border(

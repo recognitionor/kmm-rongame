@@ -25,6 +25,7 @@ data class MainState(
         const val CARD_NOT_START_DIALOG = 6
         const val INFO_DIALOG = 7
         const val PANDORA_GAME_OVER = 8
+        const val OVERFLOW_MONEY = 9
 
         const val NAVIGATION_TAB_HOME = 0
         const val NAVIGATION_TAB_GAME = 1

@@ -91,6 +91,7 @@ fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
             createDialog(getString(SharedRes.strings.quiz_success_message_title),
                 "${quiz?.reward}${getString(SharedRes.strings.quiz_success_message_content)}",
                 "img_smart_cat",
+                false,
                 {
                     quizViewModel.nextStage()
                 }).invoke()
@@ -158,9 +159,7 @@ fun QuizScreen(appModule: AppModule, callback: (totalPoint: Int) -> Unit) {
                     }
                     val question = quiz?.question?.replace("\\n", "\n")
                     Text(
-                        fontSize = 18.sp,
-                        text = question ?: "",
-                        modifier = Modifier.border(
+                        fontSize = 18.sp, text = question ?: "", modifier = Modifier.border(
                             width = 2.dp, color = QuizBorder, shape = RoundedCornerShape(10.dp)
                         ).padding(8.dp).fillMaxWidth()
                             .then(Modifier.heightIn(max = 200.dp, min = 100.dp)) // 최대 높이 설정

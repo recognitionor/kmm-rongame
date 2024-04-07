@@ -22,6 +22,10 @@ class RuleConst {
 
         const val COLLECTOR_WASTE_PRICE = 10
 
+        const val PANDORA_PRICE = 100
+
+        const val PANDORA_ROSE_PICK_PRICE = 5000
+
         const val MAX_DEPOSIT = 10000
     }
 }

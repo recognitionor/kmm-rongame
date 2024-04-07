@@ -19,6 +19,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
+import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import dev.icerock.moko.resources.getImageByFileName
 
@@ -36,9 +39,25 @@ fun createDialog(
     title: String = "",
     message: String = "",
     image: String? = null,
+    useBackKey: Boolean = false,
     positiveButtonCallback: () -> Unit,
     negativeButtonCallback: (() -> Unit)? = null
 ): @Composable () -> Unit = {
+    var tempBackListener = backKeyListener
+    LaunchedEffect(Unit) {
+        if (useBackKey) {
+            backKeyListener = {
+                negativeButtonCallback?.invoke()
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            backKeyListener = tempBackListener
+        }
+    }
+
     Box(
         modifier = Modifier.fillMaxSize().background(Color.Gray.copy(alpha = 0.8F))
             .pointerInput(Unit) {
@@ -59,8 +78,7 @@ fun createDialog(
                     Spacer(modifier = Modifier.size(24.dp))
                     if (!image.isNullOrEmpty()) {
                         Image(
-                            modifier = Modifier.size(100.dp),
-                            bitmap = getCommonImageResourceBitMap(
+                            modifier = Modifier.size(100.dp), bitmap = getCommonImageResourceBitMap(
                                 SharedRes.images.getImageByFileName(image)
                             )!!, contentDescription = null
                         )

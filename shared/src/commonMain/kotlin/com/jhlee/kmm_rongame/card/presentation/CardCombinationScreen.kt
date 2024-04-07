@@ -49,7 +49,9 @@ import com.jhlee.kmm_rongame.cardselector.presentaion.CardSelectDialog
 import com.jhlee.kmm_rongame.common.view.createDialog
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
+import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainState.Companion.NOT_ENOUGH_MONEY_DIALOG
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 import dev.icerock.moko.mvvm.compose.getViewModel
@@ -71,14 +73,14 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
     val offsetX by remember { mutableStateOf(Animatable(0f)) }
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
+        Logger.log("Effect1")
         backKeyListener = {
-            if (!showCardSelectDialog) {
-                showCardSelectDialog = false
-                mainViewModel.setWholeScreen(false)
+            if (buyCardCombinationInfo != null) {
+                buyCardCombinationInfo = null
             } else {
+                Logger.log("Effect1 dismiss")
                 dismiss.invoke()
             }
-
         }
     }
     DisposableEffect(Unit) {
@@ -87,6 +89,8 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
         }
     }
     LaunchedEffect(state, state.animationMode) {
+        Logger.log("Effect2")
+
         when (state.animationMode) {
             CardCombinationState.ANIMATION_FAIL -> {
                 scope.launch {
@@ -131,8 +135,7 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                     contentDescription = null,
                     modifier = Modifier.clickable(!showCardSelectDialog) {
                         dismiss.invoke()
-                    }.width(30.dp).height(30.dp)
-                        .padding(5.dp)
+                    }.width(30.dp).height(30.dp).padding(5.dp)
                 )
             }
 
@@ -220,11 +223,17 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                     ) {
                         buyCardCombinationInfo = it
                     } else {
+                        showCardSelectDialog = true
                         mainViewModel.showDialog(
                             NOT_ENOUGH_MONEY_DIALOG,
-                            createDialog = createDialog("돈이 모자랍니다.", "", "img_bank_cat", {
-                                mainViewModel.dismissDialog()
-                            })
+                            createDialog = createDialog(
+                                "돈이 모자랍니다.",
+                                "",
+                                "img_bank_cat",
+                                useBackKey = false,
+                                {
+                                    mainViewModel.dismissDialog()
+                                })
                         )
                     }
                 }
@@ -232,9 +241,19 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
         }
         if (showCardSelectDialog) {
             mainViewModel.setWholeScreen(true)
-            CardSelectDialog(state.myCardList.filter { !state.mySelectedCardEntry.contains(it) },  selectListener = { list ->
-                viewModel.selectMyCard(selectCardSlot, list[0])
-            }) {
+            CardSelectDialog(state.myCardList.filter { !state.mySelectedCardEntry.contains(it) },
+                selectListener = { list ->
+                    viewModel.selectMyCard(selectCardSlot, list[0])
+                }) {
+                Logger.log("dissmiss")
+                backKeyListener = {
+                    Logger.log("dissmiss back")
+                    if (buyCardCombinationInfo != null) {
+                        buyCardCombinationInfo = null
+                    } else {
+                        dismiss.invoke()
+                    }
+                }
                 showCardSelectDialog = false
                 mainViewModel.setWholeScreen(false)
             }

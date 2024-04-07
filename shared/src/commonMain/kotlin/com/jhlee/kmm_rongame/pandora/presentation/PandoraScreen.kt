@@ -36,8 +36,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.backKeyListener
+import com.jhlee.kmm_rongame.bank.domain.BankUtils
+import com.jhlee.kmm_rongame.common.view.TutorialDialog
 import com.jhlee.kmm_rongame.common.view.createDialog
 import com.jhlee.kmm_rongame.constants.GradeConst
+import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
 import com.jhlee.kmm_rongame.core.util.Logger
@@ -50,6 +53,7 @@ import com.jhlee.kmm_rongame.pandora.presentation.PandoraTargetScreen
 import com.jhlee.kmm_rongame.pandora.presentation.PandoraViewModel
 import com.jhlee.kmm_rongame.ui.theme.Green300
 import com.jhlee.kmm_rongame.ui.theme.Red300
+import com.jhlee.kmm_rongame.utils.Utils
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 import kotlin.math.abs
@@ -69,7 +73,7 @@ fun PandoraScreen(
         mainViewModel.setWholeScreen(true)
         viewModel.initCardList(initSize)
         backKeyListener = {
-
+            dismiss.invoke()
         }
     }
 
@@ -97,6 +101,13 @@ fun PandoraScreen(
     val questionImage = getCommonImageResourceBitMap(SharedRes.images.ic_question)
 
     when (state.pandoraState) {
+
+        PandoraState.STATE_DEFAULT -> {
+            backKeyListener = {
+                dismiss.invoke()
+            }
+        }
+
         PandoraState.PICK_DONE -> {
             dismiss.invoke()
         }
@@ -108,7 +119,14 @@ fun PandoraScreen(
                     title = "끝!",
                     message = "더 이상 움직일수 있는 카드가 없어요",
                     positiveButtonCallback = {
-                        dismiss.invoke()
+                        if ((mainViewModel.state.value.userInfo?.money
+                                ?: 0) > RuleConst.PANDORA_ROSE_PICK_PRICE
+                        ) {
+                            viewModel.selectStatus(PandoraState.STATE_GAME_ROSE_PICK)
+                            mainViewModel.dismissDialog()
+                        } else {
+                            dismiss.invoke()
+                        }
                     })
             )
         }
@@ -119,6 +137,7 @@ fun PandoraScreen(
                 createDialog(title = "승", message = "내가 가져 갈 카드를 고르세요", positiveButtonCallback = {
                     viewModel.selectDetailCard(null)
                     mainViewModel.dismissDialog()
+                    mainViewModel.getUserInfo()
                     viewModel.selectStatus(PandoraState.STATE_GAME_WIN_PICK)
                 })
             )
@@ -132,7 +151,7 @@ fun PandoraScreen(
     ) {
 
         Box(modifier = Modifier.weight(0.7f)) {
-            if (state.pandoraState == PandoraState.STATE_GAME_WIN_PICK) {
+            if (state.pandoraState == PandoraState.STATE_GAME_WIN_PICK || state.pandoraState == PandoraState.STATE_GAME_ROSE_PICK) {
                 Column {
                     Button({
                         dismiss.invoke()
@@ -143,24 +162,40 @@ fun PandoraScreen(
                             modifier = Modifier.fillMaxWidth().padding(start = 30.dp, end = 30.dp)
                         )
                     }
-                    if (state.detailCard != null) {
-                        Button({
-                            state.detailCard?.let {
+                    Button({
+                        state.detailCard?.let {
+                            if (state.pandoraState == PandoraState.STATE_GAME_WIN) {
                                 viewModel.pickCard(it)
+                            } else {
+                                if ((mainViewModel.state.value.userInfo?.money
+                                        ?: 0) > RuleConst.PANDORA_ROSE_PICK_PRICE
+                                ) {
+                                    mainViewModel.updateUserMoney(-RuleConst.PANDORA_ROSE_PICK_PRICE)
+                                    viewModel.pickCard(it)
+                                } else {
+                                    dismiss.invoke()
+                                }
                             }
-                        }) {
-                            Text(
-                                text = "선택 카드 갖고 나가기",
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(start = 30.dp, end = 30.dp)
-                            )
+
                         }
+                    }, enabled = state.detailCard != null) {
+                        Text(
+                            text = if (state.pandoraState == PandoraState.STATE_GAME_WIN) "선택 카드 갖고 나가기" else "${
+                                BankUtils.formatNumber(
+                                    RuleConst.PANDORA_ROSE_PICK_PRICE
+                                )
+                            } 원 내고 카드 갖고 나가기",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(start = 30.dp, end = 30.dp)
+                        )
                     }
                 }
             } else {
                 state.goalCard?.let {
-                    PandoraTargetScreen(it, state)
+                    PandoraTargetScreen(it, state) {
+                        viewModel.tutorialMove(0)
+                        viewModel.selectStatus(PandoraState.TUTORIAL)
+                    }
                 }
             }
         }
@@ -173,6 +208,7 @@ fun PandoraScreen(
                     contentDescription = null
                 )
             }
+
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -182,7 +218,6 @@ fun PandoraScreen(
                         for (x in 0 until rowSize) {
                             val index = y * rowSize + x
                             val validItem = state.cardListSize > index
-                            Logger.log("index : $index")
                             val isSelected = index == startIndex
                             val isAdjacent =
                                 (abs(index / rowSize - startIndex / rowSize) == 1 && abs(index % rowSize - startIndex % rowSize) == 0) || (abs(
@@ -227,6 +262,12 @@ fun PandoraScreen(
                                 .background(if (validItem) Color.White else Color.Transparent)
                                 .then(if (validItem) Modifier.clickable {
                                     if (!validItem) {
+                                        return@clickable
+                                    }
+                                    if (isSelectMode && !isSelectable) {
+                                        return@clickable
+                                    }
+                                    if (state.cardGatchaLoading > -1) {
                                         return@clickable
                                     }
                                     if (state.pandoraState == PandoraState.STATE_GAME_WIN_PICK) {
@@ -342,6 +383,85 @@ fun PandoraScreen(
                 PandoraDetailScreen(it)
             }
 
+        }
+    }
+    if (state.pandoraState == PandoraState.TUTORIAL) {
+        val backClick: (() -> Unit)? = if (state.tutorialIndex > 0) {
+            {
+                viewModel.tutorialMove(state.tutorialIndex.minus(1))
+            }
+        } else null
+        val nextClick: (() -> Unit)? = if (state.tutorialIndex < 5) {
+            {
+                viewModel.tutorialMove(state.tutorialIndex.plus(1))
+            }
+        } else null
+
+        val dismissCallback = {
+            viewModel.tutorialMove(-1)
+            viewModel.selectStatus(PandoraState.STATE_DEFAULT)
+        }
+
+        when (state.tutorialIndex) {
+            0 -> {
+                getCommonImageResourceBitMap(SharedRes.images.tutorial_0)?.let {
+                    TutorialDialog(
+                        useBackBtn = backClick,
+                        useNextBtn = nextClick,
+                        imageBitmap = it,
+                        content = "정해진 카드들을 결합 하면 \n새로운 카드를 얻을수 있습니다.",
+                        dismiss = dismissCallback
+                    )
+                }
+            }
+
+            1 -> {
+                getCommonImageResourceBitMap(SharedRes.images.tutorial_1)?.let {
+                    TutorialDialog(
+                        backClick,
+                        useNextBtn = nextClick,
+                        imageBitmap = it,
+                        content = "같은 카드 끼리는 강화가 가능 합니다. \n파워가 1인 카드와 파워가 2인 카드를 합쳐서 강화를 하면 3이 됩니다.",
+                        dismiss = dismissCallback
+                    )
+                }
+            }
+
+            2 -> {
+                getCommonImageResourceBitMap(SharedRes.images.tutorial_2)?.let {
+                    TutorialDialog(
+                        backClick,
+                        useNextBtn = nextClick,
+                        imageBitmap = it,
+                        content = "잠재력이 1인 물과 잠재력이 1인 불을 결합하면 파워는 그대로 더하지만 잠재력은 새로 부여됩니다.",
+                        dismiss = dismissCallback
+                    )
+                }
+            }
+
+            3 -> {
+                getCommonImageResourceBitMap(SharedRes.images.tutorial_3)?.let {
+                    TutorialDialog(
+                        backClick,
+                        useNextBtn = nextClick,
+                        imageBitmap = it,
+                        content = "위 세카드는 다른 카드를 강화 하는데 사용이 됩니다.\n 단 어떤 카드는 강화 되지 않고 반응 하여 새로운 카드가 탄생하기도 합니다.",
+                        dismiss = dismissCallback
+                    )
+                }
+            }
+
+            4 -> {
+                getCommonImageResourceBitMap(SharedRes.images.tutorial_4)?.let {
+                    TutorialDialog(
+                        backClick,
+                        useNextBtn = nextClick,
+                        imageBitmap = it,
+                        content = "카드 강화를 끝까지 한경우 상자가 한칸 증가 됩니다.",
+                        dismiss = dismissCallback
+                    )
+                }
+            }
         }
     }
 }

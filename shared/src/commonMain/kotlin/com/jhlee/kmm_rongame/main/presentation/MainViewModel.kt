@@ -6,6 +6,8 @@ import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
+import com.jhlee.kmm_rongame.main.presentation.MainState.Companion.NO_DIALOG
+import com.jhlee.kmm_rongame.main.presentation.MainState.Companion.OVERFLOW_MONEY
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -148,6 +150,7 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
         mainDataSource.getUserInfo().onEach { res ->
             when (res) {
                 is Resource.Error -> {
+                    Logger.log("res getUserInfo fail ${res.data}")
                     _state.value = state.value.copy(isLoading = false, error = res.message ?: "")
                 }
 
@@ -156,14 +159,38 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
                 }
 
                 is Resource.Success -> {
-                    _state.value = state.value.copy(userInfo = res.data, isLoading = false)
+                    Logger.log("res data ${res.data}")
+//                    _state.value = state.value.copy(userInfo = res.data, isLoading = false)
+                    if ((res.data?.money ?: 0) < 0) {
+//                        updateMoney()
+                        _state.update {
+                            it.copy(
+                                openDialog = OVERFLOW_MONEY, userInfo = res.data, isLoading = false
+                            )
+                        }
+                    } else {
+                        _state.value = state.value.copy(userInfo = res.data, isLoading = false)
+                    }
                 }
             }
         }.launchIn(viewModelScope)
     }
 
+    fun updateMoney() {
+        mainDataSource.updateMoney().onEach { result ->
+            when (result) {
+                is Resource.Error -> {}
+                is Resource.Success -> {
+                    _state.update { it.copy(userInfo = result.data, openDialog = NO_DIALOG) }
+                }
+
+                is Resource.Loading -> {}
+            }
+        }.launchIn(viewModelScope)
+    }
+
     fun registerUser(name: String) {
-        mainDataSource.insertUserInfo(UserInfo(1, name, 1000, 0)).onEach { res ->
+        mainDataSource.insertUserInfo(UserInfo(1, name, 1000, 0, 0)).onEach { res ->
             when (res) {
                 is Resource.Error -> {
                     _state.value = state.value.copy(isLoading = false, error = res.message ?: "")

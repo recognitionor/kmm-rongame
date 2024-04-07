@@ -18,6 +18,7 @@ data class PandoraState(
     val goalCard: Card? = null,
     val openCardCount: Int = 0,
     val upgradeCount: Int = 0,
+    val tutorialIndex: Int = -1
 ) {
     companion object {
         const val STATE_DEFAULT = 0
@@ -25,5 +26,8 @@ data class PandoraState(
         const val STATE_GAME_WIN = 2
         const val STATE_GAME_WIN_PICK = 3
         const val PICK_DONE = 4
+        const val TUTORIAL = 5
+        const val STATE_GAME_ROSE_PICK = 6
+
     }
 }

@@ -56,11 +56,6 @@ fun CardDetailInfoScreen(card: Card, onDismiss: () -> Unit) {
             onDismiss.invoke()
         }
     }
-    DisposableEffect(Unit) {
-        onDispose {
-            backKeyListener = null
-        }
-    }
     val color: Color = GradeConst.TYPE_MAP[card.grade - 1]!!.color
 
     val cardImg = rememberBitmapFromBytes(card.image)

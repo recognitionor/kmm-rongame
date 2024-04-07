@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -38,11 +39,14 @@ import com.jhlee.kmm_rongame.card.presentation.HomeState
 import com.jhlee.kmm_rongame.card.presentation.HomeViewModel
 import com.jhlee.kmm_rongame.cardselector.presentaion.CardSelectSearchBar
 import com.jhlee.kmm_rongame.common.view.ClickableDefaults
+import com.jhlee.kmm_rongame.common.view.createDialog
+import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
+import com.jhlee.kmm_rongame.pandora.presentation.PandoraListScreen
 import com.jhlee.kmm_rongame.setting.SettingScreen
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
@@ -112,6 +116,7 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                         Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
                     ) {
+
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CardScreen(
                                 cardViewModel, viewModel, height = 120f
@@ -157,6 +162,61 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                             )
                         }
 
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Card(
+                                modifier = Modifier.run {
+                                    size(width = (120f * 0.8).dp, height = 120f.dp).padding(10.dp)
+                                        .border(
+                                            width = 4.dp,
+                                            color = Color.Gray,
+                                            shape = RoundedCornerShape(8.dp)
+                                        ).clip(RoundedCornerShape(8.dp))
+                                        .then(ClickableDefaults.getDefaultClickable {
+                                            if ((viewModel.state.value.userInfo?.money
+                                                    ?: 0) > RuleConst.PANDORA_PRICE
+                                            ) {
+                                                cardViewModel.selectScreen(HomeState.HOME_SCREEN_PANDORA)
+                                            } else {
+                                                viewModel.showDialog(
+                                                    MainState.INFO_DIALOG, createDialog(
+                                                        "돈이 부족해요.",
+                                                        "${RuleConst.PANDORA_PRICE}원 이 필요해요",
+                                                        null,
+                                                        false,
+                                                        {
+                                                            viewModel.dismissDialog()
+                                                        },
+                                                        null
+                                                    )
+                                                )
+                                            }
+                                        })
+                                }, colors = CardDefaults.cardColors(Color.White)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp)
+                                ) { // 패딩을 적용할 Box 컴포넌트 추가
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    getCommonImageResourceBitMap(SharedRes.images.ic_open_box)?.let {
+                                        Image(
+                                            bitmap = it,
+                                            contentDescription = null,
+                                            alignment = Alignment.Center,
+                                            modifier = Modifier.fillMaxWidth().height(35.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                            }
+
+                            Text(
+                                text = "판도라 상자", textAlign = TextAlign.Center
+                            )
+                        }
+
                     }
                     CardSelectSearchBar(cardStateValue.searchKeyword,
                         cardStateValue.sortFilter,
@@ -183,7 +243,12 @@ fun HomeScreen(viewModel: MainViewModel, appModule: AppModule) {
                 cardViewModel.selectScreen(HomeState.HOME_SCREEN_DEFAULT)
             }
         }
+
+        HomeState.HOME_SCREEN_PANDORA -> {
+            PandoraListScreen(viewModel, appModule) {
+                cardViewModel.getMyCardList()
+                cardViewModel.selectScreen(HomeState.HOME_SCREEN_DEFAULT)
+            }
+        }
     }
-
-
 }

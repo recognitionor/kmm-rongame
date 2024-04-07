@@ -118,12 +118,6 @@ fun BankScreen(mainViewModel: MainViewModel, appModule: AppModule, dismiss: () -
             ) {
                 Spacer(modifier = Modifier.height(60.dp))
 
-                Button(onClick = {
-                    mainViewModel.updateUserMoney((mainState.userInfo?.money ?: 0) + 900000)
-                }) {
-                    Text(text = "test")
-                }
-
                 Row {
                     getCommonImageResourceBitMap(SharedRes.images.img_bank_cat)?.let {
                         Image(

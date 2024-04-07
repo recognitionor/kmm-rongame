@@ -2,6 +2,7 @@ package com.jhlee.kmm_rongame.pandora.domain
 
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.main.domain.UserInfo
 import kotlinx.coroutines.flow.Flow
 
 interface PandoraDataSource {
@@ -19,5 +20,7 @@ interface PandoraDataSource {
     fun getStageList(): Flow<Resource<List<Card>>>
 
     fun pickCard(card: Card): Flow<Resource<Boolean>>
+
+    fun test(): Flow<Resource<UserInfo>>
 
 }

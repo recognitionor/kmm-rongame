@@ -49,6 +49,10 @@ class PandoraViewModel(
         _state.update { it.copy(pandoraState = state) }
     }
 
+    fun tutorialMove(index: Int) {
+        _state.update { it.copy(tutorialIndex = index) }
+    }
+
     fun pickCard(card: Card) {
         pandoraDataSource.pickCard(card).onEach {
             _state.update { it.copy(pandoraState = PandoraState.PICK_DONE) }
@@ -129,8 +133,7 @@ class PandoraViewModel(
                             } else {
                                 _state.update {
                                     it.copy(
-                                        cardList = tempList,
-                                        upgradeCount = it.upgradeCount.plus(1)
+                                        cardList = tempList, upgradeCount = it.upgradeCount.plus(1)
                                     )
                                 }
                             }
@@ -163,9 +166,7 @@ class PandoraViewModel(
             var checkResult = false
             when (result) {
                 is Resource.Success -> {
-                    Logger.log("success ${result.data}")
                     if (result.data == true) {
-
                         _state.update { it.copy(pandoraState = PandoraState.STATE_GAME_WIN) }
                         checkResult = true
                     }
@@ -181,14 +182,12 @@ class PandoraViewModel(
     private fun checkGameOver(
         cardList: List<Card?>, index: Int, callback: ((isResult: Boolean) -> Unit)? = null
     ) {
-        Logger.log("checkGameOver")
         pandoraDataSource.checkGameOver(
             cardList, index, state.value.rowSize, state.value.colSize
         ).onEach { result ->
             var isResult = false
             when (result) {
                 is Resource.Loading -> {
-                    Logger.log("Loading : ")
                 }
 
                 is Resource.Success -> {

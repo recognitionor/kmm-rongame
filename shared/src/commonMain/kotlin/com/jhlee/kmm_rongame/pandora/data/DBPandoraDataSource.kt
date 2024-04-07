@@ -12,6 +12,7 @@ import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
+import com.jhlee.kmm_rongame.main.domain.UserInfo
 import com.jhlee.kmm_rongame.pandora.domain.PandoraDataSource
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.delay
@@ -28,7 +29,10 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
     private val queries = db.dbQueries
     override fun getGoalCard(): Flow<Resource<Card>> = flow {
         emit(Resource.Loading())
-        val myStage = queries.getUserInfo().executeAsOne().cardStage ?: 0
+        var myStage = queries.getUserInfo().executeAsOne().pandoraStage
+        if (myStage > 30) {
+            myStage += 30
+        }
         val targetCardId = (myStage / 10).toInt()
         val targetUpgrade = (myStage % 10).toInt()
         val tempCard = queries.getCardInfo(targetCardId.toLong()).executeAsOne().toCard()
@@ -263,14 +267,13 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
             }
             emit(Resource.Success(isResult))
         } catch (e: Exception) {
-            Logger.log("error : $e")
             emit(Resource.Success(false))
         }
     }
 
+
     override fun checkWin(cardList: List<Card?>): Flow<Resource<Boolean>> = flow {
-        Logger.log("checkWin")
-        val stageIndex = queries.getUserInfo().executeAsOne().cardStage ?: 0
+        val stageIndex = queries.getUserInfo().executeAsOne().pandoraStage
         val cardIndex = (stageIndex / 10).toInt()
         val upgradeCount = (stageIndex % 10).toInt()
         var isResult = false
@@ -280,14 +283,23 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
                 return@forEach
             }
         }
+        if (isResult) {
+            queries.nextPandoraStage()
+        }
         emit(Resource.Success(isResult))
     }
 
     override fun getStageList(): Flow<Resource<List<Card>>> = flow {
         emit(Resource.Loading())
         try {
-            val tempList = queries.getCardInfoList().executeAsList()
+            val tempList = queries.getCardInfoList().executeAsList().toMutableList().apply {
+                this.removeAt(5)
+                this.removeAt(4)
+                this.removeAt(3)
+            }
+
             val resultList = tempList.map {
+                Logger.log(it.name)
                 val tempType = hashSetOf<CardType>()
                 it.type.split("|").forEach { typeName ->
                     CardInfoManager.CARD_TYPE_MAP[typeName]?.let { cardType ->
@@ -299,7 +311,6 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
                 } else {
                     it.count
                 }
-
                 it.toCard().copy(type = tempType, count = tempCount.toInt())
             }
             emit(Resource.Success(resultList))
@@ -322,5 +333,13 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
             Logger.log("error : ${e.message}")
             emit(Resource.Success(false))
         }
+    }
+
+    override fun test(): Flow<Resource<UserInfo>> = flow {
+        val user = queries.getUserInfo().executeAsOne()
+        Logger.log("user start : $user")
+        queries.nextPandoraStage()
+        val user2 = queries.getUserInfo().executeAsOne()
+        Logger.log("user end : $user2")
     }
 }

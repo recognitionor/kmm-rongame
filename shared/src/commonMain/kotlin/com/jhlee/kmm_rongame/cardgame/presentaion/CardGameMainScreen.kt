@@ -86,6 +86,7 @@ fun CardGameMainScreen(mainViewModel: MainViewModel, appModule: AppModule) {
                                             MainState.QUIZ_INFO_DIALOG, createDialog("Start(시작) ",
                                                 "$costMoney 원이 듭니다.",
                                                 "img_game_cat",
+                                                useBackKey = true,
                                                 {
                                                     mainViewModel.updateUserMoney(-(costMoney))
                                                     viewModel.getCardGame(index)

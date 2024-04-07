@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -54,9 +55,10 @@ fun PandoraListItemView(card: Card, currentIndex: Int, myStage: Int, onClick: ()
             }
         } else {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
-                onClick.invoke()
-            }
-            ) {
+                if (currentIndex >= cardStageIndex) {
+                    onClick.invoke()
+                }
+            }) {
                 Box(modifier = Modifier.weight(1f).padding(8.dp)) {
                     cardImg?.let {
                         Image(
@@ -69,23 +71,34 @@ fun PandoraListItemView(card: Card, currentIndex: Int, myStage: Int, onClick: ()
                         )
                     }
                 }
-                Box(modifier = Modifier.weight(2f)) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(5),
-                        modifier = Modifier.padding(top = 5.dp, start = 5.dp, end = 5.dp)
-                    ) {
-                        items(10) { index ->
-                            val image = if (stageUpgradeIndex - 1 > index) {
-                                SharedRes.images.ic_potential_on
-                            } else {
-                                SharedRes.images.ic_potential_off
-                            }
-                            getCommonImageResourceBitMap(image)?.let { it1 ->
-                                Image(
-                                    bitmap = it1,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(35.dp)
-                                )
+                Box(modifier = Modifier.weight(2f), contentAlignment = Alignment.Center) {
+                    if (currentIndex < cardStageIndex) {
+                        getCommonImageResourceBitMap(SharedRes.images.ic_win)?.let { it1 ->
+                            Image(
+                                alignment = Alignment.Center,
+                                bitmap = it1,
+                                contentDescription = null,
+                                modifier = Modifier.size(70.dp).fillMaxWidth()
+                            )
+                        }
+                    } else {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(5),
+                            modifier = Modifier.padding(top = 5.dp, start = 5.dp, end = 5.dp)
+                        ) {
+                            items(10) { index ->
+                                val image = if (stageUpgradeIndex - 1 > index) {
+                                    SharedRes.images.ic_potential_on
+                                } else {
+                                    SharedRes.images.ic_potential_off
+                                }
+                                getCommonImageResourceBitMap(image)?.let { it1 ->
+                                    Image(
+                                        bitmap = it1,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(35.dp)
+                                    )
+                                }
                             }
                         }
                     }

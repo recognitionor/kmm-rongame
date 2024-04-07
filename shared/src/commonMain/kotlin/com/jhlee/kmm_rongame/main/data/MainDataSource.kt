@@ -97,7 +97,7 @@ class MainDataSourceImpl(
         return flow {
             try {
                 emit(Resource.Loading())
-                queries.insertUser(userInfo.name, userInfo.money.toLong(), 0)
+                queries.insertUser(userInfo.name, userInfo.money.toLong(), 0, 0)
                 emit(Resource.Success(userInfo))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "error getUserInfo"))
@@ -291,6 +291,16 @@ class MainDataSourceImpl(
 
             emit(Resource.Success(Triple(0, 0, 0)))
         }
+    }
+
+    override fun updateMoney(): Flow<Resource<UserInfo>> = flow {
+        try {
+            queries.updateUser(77777)
+        } catch (_: Exception) {
+        }
+        val userInfo = queries.getUserInfo().executeAsOne()
+        val result = Resource.Success(userInfo.toUser())
+        emit(result)
     }
 
     private suspend fun initQuiz(

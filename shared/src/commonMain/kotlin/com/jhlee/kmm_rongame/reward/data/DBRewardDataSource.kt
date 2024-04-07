@@ -41,7 +41,7 @@ class DBRewardDataSource(
         return flow {
             try {
                 emit(Resource.Loading())
-                queries.insertUser(userInfo.name, userInfo.money.toLong(), 0)
+                queries.insertUser(userInfo.name, userInfo.money.toLong(), 0, 0)
                 emit(Resource.Success(userInfo))
             } catch (e: Exception) {
                 emit(Resource.Error(e.message ?: "error getUserInfo"))
@@ -71,4 +71,6 @@ class DBRewardDataSource(
 
     override fun initCardWholeData(isReset: Boolean): Flow<Resource<Triple<Int, Int, Int>>> =
         flow { }
+
+    override fun updateMoney(): Flow<Resource<UserInfo>> = flow { }
 }
