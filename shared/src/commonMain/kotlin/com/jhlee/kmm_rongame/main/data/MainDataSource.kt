@@ -19,7 +19,6 @@ import com.jhlee.kmm_rongame.core.data.HttpConst
 import com.jhlee.kmm_rongame.core.data.HttpConst.FLATICON_URL
 import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.domain.Resource
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.isAndroid
 import com.jhlee.kmm_rongame.main.domain.FlaticonAuth
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
@@ -142,7 +141,6 @@ class MainDataSourceImpl(
         flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
         isResult: (Boolean) -> Unit
     ) {
-        Logger.log("initCardInfo")
         var result = true
         val list = CardInfoDto.parseJson(csvString)
         list.forEachIndexed { index, it ->
@@ -215,7 +213,6 @@ class MainDataSourceImpl(
                         )
                     }
                 } catch (e: Exception) {
-                    Logger.log("error : $e")
                     result = false
                 }
                 flowCollector.emit(
@@ -276,16 +273,14 @@ class MainDataSourceImpl(
                 if (isReset) {
                     try {
                         queries.clearDB()
-                    } catch (_: Exception) {
+                    } catch (e: Exception) {
+                        emit(Resource.Error("data load fail ${e.message}"))
                     }
                 } else {
                     if (!isAndroid()) {
-                        val imageTemp = queries.getCardInfo(0).executeAsOne().image
-                        Logger.log("imageTemp : $imageTemp")
+                        val imageTemp = queries.getCardInfo(0).executeAsOneOrNull()?.image
                         val temp = ImageStorage.getImage(imageTemp ?: "")
-                        Logger.log("temp : $temp")
                         if (temp == null) {
-                            Logger.log("clearDB")
                             queries.clearDB()
                             isForceReset = true
                         }
