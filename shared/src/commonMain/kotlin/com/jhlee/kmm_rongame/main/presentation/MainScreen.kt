@@ -15,12 +15,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.backKeyListener
 import com.jhlee.kmm_rongame.book.presentation.BookScreen
 import com.jhlee.kmm_rongame.cardgame.presentaion.CardGameMainScreen
 import com.jhlee.kmm_rongame.common.view.createDialog
-import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.home.presentation.HomeScreen
 import com.jhlee.kmm_rongame.isAndroid
@@ -83,14 +81,25 @@ fun MainScreen(appModule: AppModule) {
             }
         }) {
 
-            Box(modifier = Modifier.padding(bottom = if (state.isWholeScreenOpen) 0.dp else navigationBarHeight)) {
+            Box(
+                modifier = Modifier.padding(
+                    bottom = if (state.isWholeScreenOpen) 0.dp else navigationBarHeight,
+                    top = if (isAndroid()) 0.dp else 30.dp
+                )
+            ) {
                 if ((state.userInfo?.money ?: 0) < 0) {
-                    val image = getCommonImageResourceBitMap(SharedRes.images.img_bank_cat)
                     viewModel.showDialog(
-                        MainState.INFO_DIALOG, createDialog = createDialog("위험해요", "너무 많은 돈은 위험 합니다. 이 돈은 제가 가져 가도록 하고 현실 에서의 돈 많이 벌수 있도록 행운을 빌어 드릴게요.", "img_bank_cat", true, {
-                            viewModel.updateMoney()
-                            viewModel.dismissDialog()
-                        }, null)
+                        MainState.INFO_DIALOG, createDialog = createDialog(
+                            "위험해요",
+                            "너무 많은 돈은 위험 합니다. 이 돈은 제가 가져 가도록 하고 현실 에서의 돈 많이 벌수 있도록 행운을 빌어 드릴게요.",
+                            "img_bank_cat",
+                            true,
+                            {
+                                viewModel.updateMoney()
+                                viewModel.dismissDialog()
+                            },
+                            null
+                        )
                     )
                 } else {
                     if (state.userInfo == null) {

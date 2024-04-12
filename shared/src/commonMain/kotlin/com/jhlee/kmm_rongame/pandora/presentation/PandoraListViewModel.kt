@@ -26,6 +26,10 @@ class PandoraListViewModel(
         getStageList()
     }
 
+    fun test() {
+        pandoraDataSource.test().launchIn(viewModelScope)
+    }
+
     fun selectScreen(screenMode: Int) {
         _state.update { it.copy(pandoraScreen = screenMode) }
     }

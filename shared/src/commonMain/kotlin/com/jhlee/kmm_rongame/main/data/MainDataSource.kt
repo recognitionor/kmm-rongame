@@ -3,6 +3,7 @@ package com.jhlee.kmm_rongame.main.data
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.jhlee.kmm_rongame.AppDatabase
+import com.jhlee.kmm_rongame.File
 import com.jhlee.kmm_rongame.Firebase
 import com.jhlee.kmm_rongame.card.data.CardCombinationDto
 import com.jhlee.kmm_rongame.card.data.CardInfoDto
@@ -19,6 +20,7 @@ import com.jhlee.kmm_rongame.core.data.HttpConst.FLATICON_URL
 import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.domain.Resource
 import com.jhlee.kmm_rongame.core.util.Logger
+import com.jhlee.kmm_rongame.isAndroid
 import com.jhlee.kmm_rongame.main.domain.FlaticonAuth
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
 import com.jhlee.kmm_rongame.main.domain.UserInfo
@@ -36,6 +38,7 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Clock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -137,9 +140,8 @@ class MainDataSourceImpl(
         csvString: String,
         totalSize: Int,
         flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
-        isResult: (Boolean) -> Unit,
-
-        ) {
+        isResult: (Boolean) -> Unit
+    ) {
         Logger.log("initCardInfo")
         var result = true
         val list = CardInfoDto.parseJson(csvString)
@@ -161,7 +163,6 @@ class MainDataSourceImpl(
                 cardInfo.image
             }
             try {
-                Logger.log("insertCardInfoEntity : ${it.name}")
                 queries.insertCardInfoEntity(
                     it.id.toLong(),
                     it.name,
@@ -191,7 +192,6 @@ class MainDataSourceImpl(
         flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
         isResult: (Boolean) -> Unit
     ) {
-        Logger.log("initCardCombination")
         val list = CardCombinationDto.parseJson(csvString)
         var result = true
         list.forEach { dto ->
@@ -209,7 +209,6 @@ class MainDataSourceImpl(
                     val card = queries.getCardInfoFromName(name).executeAsOne()
                     val isExist =
                         queries.existCardPadigree(card.id, item1Id, item2Id).executeAsOne()
-                    Logger.log("existCardPadigree : ${card.name}-$item1Id-$item2Id----$isExist")
                     if (!isExist) {
                         queries.insertCardPadigree(
                             card.id, item1Id, item2Id, percent.toLong(), 0
@@ -237,13 +236,11 @@ class MainDataSourceImpl(
         flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>,
         isResult: (Boolean) -> Unit
     ) {
-        Logger.log("initCardType")
         val list = CardTypeDto.parseJson(csvString)
         var result = true
         list.forEachIndexed { index, it ->
             try {
                 val strongStr = it.strongList.ifEmpty { "" }
-                Logger.log("insertCardTypeEntity : ${it.name}")
                 queries.insertCardTypeEntity(it.id.toLong(), it.name, strongStr)
                 CardTypeDto.parseStrongList(it.strongList)
                 CardInfoManager.CARD_TYPE_ID_MAP[it.id] = it.name
@@ -272,24 +269,33 @@ class MainDataSourceImpl(
     }
 
     override fun initCardWholeData(isReset: Boolean): Flow<Resource<Triple<Int, Int, Int>>> = flow {
+        var isForceReset = isReset
         emit(Resource.Loading())
-        supervisorScope {
-            try {
+        try {
+            supervisorScope {
                 if (isReset) {
                     try {
-                        Logger.log("DB Clear")
                         queries.clearDB()
                     } catch (_: Exception) {
                     }
+                } else {
+                    if (!isAndroid()) {
+                        val imageTemp = queries.getCardInfo(0).executeAsOne().image
+                        Logger.log("imageTemp : $imageTemp")
+                        val temp = ImageStorage.getImage(imageTemp ?: "")
+                        Logger.log("temp : $temp")
+                        if (temp == null) {
+                            Logger.log("clearDB")
+                            queries.clearDB()
+                            isForceReset = true
+                        }
+                    }
                 }
-                initVersion(isReset, this@flow)
-            } catch (e: Exception) {
-                Logger.log("error : ${e.message}")
-                emit(Resource.Error("data load fail ${e.message}"))
-                return@supervisorScope
+                initVersion(isForceReset, this@flow)
+                emit(Resource.Success(Triple(0, 0, 0)))
             }
-
-            emit(Resource.Success(Triple(0, 0, 0)))
+        } catch (e: Exception) {
+            emit(Resource.Error("data load fail ${e.message}"))
         }
     }
 
@@ -342,66 +348,69 @@ class MainDataSourceImpl(
     private suspend fun initVersion(
         isReset: Boolean, flowCollector: FlowCollector<Resource<Triple<Int, Int, Int>>>
     ) {
-        val time = Clock.System.now().toEpochMilliseconds()
-        DBVersion.DB_CARD_FILE_LIST.forEachIndexed { index, path ->
-            Logger.log("initVersion path : $path")
-            val versionTemp = Firebase.storage.reference.child(path).child(DBVersion.VERSION)
-            val csvTemp = httpClient.get(versionTemp.getDownloadUrl()).body<String>().split(",")
-            val version = csvTemp[0]
-            val totalSize = csvTemp[1].toInt()
-            Logger.log("initVersion version : $version")
-            Logger.log("initVersion totalSize : $totalSize")
-            for (i in 0..version.toInt()) {
-                val versionList = queries.getVersion(index.toLong(), i.toLong()).executeAsList()
-                Logger.log("versionList $i --- $versionList")
-                if (versionList.isEmpty()) {
-                    val filePath = "${path}_$i.csv"
-                    val url =
-                        Firebase.storage.reference.child(path).child(filePath).getDownloadUrl()
+        try {
+            DBVersion.DB_CARD_FILE_LIST.forEachIndexed { index, path ->
+                var downloadUrl: String? = null
+                try {
+                    val versionTemp =
+                        Firebase.storage.reference.child(path).child(DBVersion.VERSION)
+                    downloadUrl = withTimeout(5000) { // 10초 타임아웃
+                        versionTemp.getDownloadUrl()
+                    }
+                } catch (_: Exception) {
+                }
+                val csvTemp = httpClient.get(downloadUrl!!).body<String>().split(",")
+                val version = csvTemp[0]
+                val totalSize = csvTemp[1].toInt()
+                for (i in 0..version.toInt()) {
+                    val versionList = queries.getVersion(index.toLong(), i.toLong()).executeAsList()
+                    if (versionList.isEmpty()) {
+                        val filePath = "${path}_$i.csv"
+                        val url =
+                            Firebase.storage.reference.child(path).child(filePath).getDownloadUrl()
 
-                    val csvStr = httpClient.get(url).body<String>()
-                    when (index) {
-                        CARD_DB_TYPE -> {
-                            initCardInfo(isReset, csvStr, totalSize, flowCollector) { result ->
-                                Logger.log("initCardInfo-done : ${i.toLong()}")
-                                queries.insertDBVersion(
-                                    i.toLong(), index.toLong(), result
-                                )
-                            }
-                        }
-
-                        CARDTYPE_DB_TYPE -> {
-                            initCardType(csvStr, totalSize, flowCollector) { result ->
-                                Logger.log("initCardType-done : ${i.toLong()}")
-                                if (versionList.isEmpty()) {
+                        val csvStr = httpClient.get(url).body<String>()
+                        when (index) {
+                            CARD_DB_TYPE -> {
+                                initCardInfo(isReset, csvStr, totalSize, flowCollector) { result ->
                                     queries.insertDBVersion(
                                         i.toLong(), index.toLong(), result
                                     )
                                 }
                             }
-                        }
 
-                        CARDCOMBINE_DB_TYPE -> {
-                            initCardCombination(
-                                csvStr, totalSize, flowCollector
-                            ) { result: Boolean ->
-                                Logger.log("initCardCombination-done : $${i.toLong()} - ${index.toLong()} - $result")
-                                queries.insertDBVersion(
-                                    i.toLong(), index.toLong(), result
-                                )
+                            CARDTYPE_DB_TYPE -> {
+                                initCardType(csvStr, totalSize, flowCollector) { result ->
+                                    if (versionList.isEmpty()) {
+                                        queries.insertDBVersion(
+                                            i.toLong(), index.toLong(), result
+                                        )
+                                    }
+                                }
                             }
-                        }
 
-                        QUIZ_DB_TYPE -> {
-                            initQuiz(csvStr, totalSize, flowCollector) {
-                                queries.insertDBVersion(
-                                    i.toLong(), index.toLong(), it
-                                )
+                            CARDCOMBINE_DB_TYPE -> {
+                                initCardCombination(
+                                    csvStr, totalSize, flowCollector
+                                ) { result: Boolean ->
+                                    queries.insertDBVersion(
+                                        i.toLong(), index.toLong(), result
+                                    )
+                                }
+                            }
+
+                            QUIZ_DB_TYPE -> {
+                                initQuiz(csvStr, totalSize, flowCollector) {
+                                    queries.insertDBVersion(
+                                        i.toLong(), index.toLong(), it
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
+        } catch (_: Exception) {
         }
         // CardType Map Init
         queries.getCardTypeList().executeAsList().forEach {
@@ -417,6 +426,5 @@ class MainDataSourceImpl(
                 }
             }
         }
-
     }
 }

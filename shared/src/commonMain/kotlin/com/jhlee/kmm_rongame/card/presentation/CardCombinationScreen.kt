@@ -73,12 +73,10 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
     val offsetX by remember { mutableStateOf(Animatable(0f)) }
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        Logger.log("Effect1")
         backKeyListener = {
             if (buyCardCombinationInfo != null) {
                 buyCardCombinationInfo = null
             } else {
-                Logger.log("Effect1 dismiss")
                 dismiss.invoke()
             }
         }
@@ -89,8 +87,6 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
         }
     }
     LaunchedEffect(state, state.animationMode) {
-        Logger.log("Effect2")
-
         when (state.animationMode) {
             CardCombinationState.ANIMATION_FAIL -> {
                 scope.launch {
@@ -245,9 +241,7 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                 selectListener = { list ->
                     viewModel.selectMyCard(selectCardSlot, list[0])
                 }) {
-                Logger.log("dissmiss")
                 backKeyListener = {
-                    Logger.log("dissmiss back")
                     if (buyCardCombinationInfo != null) {
                         buyCardCombinationInfo = null
                     } else {

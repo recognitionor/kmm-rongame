@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import com.jhlee.kmm_rongame.SharedRes
 import com.jhlee.kmm_rongame.card.domain.Card
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
+import com.jhlee.kmm_rongame.ui.theme.Blue400
 
 @Composable
 fun PandoraTargetScreen(targetCard: Card, state: PandoraState, tutorialClick: () -> Unit) {
@@ -43,6 +45,7 @@ fun PandoraTargetScreen(targetCard: Card, state: PandoraState, tutorialClick: ()
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Text(
                 textAlign = TextAlign.Center,
                 text = "목표 카드",
@@ -96,6 +99,12 @@ fun PandoraTargetScreen(targetCard: Card, state: PandoraState, tutorialClick: ()
                 Text(
                     text = message, style = TextStyle(
                         fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Red
+                    )
+                )
+
+                Text(
+                    text = "${state.goalCount}번 강화", style = TextStyle(
+                        fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Blue400
                     )
                 )
             }

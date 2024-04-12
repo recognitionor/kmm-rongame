@@ -27,6 +27,7 @@ class CardDataSourceImpl(db: AppDatabase, private val httpClient: HttpClient) : 
             try {
                 val cardList = async {
                     queries.myCardList().executeAsList().map {
+                        Logger.log("image ~ : " + it.image)
                         val cardInfo = queries.getCardInfo(it.cardId!!.toLong()).executeAsOne()
                         it.toCard(cardInfo)
                     }

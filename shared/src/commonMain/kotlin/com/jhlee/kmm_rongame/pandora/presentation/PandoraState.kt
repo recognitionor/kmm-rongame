@@ -16,6 +16,7 @@ data class PandoraState(
     val rowSize: Int = 0,
     val colSize: Int = 0,
     val goalCard: Card? = null,
+    val goalCount: Int = 0,
     val openCardCount: Int = 0,
     val upgradeCount: Int = 0,
     val tutorialIndex: Int = -1

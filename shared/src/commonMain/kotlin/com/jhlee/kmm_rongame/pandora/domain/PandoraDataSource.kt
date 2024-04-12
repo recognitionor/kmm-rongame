@@ -12,15 +12,15 @@ interface PandoraDataSource {
     fun gatchaBasicCard(): Flow<Resource<Card>>
 
     fun checkGameOver(
-        cardList: List<Card?>, index: Int, rowSize: Int, colSize: Int
+        cardList: List<Card?>, rowSize: Int, colSize: Int
     ): Flow<Resource<Boolean>>
 
-    fun checkWin(cardList: List<Card?>): Flow<Resource<Boolean>>
+    fun checkWin(): Flow<Resource<Boolean>>
 
     fun getStageList(): Flow<Resource<List<Card>>>
 
     fun pickCard(card: Card): Flow<Resource<Boolean>>
 
-    fun test(): Flow<Resource<UserInfo>>
+    fun test(): Flow<Resource<Boolean>>
 
 }

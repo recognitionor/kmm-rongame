@@ -55,7 +55,6 @@ fun PandoraListScreen(mainViewModel: MainViewModel, appModule: AppModule, dismis
             )
         })
 
-
     val state: PandoraListState by viewModel.state.collectAsState()
     LaunchedEffect(Unit) {
         backKeyListener = {
@@ -93,6 +92,12 @@ fun PandoraListScreen(mainViewModel: MainViewModel, appModule: AppModule, dismis
                             }.width(30.dp).height(30.dp).padding(5.dp)
                         )
                     }
+//                    testCode
+//                    Button({
+//                        viewModel.test()
+//                    }) {
+//                        Text("text")
+//                    }
 
                     Text(
                         text = "판도라의 상자",
@@ -129,8 +134,7 @@ fun PandoraListScreen(mainViewModel: MainViewModel, appModule: AppModule, dismis
                                 ) {
                                     mainViewModel.showDialog(
                                         MainState.INFO_DIALOG,
-                                        createDialog(
-                                            "${RuleConst.PANDORA_PRICE}원",
+                                        createDialog("${RuleConst.PANDORA_PRICE}원",
                                             "${RuleConst.PANDORA_PRICE}원이 차감 됩니다.",
                                             null,
                                             useBackKey = true,

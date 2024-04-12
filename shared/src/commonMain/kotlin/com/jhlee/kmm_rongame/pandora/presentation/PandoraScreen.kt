@@ -43,7 +43,6 @@ import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
-import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.di.AppModule
 import com.jhlee.kmm_rongame.main.presentation.MainState
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
@@ -53,7 +52,6 @@ import com.jhlee.kmm_rongame.pandora.presentation.PandoraTargetScreen
 import com.jhlee.kmm_rongame.pandora.presentation.PandoraViewModel
 import com.jhlee.kmm_rongame.ui.theme.Green300
 import com.jhlee.kmm_rongame.ui.theme.Red300
-import com.jhlee.kmm_rongame.utils.Utils
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 import kotlin.math.abs
@@ -67,11 +65,12 @@ fun PandoraScreen(
             appModule.dbPandoraDataSource
         )
     })
+
     val state: PandoraState by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         mainViewModel.setWholeScreen(true)
-        viewModel.initCardList(initSize)
+
         backKeyListener = {
             dismiss.invoke()
         }
@@ -115,8 +114,7 @@ fun PandoraScreen(
         PandoraState.STATE_GAME_OVER -> {
             mainViewModel.showDialog(
                 MainState.PANDORA_GAME_OVER,
-                createDialog(
-                    title = "끝!",
+                createDialog(title = "끝!",
                     message = "더 이상 움직일수 있는 카드가 없어요",
                     positiveButtonCallback = {
                         if ((mainViewModel.state.value.userInfo?.money
@@ -149,6 +147,17 @@ fun PandoraScreen(
         modifier = Modifier.background(Color.White).fillMaxSize().padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            getCommonImageResourceBitMap(SharedRes.images.ic_back)?.let {
+                Image(
+                    bitmap = it,
+                    contentDescription = null,
+                    modifier = Modifier.clickable(true) {
+                        dismiss.invoke()
+                    }.width(30.dp).height(30.dp).padding(5.dp)
+                )
+            }
+        }
 
         Box(modifier = Modifier.weight(0.7f)) {
             if (state.pandoraState == PandoraState.STATE_GAME_WIN_PICK || state.pandoraState == PandoraState.STATE_GAME_ROSE_PICK) {
@@ -180,7 +189,7 @@ fun PandoraScreen(
                         }
                     }, enabled = state.detailCard != null) {
                         Text(
-                            text = if (state.pandoraState == PandoraState.STATE_GAME_WIN) "선택 카드 갖고 나가기" else "${
+                            text = if (state.pandoraState == PandoraState.STATE_GAME_WIN_PICK) "선택 카드 갖고 나가기" else "${
                                 BankUtils.formatNumber(
                                     RuleConst.PANDORA_ROSE_PICK_PRICE
                                 )
@@ -270,7 +279,7 @@ fun PandoraScreen(
                                     if (state.cardGatchaLoading > -1) {
                                         return@clickable
                                     }
-                                    if (state.pandoraState == PandoraState.STATE_GAME_WIN_PICK) {
+                                    if (state.pandoraState == PandoraState.STATE_GAME_WIN_PICK || state.pandoraState == PandoraState.STATE_GAME_ROSE_PICK) {
                                         if (state.detailCard != null) {
                                             viewModel.selectDetailCard(null)
                                         } else {
@@ -294,9 +303,11 @@ fun PandoraScreen(
                                                     if (startIndex == index) {
                                                         viewModel.changeSelectMode()
                                                     } else {
-                                                        viewModel.cardCombination(
-                                                            startIndex, index
-                                                        )
+                                                        if (state.pandoraState == PandoraState.STATE_DEFAULT) {
+                                                            viewModel.cardCombination(
+                                                                startIndex, index
+                                                            )
+                                                        }
                                                     }
                                                 }
                                             }

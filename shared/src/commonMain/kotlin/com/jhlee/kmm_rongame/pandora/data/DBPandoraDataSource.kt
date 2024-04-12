@@ -22,6 +22,7 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.datetime.Clock
 import kotlin.math.absoluteValue
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.random.Random
 
 class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
@@ -63,7 +64,7 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
                     }
 
                     val resultCard = card2.copy(
-                        upgrade = card2.upgrade.plus(upgradeValue),
+                        upgrade = min(card2.potential, card2.upgrade.plus(upgradeValue)),
                         power = card1.power + card2.power
                     )
                     emit(Resource.Success(resultCard))
@@ -198,69 +199,73 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
     }
 
     override fun checkGameOver(
-        cardList: List<Card?>, index: Int, rowSize: Int, colSize: Int
+        cardList: List<Card?>, rowSize: Int, colSize: Int
     ): Flow<Resource<Boolean>> = flow {
         if (cardList.contains(null)) {
             emit(Resource.Success(true))
             return@flow
         }
         try {
-            val card1 = cardList[index]!!
-            val startIndexRow = index % rowSize
-            val startIndexCol = index / rowSize
-            var combineResult: List<CardCombination> = emptyList()
-            val cardInfoList = queries.getCardInfoList().executeAsList()
-            // 왼쪽 인덱스
-            val leftIndex = if (startIndexRow == 0) -1 else index - 1
-
-            // 오른쪽 인덱스
-            val rightIndex = if (startIndexRow + 1 >= rowSize) -1 else index + 1
-
-            // 위쪽 인덱스
-            val topIndex = if (startIndexCol == 0) -1 else index - rowSize
-
-            // 아래쪽 인덱스
-            val bottomIndex = if (startIndexCol + 1 >= colSize) -1 else index + rowSize
-
-            val tempList: List<Int> = listOf(leftIndex, rightIndex, topIndex, bottomIndex)
             var isResult = false
-            var count = 0
-            tempList.forEach {
-                count++
-                if (it > -1) {
-                    val card2 = cardList[it]!!
-                    if (card1.cardId == card2.cardId) {
-                        if (card2.potential > card2.upgrade) {
-                            isResult = true
-                            return@forEach
-                        }
-                    } else {
-                        queries.getCardCombineList().executeAsList().forEach { cardEntity ->
-                            if (cardEntity.item1?.toInt() == card1.cardId && cardEntity.item2?.toInt() == card2.cardId) {
-                                combineResult = cardEntity.toCombineResult(cardInfoList)
-                            }
-                            if (cardEntity.item2?.toInt() == card1.cardId && cardEntity.item1?.toInt() == card2.cardId) {
-                                combineResult = cardEntity.toCombineResult(cardInfoList)
-                            }
-                        }
-                        // 일반 강화 로직
-                        if (combineResult.isEmpty()) {
-                            val isCard1CanUpgrade = CardUtils.isUpgradeCard(card1)
-                            val isCard2CanUpgrade = CardUtils.isUpgradeCard(card2)
-                            if (isCard1CanUpgrade != isCard2CanUpgrade) {
-                                val upgradeCard: Card = if (isCard1CanUpgrade) {
-                                    card1
-                                } else {
-                                    card2
+            cardList.forEachIndexed { index, card ->
+                if (card != null) {
+                    val startIndexRow = index % rowSize
+                    val startIndexCol = index / rowSize
+                    var combineResult: List<CardCombination> = emptyList()
+                    val cardInfoList = queries.getCardInfoList().executeAsList()
+                    // 왼쪽 인덱스
+                    val leftIndex = if (startIndexRow == 0) -1 else index - 1
+
+                    // 오른쪽 인덱스
+                    val rightIndex = if (startIndexRow + 1 >= rowSize) -1 else index + 1
+
+                    // 위쪽 인덱스
+                    val topIndex = if (startIndexCol == 0) -1 else index - rowSize
+
+                    // 아래쪽 인덱스
+                    val bottomIndex = if (startIndexCol + 1 >= colSize) -1 else index + rowSize
+
+                    val tempList: List<Int> = listOf(leftIndex, rightIndex, topIndex, bottomIndex)
+
+                    var count = 0
+                    tempList.forEach {
+                        count++
+                        if (it > -1 && tempList.size > it) {
+                            val card2 = cardList[it]!!
+                            if (card.cardId == card2.cardId) {
+                                if (card2.potential > card2.upgrade) {
+                                    isResult = true
+                                    return@forEach
                                 }
-                                if (upgradeCard.potential > upgradeCard.upgrade) {
+                            } else {
+                                queries.getCardCombineList().executeAsList().forEach { cardEntity ->
+                                    if (cardEntity.item1?.toInt() == card.cardId && cardEntity.item2?.toInt() == card2.cardId) {
+                                        combineResult = cardEntity.toCombineResult(cardInfoList)
+                                    }
+                                    if (cardEntity.item2?.toInt() == card.cardId && cardEntity.item1?.toInt() == card2.cardId) {
+                                        combineResult = cardEntity.toCombineResult(cardInfoList)
+                                    }
+                                }
+                                // 일반 강화 로직
+                                if (combineResult.isEmpty()) {
+                                    val isCard1CanUpgrade = CardUtils.isUpgradeCard(card)
+                                    val isCard2CanUpgrade = CardUtils.isUpgradeCard(card2)
+                                    if (isCard1CanUpgrade != isCard2CanUpgrade) {
+                                        val upgradeCard: Card = if (isCard1CanUpgrade) {
+                                            card
+                                        } else {
+                                            card2
+                                        }
+                                        if (upgradeCard.potential > upgradeCard.upgrade) {
+                                            isResult = true
+                                            return@forEach
+                                        }
+                                    }
+                                } else {
                                     isResult = true
                                     return@forEach
                                 }
                             }
-                        } else {
-                            isResult = true
-                            return@forEach
                         }
                     }
                 }
@@ -272,21 +277,9 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
     }
 
 
-    override fun checkWin(cardList: List<Card?>): Flow<Resource<Boolean>> = flow {
-        val stageIndex = queries.getUserInfo().executeAsOne().pandoraStage
-        val cardIndex = (stageIndex / 10).toInt()
-        val upgradeCount = (stageIndex % 10).toInt()
-        var isResult = false
-        cardList.forEach { card ->
-            if (card?.cardId == cardIndex && card.upgrade >= upgradeCount) {
-                isResult = true
-                return@forEach
-            }
-        }
-        if (isResult) {
-            queries.nextPandoraStage()
-        }
-        emit(Resource.Success(isResult))
+    override fun checkWin(): Flow<Resource<Boolean>> = flow {
+        queries.nextPandoraStage()
+        emit(Resource.Success(true))
     }
 
     override fun getStageList(): Flow<Resource<List<Card>>> = flow {
@@ -299,7 +292,6 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
             }
 
             val resultList = tempList.map {
-                Logger.log(it.name)
                 val tempType = hashSetOf<CardType>()
                 it.type.split("|").forEach { typeName ->
                     CardInfoManager.CARD_TYPE_MAP[typeName]?.let { cardType ->
@@ -335,11 +327,7 @@ class DBPandoraDataSource(db: AppDatabase) : PandoraDataSource {
         }
     }
 
-    override fun test(): Flow<Resource<UserInfo>> = flow {
-        val user = queries.getUserInfo().executeAsOne()
-        Logger.log("user start : $user")
+    override fun test(): Flow<Resource<Boolean>> = flow {
         queries.nextPandoraStage()
-        val user2 = queries.getUserInfo().executeAsOne()
-        Logger.log("user end : $user2")
     }
 }

@@ -36,6 +36,7 @@ import com.jhlee.kmm_rongame.constants.GradeConst
 import com.jhlee.kmm_rongame.constants.RuleConst
 import com.jhlee.kmm_rongame.core.presentation.getCommonImageResourceBitMap
 import com.jhlee.kmm_rongame.core.presentation.rememberBitmapFromBytes
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.main.presentation.MainViewModel
 
 @Composable
@@ -59,6 +60,8 @@ fun CardScreen(
 
     if (cardStateValue.gatchaCard != null) {
         cardStateValue.gatchaCard?.let {
+            Logger.log("card name : " + it.name)
+            Logger.log("card image : " + it.image)
             questionImage = getCommonImageResourceBitMap(SharedRes.images.ic_question)
             nameStr = it.name
             nameEngStr = it.nameEng

@@ -150,7 +150,6 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
         mainDataSource.getUserInfo().onEach { res ->
             when (res) {
                 is Resource.Error -> {
-                    Logger.log("res getUserInfo fail ${res.data}")
                     _state.value = state.value.copy(isLoading = false, error = res.message ?: "")
                 }
 
@@ -159,10 +158,7 @@ class MainViewModel(private val mainDataSource: MainDataSource) : ViewModel() {
                 }
 
                 is Resource.Success -> {
-                    Logger.log("res data ${res.data}")
-//                    _state.value = state.value.copy(userInfo = res.data, isLoading = false)
                     if ((res.data?.money ?: 0) < 0) {
-//                        updateMoney()
                         _state.update {
                             it.copy(
                                 openDialog = OVERFLOW_MONEY, userInfo = res.data, isLoading = false

@@ -38,6 +38,15 @@ class PandoraViewModel(
                 is Resource.Error -> {}
                 is Resource.Success -> {
                     _state.update { it.copy(goalCard = result.data) }
+                    when (result.data?.grade) {
+                        1, 2 -> initCardList(4)
+                        3 -> initCardList(6)
+                        4, 5 -> initCardList(9)
+                        6, 7 -> initCardList(16)
+                        else -> initCardList(25)
+                    }
+
+
                 }
 
                 is Resource.Loading -> {}
@@ -63,7 +72,7 @@ class PandoraViewModel(
         _state.update { it.copy(detailCard = card) }
     }
 
-    fun initCardList(listSize: Int) {
+    private fun initCardList(listSize: Int) {
         val rowSize = min(round(sqrt(listSize.toDouble())).toInt(), 7)
         val colSize = if (listSize % rowSize == 0) listSize / rowSize else listSize / rowSize + 1
         _state.update {
@@ -76,7 +85,7 @@ class PandoraViewModel(
         }
     }
 
-    fun updateCardListSize(list: MutableList<Card?>) {
+    private fun updateCardListSize(list: MutableList<Card?>) {
         val maxRow = 7
         val listSize = min(maxRow * maxRow, list.size.plus(1))
         val rowSize = min(round(sqrt(listSize.toDouble())).toInt(), maxRow)
@@ -125,6 +134,12 @@ class PandoraViewModel(
                 pandoraDataSource.combinationCard(combinationList).onEach { result ->
                     when (result) {
                         is Resource.Success -> {
+                            val newGoalCount = state.value.goalCount.plus(1)
+                            if (result.data?.cardId == state.value.goalCard?.cardId && (result.data?.upgrade
+                                    ?: 0) > 0
+                            ) {
+                                _state.update { it.copy(goalCount = newGoalCount) }
+                            }
                             val tempList = state.value.cardList.toMutableList()
                             tempList[index] = result.data
                             tempList[startIndex] = null
@@ -138,11 +153,13 @@ class PandoraViewModel(
                                 }
                             }
                             changeSelectMode()
-                            checkWin(tempList) { checkWinResult ->
-                                if (!checkWinResult) {
-                                    checkGameOver(tempList, startIndex) { checkGameOverResult ->
-                                        if (!checkGameOverResult) {
-                                            checkGameOver(tempList, index)
+                            if (result.data?.cardId == state.value.goalCard?.cardId) {
+                                checkWin(newGoalCount) { checkWinResult ->
+                                    if (!checkWinResult) {
+                                        checkGameOver(tempList, startIndex) { checkGameOverResult ->
+                                            if (!checkGameOverResult) {
+                                                checkGameOver(tempList, index)
+                                            }
                                         }
                                     }
                                 }
@@ -161,29 +178,21 @@ class PandoraViewModel(
         }
     }
 
-    private fun checkWin(cardList: List<Card?>, callback: (isResult: Boolean) -> Unit) {
-        pandoraDataSource.checkWin(cardList).onEach { result ->
-            var checkResult = false
-            when (result) {
-                is Resource.Success -> {
-                    if (result.data == true) {
-                        _state.update { it.copy(pandoraState = PandoraState.STATE_GAME_WIN) }
-                        checkResult = true
-                    }
-                }
-
-                is Resource.Loading -> {}
-                is Resource.Error -> {}
-            }
-            callback.invoke(checkResult)
-        }.launchIn(viewModelScope)
+    private fun checkWin(goalCount: Int, callback: (isResult: Boolean) -> Unit) {
+        var checkResult = false
+        if ((_state.value.goalCard?.upgrade ?: 0) <= goalCount) {
+            pandoraDataSource.checkWin().launchIn(viewModelScope)
+            _state.update { it.copy(pandoraState = PandoraState.STATE_GAME_WIN) }
+            checkResult = true
+        }
+        callback.invoke(checkResult)
     }
 
     private fun checkGameOver(
         cardList: List<Card?>, index: Int, callback: ((isResult: Boolean) -> Unit)? = null
     ) {
         pandoraDataSource.checkGameOver(
-            cardList, index, state.value.rowSize, state.value.colSize
+            cardList, state.value.rowSize, state.value.colSize
         ).onEach { result ->
             var isResult = false
             when (result) {
@@ -212,7 +221,6 @@ class PandoraViewModel(
                 is Resource.Success -> {
                     val tempList = _state.value.cardList.toMutableList()
                     tempList[index] = result.data
-
                     _state.update {
                         it.copy(
                             detailCard = result.data,
@@ -222,12 +230,11 @@ class PandoraViewModel(
                             openCardCount = it.openCardCount.plus(1)
                         )
                     }
-                    checkWin(tempList) {
+                    checkWin(result.data?.upgrade ?: 0) {
                         if (!it) {
                             checkGameOver(tempList, index)
                         }
                     }
-
                 }
 
                 is Resource.Loading -> {
