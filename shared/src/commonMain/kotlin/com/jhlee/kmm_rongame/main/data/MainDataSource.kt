@@ -19,6 +19,7 @@ import com.jhlee.kmm_rongame.core.data.HttpConst
 import com.jhlee.kmm_rongame.core.data.HttpConst.FLATICON_URL
 import com.jhlee.kmm_rongame.core.data.ImageStorage
 import com.jhlee.kmm_rongame.core.domain.Resource
+import com.jhlee.kmm_rongame.core.util.Logger
 import com.jhlee.kmm_rongame.isAndroid
 import com.jhlee.kmm_rongame.main.domain.FlaticonAuth
 import com.jhlee.kmm_rongame.main.domain.MainDataSource
@@ -160,6 +161,7 @@ class MainDataSourceImpl(
             } else {
                 cardInfo.image
             }
+            Logger.log("card : " + it.name)
             try {
                 queries.insertCardInfoEntity(
                     it.id.toLong(),
