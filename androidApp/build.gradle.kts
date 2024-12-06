@@ -12,7 +12,7 @@ android {
         applicationId = "com.jhlee.kmm_rongame.android"
         minSdk = 24
         targetSdk = 34
-        versionCode = 144
+        versionCode = 145
         versionName = "1.4.5"
     }
     buildFeatures {
