@@ -65,7 +65,12 @@ class CardCombinationViewModel(private val cardCombinationDataSource: CardCombin
     }
 
     fun combinationCard() {
-        _state.update { it.copy(animationMode = CardCombinationState.ANIMATION_DEFAULT) }
+        if (_state.value.isCombining) return // 이미 작업 중이면 무시
+        _state.update {
+            it.copy(
+                isCombining = true, animationMode = CardCombinationState.ANIMATION_DEFAULT
+            )
+        }
         cardCombinationDataSource.combinationCard(state.value.mySelectedCardEntry)
             .onEach { result ->
                 when (result) {
@@ -114,7 +119,7 @@ class CardCombinationViewModel(private val cardCombinationDataSource: CardCombin
     }
 
     fun clearAnimation() {
-        _state.update { it.copy(animationMode = CardCombinationState.ANIMATION_DEFAULT) }
+        _state.update { it.copy(isCombining = false, animationMode = CardCombinationState.ANIMATION_DEFAULT) }
     }
 
     fun clearSelected() {

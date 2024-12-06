@@ -119,7 +119,6 @@ fun CardCombinationScreen(appModule: AppModule, mainViewModel: MainViewModel, di
                 }
             }
         }
-        viewModel.clearAnimation()
     }
 
 

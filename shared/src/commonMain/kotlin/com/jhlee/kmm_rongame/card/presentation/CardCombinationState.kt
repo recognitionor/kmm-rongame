@@ -14,6 +14,7 @@ data class CardCombinationState(
     val error: String = "",
     val cardRandomProgress: Int = 0,
     val homeScreenMode: Int = 0,
+    val isCombining: Boolean = false
 ) {
     companion object {
         const val CARD_COMBINE_DEFAULT = 0
