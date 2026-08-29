@@ -1,3 +1,7 @@
 <resources>
-    <style name="AppTheme" parent="android:Theme.Material.NoActionBar"/>
+    <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
+        <!-- targetSdk 36 은 시스템 바를 투명하게 강제한다. 앱 배경이 밝으므로 아이콘을 어둡게 고정. -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
 </resources>

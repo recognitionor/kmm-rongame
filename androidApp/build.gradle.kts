@@ -7,13 +7,13 @@ plugins {
 
 android {
     namespace = "com.jhlee.kmm_rongame.android"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.jhlee.kmm_rongame.android"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 147
-        versionName = "1.4.7"
+        targetSdk = 36
+        versionCode = 148
+        versionName = "1.4.8"
     }
     buildFeatures {
         compose = true
@@ -52,5 +52,4 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.7.1")
     implementation("androidx.appcompat:appcompat-resources:1.6.1")
 
-    implementation("com.android.billingclient:billing:7.0.0")
 }
